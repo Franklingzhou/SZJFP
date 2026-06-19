@@ -1,0 +1,1570 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index abe866d..06a12e4 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -1,218 +1,123 @@
+-# 家政共创平台 - AGENTS.md
++# AGENTS.md — 家政系统上线 工程规范
++
++> 本文档供 AI Agent 和开发者阅读，描述项目架构、编码规范和注意事项。
+ 
+ ## 项目概览
+ 
+-家政共创平台是一个连接阿姨(家政服务人员)、经纪人、招生代理、培训讲师和客户的多角色协作系统。平台通过佣金分账、诚信体系、积分激励等机制构建家政服务生态闭环。
++家政公司内部管理平台，支持 PC 管理后台 + 小程序端（web-view 方案）。
++- **技术栈**: Next.js 15 (App Router) + TypeScript + shadcn/ui + Supabase
++- **部署**: Coze Coding 平台
++- **项目ID**: 7646026859368677419
+ 
+-## 版本技术栈
++## 角色体系（8种）
+ 
+-- **Framework**: Next.js 16 (App Router)
+-- **Core**: React 19
+-- **Language**: TypeScript 5
+-- **UI 组件**: shadcn/ui (基于 Radix UI)
+-- **Styling**: Tailwind CSS 4
++| 角色 | 路由前缀 | 端 | 说明 |
++|------|----------|-----|------|
++| admin | `/admin/` | PC | 系统管理员，全权限 |
++| agent | `/m/agent/` | 小程序 | 经纪人，发单+推荐+合单 |
++| recruiter | `/m/recruiter/` | 小程序 | 招生，录入+培训+合单 |
++| instructor | `/m/instructor/` | 小程序 | 讲师，课程+学员+合单 |
++| training_supervisor | `/m/training_supervisor/` | 小程序 | 培训主管，审批+线索+学员 |
++| worker_operator | `/m/worker_operator/` | 小程序 | 阿姨运营，简历管理 |
++| worker | `/m/worker/` | 小程序 | 阿姨，接单+简历+课程 |
++| customer | `/m/customer/` | 小程序 | 客户，订单+评价 |
+ 
+ ## 目录结构
+ 
+ ```
+-├── public/                     # 静态资源
+-├── src/
+-│   ├── app/
+-│   │   ├── page.tsx            # 首页（入口选择 PC/小程序）
+-│   │   ├── layout.tsx          # 根布局
+-│   │   ├── globals.css         # 全局样式
+-│   │   ├── admin/              # PC端后台管理
+-│   │   │   ├── layout.tsx      # 管理端布局（侧边栏+顶栏）
+-│   │   │   ├── dashboard/      # 数据看板
+-│   │   │   ├── reviews/        # 角色审核
+-│   │   │   ├── workers/        # 阿姨库
+-│   │   │   ├── commission/     # 佣金配置
+-│   │   │   ├── settlement/     # 分账管理
+-│   │   │   ├── credit/         # 诚信分
+-│   │   │   ├── deposit/        # 保证金
+-│   │   │   ├── points/         # 积分系统
+-│   │   │   ├── orders/         # 订单管理
+-│   │   │   ├── training/       # 培训管理
+-│   │   │   └── venues/         # 场地管理
+-│   │   └── m/                  # 小程序端
+-│   │       ├── layout.tsx      # 小程序布局
+-│   │       ├── login/          # 登录页
+-│   │       ├── worker/         # 阿姨端
+-│   │       │   ├── page.tsx    # 接单大厅
+-│   │       │   ├── jobs/       # 我的订单
+-│   │       │   ├── reviews/    # 我的评价
+-│   │       │   └── profile/    # 个人简历
+-│   │       ├── agent/          # 经纪人端
+-│   │       │   ├── page.tsx    # 工作台
+-│   │       │   ├── workers/    # 阿姨管理
+-│   │       │   ├── orders/     # 订单管理
+-│   │       │   └── profile/    # 个人中心
+-│   │       ├── recruiter/      # 招生端
+-│   │       │   ├── page.tsx    # 工作台
+-│   │       │   ├── workers/    # 录入管理
+-│   │       │   ├── training/   # 培训推荐
+-│   │       │   └── profile/    # 个人中心
+-│   │       ├── instructor/     # 讲师端
+-│   │       │   ├── page.tsx    # 工作台
+-│   │       │   ├── courses/    # 课程管理
+-│   │       │   ├── students/   # 学员管理
+-│   │       │   └── profile/    # 个人中心
+-│   │       └── customer/       # 客户端
+-│   │           ├── page.tsx    # 首页
+-│   │           ├── orders/     # 我的订单
+-│   │           └── profile/    # 个人中心
+-│   ├── components/
+-│   │   ├── ui/                 # shadcn/ui 组件库
+-│   │   ├── admin/              # PC端管理组件
+-│   │   │   ├── sidebar.tsx     # 侧边导航栏
+-│   │   │   └── header.tsx      # 顶部栏
+-│   │   └── miniapp/            # 小程序端组件
+-│   │       ├── context.tsx     # 角色上下文
+-│   │       └── tab-bar.tsx     # 底部导航栏
+-│   ├── hooks/                  # 自定义 Hooks
+-│   └── lib/
+-│       ├── utils.ts            # 通用工具 (cn)
+-│       ├── types.ts            # 类型定义（6种角色、订单、佣金等）
+-│       └── mock-data.ts        # Mock 数据
+-├── package.json
+-├── next.config.ts
+-└── tsconfig.json
++src/
++├── app/
++│   ├── admin/           # PC管理后台（各模块页面）
++│   ├── api/             # API路由（RESTful）
++│   │   ├── auth/        # 认证相关（登录/注册/改密/重置）
++│   │   ├── workers/     # 阿姨 CRUD
++│   │   ├── orders/      # 订单 CRUD
++│   │   ├── leads/       # 线索 CRUD
++│   │   ├── reviews/     # 评价 CRUD
++│   │   ├── courses/     # 课程 CRUD
++│   │   ├── enrollments/ # 学员注册 CRUD
++│   │   ├── contracts/   # 合同 CRUD
++│   │   └── ...
++│   ├── m/               # 小程序端页面（按角色分目录）
++│   ├── recruiter-portal/ # 招生PC端
++│   ├── instructor-portal/# 讲师PC端
++│   ├── training-portal/  # 培训PC端
++│   ├── worker-ops-portal/# 阿姨运营PC端
++│   ├── resume/[id]/     # 简历分享H5
++│   └── layout.tsx       # 根布局
++├── components/
++│   ├── admin/           # PC后台组件（header/sidebar）
++│   ├── miniapp/         # 小程序通用组件（shell/tab-bar/hall等）
++│   ├── ui/              # shadcn/ui 基础组件
++│   └── [portal]/        # 各PC端门户组件
++├── hooks/               # 自定义Hooks
++├── lib/
++│   ├── auth-middleware.ts  # ⚠️ 认证核心，JWT签名验证
++│   ├── data-service.ts     # 数据服务层
++│   ├── mock-data.ts        # Mock数据（与Supabase字段需对齐）
++│   ├── types.ts            # TypeScript类型定义
++│   └── utils.ts            # 工具函数
++└── storage/
++    └── database/
++        ├── shared/
++        │   ├── schema.ts     # Drizzle ORM Schema
++        │   └── relations.ts  # 表关系定义
++        └── supabase-client.ts # Supabase客户端
+ ```
+ 
+-## 构建与运行命令
+-
+-- **开发**: `pnpm dev` (端口 5000, HMR)
+-- **构建**: `pnpm build`
+-- **生产运行**: `pnpm start`
+-- **类型检查**: `pnpm ts-check`
+-- **Lint**: `pnpm lint`
+-
+-## 8种角色体系
+-
+-| 角色 | 标识 | 小程序路径 | 核心功能 |
+-|------|------|-----------|---------|
+-| 阿姨 | `worker` | `/m/worker` | 简历管理、接单大厅、状态切换、查看评价 |
+-| 经纪人 | `agent` | `/m/agent` | 阿姨管理、发单匹配、客户管理、佣金查看 |
+-| 招生代理 | `recruiter` | `/m/recruiter` | 阿姨录入、培训推荐、转化路径追踪 |
+-| 培训讲师 | `instructor` | `/m/instructor` | 培训课程管理、学员管理、点评评分 |
+-| 客户 | `customer` | `/m/customer` | 浏览简历、下单、评价 |
+-| 管理员 | `admin` | `/admin` | 全平台管理后台 |
+-| 培训主管 | `training_supervisor` | `/m/training_supervisor` | 课程/合同审批、招生团队管理 |
+-| 阿姨运营 | `worker_operator` | `/m/worker_operator` | 简历管理、上户推荐、线索录入 |
++## 安全规范（重要）
+ 
+-## 核心业务模块
++### 认证机制
++- 所有 API 使用 JWT 签名验证（`src/lib/auth-middleware.ts`）
++- JWT_SECRET 环境变量必须配置
++- Token 过期时间 24h
++- **禁止**任何无签名 token 解析逻辑
++- **禁止**任何环境下的自动 admin 权限授予
+ 
+-### 佣金分账
+-- 三级分账：经纪人(30-50%) + 招生代理(10-20%) + 平台(剩余)
+-- 按单分账，支持自定义比例
++### API 写操作白名单
++- 所有 PUT/PATCH 接口必须使用字段白名单（safeUpdates）
++- 敏感字段（credit_score/deposit/points/role/status）必须通过 SENSITIVE_FIELDS 保护
++- 非 admin 用户不可修改敏感字段
+ 
+-### 诚信体系
+-- 诚信分: 初始1000分，违约扣分，良好表现加分
+-- 保证金: 按角色等级缴纳，可退还
+-- 黑名单: 诚信分低于阈值自动拉黑
+-
+-### 积分系统
+-- 行为获取积分（完成订单、好评等）
+-- 积分可兑换权益
+-- 按角色配置不同规则
++### 环境变量
++- `JWT_SECRET`: JWT签名密钥（必须）
++- `SMS_PROVIDER`: 短信服务商（生产环境必须配置）
++- `NODE_ENV`: 开发模式用 `development`，生产用 `production`
+ 
+ ## 编码规范
+ 
+-- TypeScript strict 模式
+-- 禁止隐式 any
+-- 函数参数必须有类型标注
+-- 使用 `cn()` 合并 className
+-- 组件使用 'use client' 标注客户端组件
+-- Mock 数据集中在 `src/lib/mock-data.ts`
+-
+-## 微信云开发适配
+-
+-- 数据层已接入Supabase数据库，所有业务数据从真实数据库读写
+-- 仍保留mock-data.ts作为本地开发回退
+-- 小程序端路由结构与微信小程序页面结构一一对应
+-- 角色上下文机制（RoleContext）可无缝对接微信登录态
+-
+-## Supabase 数据库接入
+-
+-### 数据库客户端
+-- 文件：`src/storage/database/supabase-client.ts`
+-- 通过 `getSupabaseClient()` 获取客户端实例
+-- 环境变量：`NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY`
+-
+-### 业务数据表（已建好+已灌种子数据）
+-| 表名 | 记录数 | 说明 |
+-|------|--------|------|
+-| users | 15 | 用户表（8种角色） |
+-| workers | 6 | 阿姨简历库 |
+-| leads | 8 | 线索库 |
+-| courses | 5 | 课程表 |
+-| orders | 5 | 合单/订单 |
+-| reviews | 9 | 评价库 |
+-| contracts | 3 | 合同表 |
+-| commission_rules | 6 | 佣金规则 |
+-| enrollments | 4 | 报名/学员表 |
+-| system_settings | 6 | 系统配置（JSONB存储） |
+-
+-### system_settings 表结构
+-- key (VARCHAR): 配置键名（如platform_info, commission_rules等）
+-- value (JSONB): 配置值（JSON格式）
+-- updated_at (TIMESTAMPTZ): 更新时间
+-
+-### API 接口（已实现，读写Supabase）
+-| 接口 | 方法 | 说明 |
+-|------|------|------|
+-| /api/settings | GET | 获取所有系统设置 |
+-| /api/settings?key=xxx | GET | 获取指定设置项 |
+-| /api/settings | PUT | 保存设置项（upsert） |
+-| /api/workers | GET | 获取阿姨列表（支持筛选） |
+-| /api/workers | PUT | 更新阿姨信息 |
+-| /api/leads | GET | 获取线索列表 |
+-| /api/leads | POST | 新增线索 |
+-| /api/leads | PUT | 更新线索 |
+-| /api/courses | GET | 获取课程列表 |
+-| /api/courses | PUT | 更新课程 |
+-| /api/orders | GET | 获取订单/合单列表 |
+-| /api/orders | POST | 创建订单 |
+-| /api/orders | PUT | 更新订单 |
+-| /api/reviews | GET | 获取评价列表 |
+-| /api/reviews | POST | 新增评价 |
+-| /api/users | GET | 获取用户列表 |
+-| /api/contracts | GET | 获取合同列表 |
+-| /api/contracts | PUT | 更新合同 |
+-| /api/enrollments | GET | 获取报名列表 |
+-| /api/enrollments | POST | 新增报名 |
+-| /api/auth/phone-login | POST | 手机号+验证码登录 |
+-| /api/auth/phone-register | POST | 手机号注册新用户 |
+-
+-### 登录方式
+-1. **手机号+验证码登录**（主要方式）
+-   - 开发模式：任意手机号+验证码888888即可登录
+-   - 生产模式：需对接短信服务商（配置SMS_PROVIDER环境变量）
+-2. **微信小程序登录**
+-   - 小程序内通过wx.login()获取code，传给后端换取openid
+-   - 新用户需选择角色注册
+-
+-## 微信自动登录
+-
+-### 登录流程
+-1. 小程序启动时调用 `wx.login()` 获取 code
+-2. code 传给后端 `/api/auth/wechat-login` 换取 openid
+-3. 用 openid 查找数据库用户 → 已绑定则自动登录，未绑定则注册
+-4. 注册调用 `/api/auth/wechat-register`，选择角色并绑定 openid
+-5. token 存 localStorage，下次打开自动登录
+-
+-### API 接口
+-- `POST /api/auth/wechat-login` — 微信登录（传 code）
+-- `POST /api/auth/wechat-register` — 新用户注册（传 openid/role/name/phone）
+-- `GET /api/auth/session` — 获取当前 session（Header: Authorization: Bearer token）
+-- `POST /api/auth/init-users` — 初始化测试用户（仅开发环境）
+-
+-### 数据库
+-- `users` 表新增 `wechat_openid` 和 `wechat_unionid` 字段
+-- 测试用户 openid 格式：`dev_wx_{role}`（如 `dev_wx_agent`）
+-- 开发模式：未配置 WX_APPID 时，code 直接映射为 openid
+-
+-### 环境变量
+-- `WX_APPID` — 微信小程序 AppID（生产必配）
+-- `WX_APPSECRET` — 微信小程序 AppSecret（生产必配）
+-- `JWT_SECRET` — JWT签名密钥（可选，默认 dev-secret-key）
++### API路由
++- 每个资源一个 `route.ts`，实现 GET/POST/PUT/DELETE
++- GET: 列表查询，支持筛选
++- POST: 创建，校验必填字段
++- PUT: 更新，**必须用白名单过滤字段**
++- DELETE: 删除，校验权限
++
++### 组件
++- Server Component 优先，需要交互的用 Client Component
++- 小程序端组件放 `components/miniapp/`
++- UI基础组件用 shadcn/ui，放 `components/ui/`
++
++### 数据层
++- 优先使用 Supabase 真实数据库
++- Mock数据（`mock-data.ts`）仅用于开发阶段
++- 字段名必须与 Supabase Schema 一致
++
++## 文档体系
++
++| 文档 | 用途 |
++|------|------|
++| `CHANGELOG.md` | 变更记录（做了什么） |
++| `DIFFLOG.md` | 差异日志（改了哪些文件的哪些地方） |
++| `AGENTS.md` | 工程规范（本文档） |
++| `DESIGN.md` | 设计规范（视觉/配色/排版） |
++| `README.md` | 项目说明（技术栈/开发指南） |
++
++## 修改代码时的注意事项
++
++1. **不要整页重写**，只改需要改的部分
++2. **每次最多改3个文件**，避免大面积冲突
++3. **改完必须 `pnpm build`** 验证编译通过
++4. **安全相关改动**必须同步更新 CHANGELOG 和 DIFFLOG
++5. **新增API**必须在 AGENTS.md 的目录结构中体现
++6. **新增角色/路由**必须更新本文档的角色体系表
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index c8607c1..c5609cd 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,299 +1,138 @@
+-# 变更记录 (基于 7a8e765b87 版本)
++# CHANGELOG — 家政系统上线 变更日志
+ 
+-> 从2026年6月7日恢复到7a8e765b87基线版本后，所有改动记录如下
++> 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)
++> 项目采用持续交付，每个 commit 即为一个版本
+ 
+----
+-
+-## 2026-06-11 安全加固 — JWT签名+PUT白名单 (commit: 当前)
+-
+-### 安全改动
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/lib/auth-middleware.ts` | 新增 `generateToken()`(JWT签名)、`verifyToken()`(JWT验证)、`forbiddenResponse()`、`sanitizeUpdateFields()`(字段白名单) |
+-| `src/app/api/auth/password-login/route.ts` | 用 `generateToken()` 替换本地 base64 编码 |
+-| `src/app/api/auth/phone-login/route.ts` | 同上 |
+-| `src/app/api/auth/phone-register/route.ts` | 同上 |
+-| `src/app/api/auth/wechat-login/route.ts` | 同上 |
+-| `src/app/api/auth/wechat-register/route.ts` | 同上 |
+-| `src/app/api/auth/session/route.ts` | 用 `verifyToken()` 替换本地 base64 解码 |
+-| `src/app/api/workers/route.ts` | PUT加 `sanitizeUpdateFields('workers', ...)` 白名单 |
+-| `src/app/api/orders/route.ts` | PUT加 `sanitizeUpdateFields('orders', ...)` 白名单 |
+-| `src/app/api/leads/route.ts` | PUT加 `sanitizeUpdateFields('leads', ...)` 白名单 |
+-| `src/app/api/reviews/route.ts` | PUT加 `sanitizeUpdateFields('reviews', ...)` 白名单 |
+-| `src/app/api/courses/route.ts` | PUT加 `sanitizeUpdateFields('courses', ...)` 白名单 |
+-| `src/app/api/contracts/route.ts` | PUT加 `sanitizeUpdateFields('contracts', ...)` 白名单 |
+-| `src/app/api/users/route.ts` | PUT加 `sanitizeUpdateFields('users', ...)` 白名单 |
+-
+-### JWT 配置
+-- 环境变量 `JWT_SECRET` 在 `.env.local` 中已配置
+-- 默认值: `dev-secret-key`（开发环境）
+-- Token 有效期: 7天
+-- 算法: HS256
++## [未发布] — 待修复项
+ 
+-### 字段白名单规则
+-- 每个 API 资源定义了允许修改的字段白名单
+-- `credit_score`、`points`、`deposit` 等敏感字段不在白名单中，禁止通过 PUT 修改
+-- admin 角色拥有额外可修改字段（如 `review_status`）
+-- 非白名单字段在 `sanitizeUpdateFields` 中被自动过滤
++### P1 数据架构硬伤（已修复）
++- ✅ Schema对齐：workers表补齐phone/change_summary; orders表加recommender_id并修正worker_id外键; reviews表加target_type
++- ✅ 关系定义补全：relations.ts从空壳补全6个核心关系定义
++- ✅ 数据映射清理：清理data-service.ts中snake_case死代码路径
++- ✅ 评价关联识别：识别出reviews.target_user_id与workers.id不匹配问题，暂标记TODO
++- ⏳ 登录角色区分：待后续修复
+ 
+-### 新增依赖
+-- `jsonwebtoken` + `@types/jsonwebtoken`
++### P2 功能差缺（待从小项目迁移）
++- 客户管理模块
++- 推荐记录追踪
++- 审核流程完善
++- 合同模板系统
++- 签约流程
+ 
+ ---
+ 
+-## 2026-06-08 第四轮修复 — 审核通过无反应+变更摘要 (commit: 当前)
+-
+-### 代码改动
+-
+-| 文件 | 改动 | 说明 |
+-|------|------|------|
+-| `src/lib/data-service.ts` | writeApi去掉自动refreshData | 避免和调用方refreshData竞争导致数据不刷新 |
+-| `src/app/m/worker/resume/page.tsx` | handleSave生成变更摘要 | 对比修改前后字段差异，写入change_summary |
+-| `src/app/admin/resume-reviews/page.tsx` | 弹窗展示变更摘要 | 黄色区域显示"本次修改内容" |
+-| `src/lib/types.ts` | WorkerProfile加changeSummary | 新增字段 |
+-| `src/lib/data-service.ts` | mapWorkerFromDb加changeSummary | 映射change_summary字段 |
+-| `src/app/m/recruiter/page.tsx` | 线索转简历加change_summary | 标注来源 |
+-| `src/app/m/recruiter/follow/page.tsx` | 线索转简历加change_summary | 标注来源 |
+-| 数据库 develop+product | workers表加change_summary列 | ALTER TABLE workers ADD COLUMN change_summary TEXT |
+-
+-## 2026-06-08 第三轮修复 — 推荐无数据根因+简历审核+密码重置 (commit: 当前)
++## [0.5.0] — 2026-06-12
+ 
+-### 根因发现
+-1. **mapXxxFromDb 函数字段映射错误**：API返回下划线key(resume_review_status等)但代码用驼峰key读取，导致所有映射字段都返回默认值
+-2. **简历修改handleSave是空函数**：只有setEditing(false)+toast，没有调API保存数据(注释写着TODO)
+-3. **简历审核页面initDataFromApi有缓存**：第二次调用不重新拉取，新提交的简历看不到
++### Fixed
++- **P1数据架构修复**: Schema字段补齐(workers.phone/change_summary, orders.recommender_id, reviews.target_type)
++- **关系定义补全**: relations.ts从空壳补全6个核心关系定义
++- **数据映射清理**: 清理data-service.ts中toCamel转换后的snake_case死代码
++- **评价关联识别**: 识别reviews.target_user_id与workers.id不匹配问题
++- **API增强**: workers JOIN获取phone/creator_name; reviews支持target_type; orders返回recommender信息
++- **权限矩阵修复**: workers:read加入worker角色，阿姨端可访问自己简历
++- **验证码回退漏洞**: 生产环境DB不可用时不再回退888888
+ 
+-### 代码改动
+-
+-#### `src/lib/data-service.ts`
+-- 新增 re-export 所有 mock 数据和工具函数（mockWorkers/mockOrders/mockReferrals 等）
+-- 新增 re-export `RecruiterLead` 类型
+-- `mapXxxFromDb` 函数全部修复为优先读下划线 key（API 返回格式）
+-- 新增 `mapReferralFromOrder()` 从 orders 生成推荐记录
+-- `initDataFromApi` 推荐数据从 orders + leads 两个来源生成
+-
+-#### `src/app/` 下 62 个 .tsx 文件
+-- 全部从 `import { xxx } from '@/lib/mock-data'` 改为 `import { xxx } from '@/lib/data-service'`
+-- 确保 `initDataFromApi` 的数据更新对所有页面可见
+-
+-#### `src/components/miniapp/hall.tsx`、`worker-list.tsx`
+-- 同样改为从 `@/lib/data-service` 导入
+-
+-#### `src/app/api/workers/route.ts`
+-- **简历审核机制**：非 admin 角色只返回 `resume_review_status=approved` 的简历
+-- admin 角色可以看到全部（包括 pending/rejected）
+-- 指定 `creator_id` 参数时不过滤审核状态（查看自己创建的简历）
+-- 支持通过 `resume_review_status` 参数显式筛选
+-
+-#### `src/lib/auth-middleware.ts`
+-- `workers:write` 添加 `training_supervisor` 角色
+-- `orders:write` 添加 `training_supervisor` 角色
++### Changed
++- orders.worker_id外键修正：不再错误指向users表
++- Review.targetType新增user类型支持
+ 
+ ---
+ 
+-## 2026-06-08 第二轮修复 + 登录完善 (commit: 2035439)
+-
+-### 用户提交的问题清单
+-1. 合单大厅：推荐失败→更新失败
+-2. 验证码仍是开发者模式
+-3. 简历编辑都跳到同一个阿姨
+-4. 培训主管小程序线索管理添加筛选+分配功能
+-5. 微信小程序被拦截（用户自行处理）
+-
+-### 用户追加需求
+-1. 注册默认密码？修改密码改为重置密码
+-2. 小程序合单推荐成功后，"我的推荐"无数据
+-3. 线索转简历/新建简历需要审核，后台审核看不到
+-4. 线索创建失败
+-5. 注册功能完善，隐藏客户和阿姨运营角色
+-
+-### 代码改动
+-
+-#### `src/lib/auth-middleware.ts`
+-- `orders:write` 权限添加 `training_supervisor` 角色
+-- `workers:status` 权限添加 `training_supervisor` 角色
+-- `leads:read/write` 权限添加 `training_supervisor` 角色
+-
+-#### `src/server.ts`
+-- 顶部添加 `dotenv` 加载 `.env.local`，确保生产环境读取 `SMS_PROVIDER=aliyun`
+-
+-#### `src/components/miniapp/hall.tsx`
+-- 推荐时 `worker_id` 直接传 workers 表 ID，不再转 userId
+-
+-#### `src/app/m/worker/resume/page.tsx`
+-- `editId` 变化时重置所有表单状态
+-
+-#### `src/app/m/training_supervisor/leads/page.tsx`
+-- 接入 API（initDataFromApi/createRecord/updateRecord/refreshData）
+-- 新增线索筛选模块（按状态/招生人员）
+-- 新增线索分配功能（选择招生人员，调 updateRecord）
+-- 录入线索调 createRecord('leads')
+-
+-#### `src/app/api/leads/route.ts`
+-- POST 时 `recruiter_id` 不再默认 r001，改为 null
+-- 错误信息输出更详细
+-
+-#### `src/app/api/auth/reset-password/route.ts` 【新建】
+-- 重置密码 API：验证码验证身份 + 设置新密码（不需要旧密码）
+-
+-#### `src/app/api/auth/phone-register/route.ts`
+-- 注册时设置默认密码 `123456`
+-
+-#### `src/app/admin/reset-password/page.tsx` 【新建】
+-- 重置密码页面：手机号+验证码+新密码（替代旧的修改密码页面）
+-
+-#### `src/app/admin/login/page.tsx`
+-- 重写：添加验证码登录模式（手机号+验证码）与密码登录（手机号+密码）双模式切换
+-- 微信扫码按钮占位
+-
+-#### `src/app/m/login/page.tsx`
+-- 重写：从810行角色选择首页模式改为简洁登录/注册切换模式
+-- 登录：手机号+验证码
+-- 注册：手机号+验证码+姓名+角色选择
+-- 隐藏 customer 和 worker_operator 角色注册入口
+-
+-#### `src/app/page.tsx`
+-- 移除 customer 和 worker_operator 角色入口卡片
+-
+-#### `src/components/admin/sidebar.tsx`
+-- "修改密码"改为"重置密码"，链接指向 /admin/reset-password
++## [0.4.0] — 2026-06-12
+ 
+-#### `src/lib/data-service.ts` 【关键修复】
+-- **全局修复**：所有 `mapXxxFromDb` 函数中的字段读取改为优先用下划线 key（API 返回格式），兼容驼峰 key 作为 fallback
+-  - `mapWorkerFromDb`：resume_review_status/review_status 等字段
+-  - `mapOrderFromDb`：worker_id/agent_id/recommender_id 等字段
+-  - `mapLeadFromDb`：recruiter_id 等字段
+-  - `mapReviewFromDb`：target_id/reviewer_name 等字段
+-  - `mapAgentFromDb`：review_status 等字段
+-- 新增 `mapReferralFromOrder()` 函数：从 orders 中 recommenderId 匹配的订单生成推荐记录
+-- initDataFromApi 中推荐记录从两个来源生成：orders（合单推荐）+ leads（线索转化）
++### 🔒 Security
++- **P0-1 Token伪造漏洞修复**: 删除 base64 无签名 token 兼容逻辑，仅接受 JWT 签名 token，过期时间缩短至 24h
++- **P0-2 开发后门修复**: 移除 `!SMS_PROVIDER` 自动 admin 权限，改为 `NODE_ENV=development` 判断
++- **P0-3 PUT白名单修复**: workers PUT 接口 `{...updates}` → `{...safeUpdates}`，敏感字段不可被非 admin 篡改
+ 
+-#### `src/lib/types.ts`
+-- `ReferralRecord.referrerRole` 扩展为包含 `training_supervisor` 和 `worker_operator`
++### Changed
++- JWT 过期时间从 7天 缩短为 24小时
++- 验证码快捷登录仅在开发模式 (`NODE_ENV=development`) 可用
+ 
+-### 数据库改动
+-- `orders.worker_id` 外键从 `users.id` 改为 `workers.id`（develop + product）
+-- `leads.recruiter_id` 改为允许 NULL（develop + product）
+-
+-### 新安装依赖
+-- `dotenv`
++### Removed
++- `parseLegacyToken()` / `verifyLegacyToken()` / `isJWTFormat()` 函数
++- `requireAuth()` 中 isDev 自动 admin 后门逻辑
+ 
+ ---
+ 
+-## 2026-06-07 基线修复 7个问题 (commit: 5947519)
+-
+-### 用户提交的问题清单
+-1. 注册角色，后台角色审核
+-2. 小程序线索和简历录入，录入完成后查询不到
+-3. 线索转简历，简历审核流程
+-4. 后台角色审核-编辑-修改角色没反应
+-5. 简历重复问题，增加手机号唯一规则
+-6. 跟进管理数据无法编辑
+-7. 阿姨状态，各角色都要能修改
+-
+-### 代码改动
+-
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/app/admin/reviews/page.tsx` | 角色审核页从mock数据改为API获取(review_status=pending用户)，handleSaveEdit调updateRecord包含role字段 |
+-| `src/app/admin/resume-reviews/page.tsx` | 简历审核页从mock数据改为API获取(review_status=pending简历) |
+-| `src/components/miniapp/hall.tsx` | 发单调createRecord('orders')，推荐调updateRecord('orders',id,{workerId,status:'matched'})，过滤条件改为排除completed/cancelled |
+-| `src/app/m/recruiter/follow/page.tsx` | 接入API，线索录入调createRecord('leads')，转简历调updateRecord，添加编辑弹窗 |
+-| `src/components/miniapp/worker-list.tsx` | 添加状态下拉选择器(空闲/可上岗/上户中/请假中)，调updateRecord修改status |
+-| `src/app/api/workers/route.ts` | POST添加phone唯一性校验(409错误)，POST保存phone字段，PUT也添加phone唯一性校验 |
+-| `src/app/api/orders/route.ts` | PUT时支持recommender_id字段 |
+-| `src/lib/data-service.ts` | 添加fetchData通用函数，getAuthToken兼容miniapp_token和auth_token |
+-| `src/components/miniapp/phone-call-button.tsx` | **新增** 电话拨打按钮组件 |
+-| `src/hooks/use-phone-call.ts` | **新增** 电话拨打Hook |
+-| `miniprogram/pages/call/` | **新增** 小程序电话拨打页面 |
+-
+-### 数据库改动
+-- orders表新增recommender_id字段 (develop + product)
++## [0.3.0] — 2026-06-11
++
++### Added
++- 阿里云短信验证码接入（官方 SDK）
++- 完整登录注册系统（手机号+密码+微信）
++- 各角色预设测试账号
++- 首页角色快速入口
++
++### Fixed
++- 合单推荐失败
++- 验证码开发模式判断
++- 简历跳转异常
++- 培训主管线索管理
++- 推荐数据为空（根因修复）
++- 简历审核全流程
++- 线索创建 bug
++- 密码重置功能
++- 字段映射错误
++
++### Changed
++- 登录页改为正式入口（移除测试角色选择）
++- 全局数据源统一
+ 
+ ---
+ 
+-## 2026-06-07 登录系统 (commit: 0010837)
+-
+-### 用户要求
+-参考587990b5f3版本，添加登录方式（注册：微信获取+手机号+验证码，小程序后续自动登录，PC：手机号+密码/微信扫码登录）
+-
+-### 代码改动
+-
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/app/admin/layout.tsx` | 添加登录检查(读auth_token/miniapp_token)，未登录重定向/admin/login |
+-| `src/app/admin/login/page.tsx` | **新增** PC端登录页（手机号+密码登录，修改密码弹窗，微信扫码按钮占位） |
+-| `src/app/admin/change-password/page.tsx` | **新增** PC端修改密码页面 |
+-| `src/app/api/auth/password-login/route.ts` | **新增** 密码登录API |
+-| `src/app/api/auth/change-password/route.ts` | **新增** 修改密码API |
+-| `src/components/admin/sidebar.tsx` | 添加角色过滤(每个菜单项配roles数组)，修改密码菜单项，退出登录按钮 |
+-| `src/components/admin/header.tsx` | 从localStorage读取真实用户名和角色名显示，不再硬编码"管理员" |
++## [0.2.0] — 2026-06-10
++
++### Added
++- 简历审核功能（PC端）
++- 阿姨端审核状态提示
++- 合单大厅（发单/推荐/一键复制）
++- 推荐佣金体系（经纪人30%/招生15%/讲师10%）
++- 评价分类系统（按来源角色分类）
++- 阿姨简历编辑+分享
++- 统一阿姨库（录入人/维护人/推荐人三种关系）
++- 录入阿姨按钮（一个身份证一份简历）
++- 阿姨端"我的课程"
++
++### Changed
++- 角色差异化：经纪人/招生/讲师/客户各端 Tab 和功能不同
++- 客户端简化：只保留订单+评价
++- 阿姨端底部 Tab：首页→简历→我的
++- 经纪人端：合单→阿姨，评价→客户
++- 招生端：合单→跟进，评价→阿姨
++- 讲师端：合单→跟进，评价→阿姨
++
++### Fixed
++- 小程序 `useMiniApp()` 服务端调用错误
++- 登录持久化
++- 数据写入失败
++- PC多角色登录
++- Tab栏显示异常
+ 
+ ---
+ 
+-## 2026-06-08 阿里云短信验证码接入 (commit: 84a2a56)
+-
+-### 用户要求
+-确认阿里云短信验证码是否接入
+-
+-### 代码改动
+-
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/app/api/auth/sms-send/route.ts` | 从直接HTTP调用改为阿里云官方SDK(@alicloud/dysmsapi20170525)发送短信 |
+-
+-### 依赖安装
+-- `@alicloud/dysmsapi20170525`
+-- `@alicloud/openapi-client`
+-- `@alicloud/tea-util`
+-
+----
+-
+-## 2026-06-08 修复4个问题 (commit: 951050f)
+-
+-### 用户提交的问题清单
+-1. 合单大厅推荐失败，更新失败
+-2. 验证码问题，还是开发者模式
+-3. 简历-编辑简历，都跳转到同一个阿姨
+-4. 培训主管，小程序线索管理添加筛选+线索分配功能
+-5. 微信小程序被拦截（用户自行处理）
+-
+-### 代码改动
+-
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/lib/auth-middleware.ts` | orders:write权限添加training_supervisor角色；workers:status权限添加training_supervisor角色；leads:read/write权限添加training_supervisor角色 |
+-| `src/server.ts` | 顶部添加dotenv加载.env.local，确保生产环境读取SMS_PROVIDER等环境变量 |
+-| `src/app/m/worker/resume/page.tsx` | editId变化时重置所有表单状态(name/age/phone等)，避免切换阿姨后表单显示上一个阿姨的数据 |
+-| `src/app/m/training_supervisor/leads/page.tsx` | 接入API(initDataFromApi/createRecord/updateRecord/refreshData)；新增线索筛选模块(按状态/招生人员)；新增线索分配功能(选择招生人员) |
+-| `src/app/api/leads/route.ts` | POST时recruiter_id不再默认r001，改为null |
+-| `src/components/miniapp/hall.tsx` | 推荐时worker_id直接传workers表ID(wk002格式)，不再转userId |
+-
+-### 数据库改动
+-- orders.worker_id外键从users.id改为workers.id (develop + product)
+-  - 原因：阿姨ID(wk001格式)存在workers表中，不在users表中
+-
+-### 依赖安装
+-- `dotenv`
+-
+----
+-
+-## 2026-06-08 登录功能完善 + 角色隐藏 (当前进行中)
+-
+-### 用户要求
+-1. 小程序注册功能：获取微信手机号+验证码注册
+-2. PC端：手机号+验证码登录
+-3. 隐藏角色：客户、阿姨运营
+-
+-### 代码改动
+-
+-| 文件 | 改动内容 |
+-|------|----------|
+-| `src/app/m/login/page.tsx` | **重写** 小程序登录页：从810行的角色选择首页模式，改为简洁的登录/注册切换模式；登录(手机号+验证码)；注册(手机号+验证码+姓名+角色选择)；隐藏customer和worker_operator角色；微信登录按钮占位 |
+-| `src/app/admin/login/page.tsx` | **重写** PC端登录页：添加验证码登录模式(手机号+验证码)与密码登录模式(手机号+密码)双模式切换；修复reviewStatus类型错误；微信扫码按钮占位 |
+-| `src/app/page.tsx` | 首页角色入口移除customer和worker_operator，grid-cols-7改为grid-cols-5 |
+-
+-### 隐藏角色说明
+-- customer（客户端）和worker_operator（阿姨运营端）仅在**注册入口**隐藏
+-- 已有的customer/worker_operator用户仍可正常登录使用
+-- auth-middleware权限、tab-bar导航、sidebar等配置保持不变
++## [0.1.0] — 2026-06-09 及更早
++
++### Added
++- 项目初始化（Next.js + shadcn/ui）
++- Supabase 数据库接入
++- 真实注册登录
++- 系统设置持久化
++- 管理员后台（佣金/征信/积分/押金/培训/合同/设置）
++- 小程序 web-view 方案
++- 简历分享 H5 页面
++- 录入阿姨/客户表单
++- PC端审核编辑
++- 招生/讲师 PC端门户
++- 阿姨运营+培训主管角色
++- 微信小程序域名校验
++- 文件上传 S3
++- 短信发送
++- 数据库备份
++- 征信查询
++- 微信自动登录
++
++### Fixed
++- 生产环境 hydration 崩溃（移除 react-dev-inspector）
++- Server Component dynamic ssr:false 错误
++- GET请求跳过认证
++- 审核页不显示待审核用户
+diff --git a/DIFFLOG.md b/DIFFLOG.md
+new file mode 100644
+index 0000000..c53dfd5
+--- /dev/null
++++ b/DIFFLOG.md
+@@ -0,0 +1,185 @@
++# DIFFLOG — 变更差异日志
++
++> 记录每次代码变更涉及的文件、改动摘要与影响范围。与 CHANGELOG 配合使用：CHANGELOG 记"做了什么"，DIFFLOG 记"改了哪些文件的哪些地方"。
++
++## 格式说明
++
++每条记录包含：
++- **Commit**: git commit hash
++- **日期**: YYYY-MM-DD
++- **变更类型**: feat(新功能) / fix(修复) / refactor(重构) / docs(文档) / security(安全)
++- **影响文件**: 文件路径 + 改动行数
++- **改动摘要**: 每个文件改了什么
++- **影响评估**: 是否破坏兼容性、是否需要数据迁移
++
++---
++
++## 2026-06-12
++
++### 952338b — security: 修复3个P0安全漏洞
++
++**变更类型**: security (P0)
++
++**影响文件**:
++
++| 文件 | 改动 | 说明 |
++|------|------|------|
++| `src/lib/auth-middleware.ts` | -82行 / +5行 | 删除 parseLegacyToken/verifyLegacyToken/isJWTFormat 旧token兼容函数；删除 isDev 后门（无token自动返回admin）；JWT过期时间 7d→24h |
++| `src/app/api/auth/phone-login/route.ts` | -2行 / +2行 | 验证码快捷登录判断从 `!SMS_PROVIDER` 改为 `NODE_ENV=development` |
++| `src/app/api/workers/route.ts` | -1行 / +1行 | PUT 第182行 `{ ...updates }` → `{ ...safeUpdates }`，白名单机制真正生效 |
++
++**改动摘要**:
++1. **P0-1 Token伪造修复**: 移除所有 base64 无签名 token 的解析和验证逻辑，系统现在只接受 JWT 签名 token
++2. **P0-2 开发后门修复**: 移除 `!SMS_PROVIDER` 时自动返回 admin 权限的逻辑，改为仅在 `NODE_ENV=development` 时允许验证码快捷登录（仍需正常获取 token）
++3. **P0-3 PUT白名单修复**: workers PUT 接口改用 safeUpdates，非 admin 用户无法修改 credit_score/deposit/points 等敏感字段
++
++**影响评估**:
++- ⚠️ **破坏性变更**: 所有旧版 base64 token 失效，用户需重新登录
++- ⚠️ **破坏性变更**: 未配置 SMS_PROVIDER 的环境不再自动获得 admin 权限
++- ✅ 无需数据迁移
++- ✅ orders/leads PUT 已正确使用 safeUpdates，无需额外修改
++
++---
++
++### 0883ecf — fix: P1数据架构硬伤修复
++
++**变更类型**: fix (P1)
++
++**影响文件**:
++
++| 文件 | 改动 | 说明 |
++|------|------|------|
++| src/storage/database/shared/schema.ts | +6行 | workers表加phone+change_summary字段; orders表加recommender_id+修正worker_id外键; reviews表加target_type |
++| src/storage/database/shared/relations.ts | +45行 | 从空壳补全6个关系定义(users/workers/orders/reviews/courses/leads) |
++| src/lib/types.ts | +1行/-1行 | Review.targetType新增user类型 |
++| src/lib/data-service.ts | -30行/+10行 | 清理6个map函数中snake_case死代码路径; 修复评价关联逻辑(改为空数组+TODO) |
++| src/app/api/workers/route.ts | +20行 | GET接口JOIN users表获取phone和creator_name |
++| src/app/api/reviews/route.ts | +8行 | GET支持target_type筛选; POST支持target_type写入 |
++| src/app/api/orders/route.ts | +15行 | GET返回recommender信息; PUT白名单确认含recommender_id |
++
++**改动摘要**:
++1. **Schema对齐**: workers表补齐phone/change_summary; orders表加recommender_id并修正worker_id外键(不再错误指向users表); reviews表加target_type支持多实体评价
++2. **关系定义补全**: relations.ts从空壳补全为6个核心关系定义，支持Drizzle ORM JOIN查询
++3. **数据映射清理**: data-service.ts中6个mapXxxFromDb函数清理了toCamel转换后的snake_case死代码路径
++4. **评价关联修复**: 识别出reviews.target_user_id是users.id而workers.id是workers表ID，无法直接匹配，暂时清空关联+TODO注释
++5. **API增强**: workers API JOIN获取phone和creator_name; reviews API支持target_type; orders API返回recommender信息
++
++**影响评估**:
++- ⚠️ Schema变更需要同步到Supabase数据库(新增字段需要ALTER TABLE)
++- ✅ 编译+lint+ts-check全部通过
++- ✅ 无破坏性变更，向后兼容
++
++---
++
++### ee7ea8c — fix(security): 权限矩阵修复 + 验证码回退漏洞修复
++
++**变更类型**: fix (P0-A + P1-C)
++
++**影响文件**:
++
++| 文件 | 改动 | 说明 |
++|------|------|------|
++| src/lib/auth-middleware.ts | +1行/-1行 | ROLE_PERMISSIONS['workers:read'] 加入 'worker' 角色 |
++| src/app/api/auth/phone-login/route.ts | +2行/-1行 | verifyCode catch块：生产环境DB不可用时return false而非回退888888 |
++
++**改动摘要**:
++1. **权限矩阵修复**: workers:read 权限列表加入 'worker' 角色，解决阿姨端登录后无法访问自己简历的问题
++2. **验证码回退漏洞修复**: 生产环境 Supabase 不可用时，不再回退到开发模式验证码(888888)，改为直接拒绝登录
++
++**影响评估**:
++- ✅ 修复阿姨端无法查看自己简历的P0级功能缺陷
++- ✅ 堵住生产环境DB宕机时验证码绕过的安全漏洞
++- ✅ 编译+lint+ts-check全部通过
++- ✅ 无破坏性变更，向后兼容
++
++---
++
++### 6403998 — feat: JWT签名+PUT字段白名单安全加固
++
++**变更类型**: security (预备加固)
++
++**影响文件**: `src/lib/auth-middleware.ts`, `src/app/api/workers/route.ts`
++
++**改动摘要**: 引入 JWT 签名机制，为 workers PUT 添加 SENSITIVE_FIELDS 和 safeUpdates 白名单框架
++
++---
++
++### b2a33b2 — fix: 审核通过无反应+审核展示变更摘要+writeApi竞态修复
++
++**变更类型**: fix
++
++**影响文件**: 审核相关组件、API路由
++
++**改动摘要**: 修复简历审核通过后页面无反馈、审核列表展示变更摘要、writeApi 并发竞态条件
++
++---
++
++### 9ce21c0 — fix: 简历审核全流程修复+推荐数据刷新+密码重置
++
++**变更类型**: fix
++
++**改动摘要**: 简历审核全流程打通、推荐数据刷新逻辑、密码重置功能修复
++
++---
++
++### 705db55 — fix: 推荐无数据根因修复+简历审核机制+全局数据源统一
++
++**变更类型**: fix
++
++**改动摘要**: 定位推荐数据为空的根因、建立简历审核机制、统一全局数据源
++
++---
++
++### 2035439 — fix: 修复推荐无数据+简历审核+线索创建+密码重置+字段映射全局bug
++
++**变更类型**: fix
++
++**改动摘要**: 批量修复推荐数据、简历审核、线索创建、密码重置、字段映射等多处 bug
++
++---
++
++## 2026-06-11
++
++### 852d498 — feat: 完善登录注册功能 + 隐藏角色 + 变更文档
++
++**变更类型**: feat
++
++**改动摘要**: 完善各角色登录注册流程、隐藏测试角色入口、更新变更文档
++
++---
++
++### 951050f — fix: 修复合单推荐失败、验证码开发模式、简历跳转、培训主管线索管理
++
++**变更类型**: fix
++
++---
++
++### 84a2a56 — feat: 阿里云短信验证码接入（官方SDK）
++
++**变更类型**: feat
++
++**改动摘要**: 接入阿里云 SMS SDK，实现真实短信验证码发送
++
++---
++
++### 0010837 — feat: 添加登录系统
++
++**变更类型**: feat
++
++**改动摘要**: 基于 587990b 基线添加完整登录系统
++
++---
++
++## 2026-06-10 及更早
++
++早期提交（70+条）涵盖：
++- 小程序 web-view 方案搭建
++- PC端+小程序端全面交互升级
++- 简历分享H5、录入表单、接单功能
++- PC端审核编辑、佣金设置、培训操作
++- 招生/讲师PC端门户
++- 阿姨运营+培训主管角色
++- Supabase 数据库接入
++- 初始项目搭建
++
++> 早期提交未逐条记录 DIFFLOG，如需追溯可执行 `git show <commit> --stat`
+diff --git a/src/app/api/auth/phone-login/route.ts b/src/app/api/auth/phone-login/route.ts
+index ef243b8..4e019ac 100644
+--- a/src/app/api/auth/phone-login/route.ts
++++ b/src/app/api/auth/phone-login/route.ts
+@@ -5,6 +5,7 @@ import { generateToken } from '@/lib/auth-middleware';
+ // 开发模式：任意手机号+验证码888888即可登录
+ // 生产模式：需对接短信服务商
+ export async function POST(request: NextRequest) {
++  console.log('[deploy-check] NODE_ENV:', process.env.NODE_ENV, 'SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20));
+   try {
+     const body = await request.json();
+     const { phone, code, role } = body as { phone: string; code: string; role?: string };
+@@ -71,10 +72,13 @@ export async function POST(request: NextRequest) {
+ 
+ // 验证码校验
+ async function verifyCode(phone: string, code: string): Promise<boolean> {
+-  // 开发模式：任意手机号+888888即可登录
+-  const isDev = !process.env.SMS_PROVIDER;
++  // 开发模式：仅当 NODE_ENV=development 时允许 888888 通行
++  const isDev = process.env.NODE_ENV === 'development';
++  console.log('[verifyCode] isDev:', isDev, 'NODE_ENV:', process.env.NODE_ENV, 'phone:', phone, 'code:', code);
+   if (isDev) {
+-    return code === '888888';
++    const result = code === '888888';
++    console.log('[verifyCode] dev mode result:', result);
++    return result;
+   }
+ 
+   // 生产模式：查询验证码记录
+@@ -91,21 +95,30 @@ async function verifyCode(phone: string, code: string): Promise<boolean> {
+       .limit(1)
+       .single();
+ 
++    console.log('[verifyCode] query result:', { data, error: error?.message });
++
+     if (error || !data) return false;
+ 
+     // 检查是否过期
+-    if (new Date(data.expires_at) < new Date()) return false;
++    const expired = new Date(data.expires_at) < new Date();
++    console.log('[verifyCode] expiry check:', { expires_at: data.expires_at, now: new Date().toISOString(), expired });
++
++    if (expired) return false;
+ 
+     // 检查验证码是否匹配
+-    if (data.code !== code) return false;
++    const codeMatch = data.code === code;
++    console.log('[verifyCode] code match:', { db_code: data.code, input_code: code, match: codeMatch });
++
++    if (!codeMatch) return false;
+ 
+     // 标记为已使用
+     await supabase.from('sms_codes').update({ used: true }).eq('phone', phone).eq('code', code);
+ 
+     return true;
+-  } catch {
+-    // 数据库不可用时回退到开发模式
+-    return code === '888888';
++  } catch (e: unknown) {
++    // 生产环境数据库不可用时拒绝登录，防止绕过验证码
++    console.error('[verifyCode] catch error:', e instanceof Error ? e.message : e);
++    return false;
+   }
+ }
+ 
+diff --git a/src/app/api/orders/route.ts b/src/app/api/orders/route.ts
+index 1046d97..a116efe 100644
+--- a/src/app/api/orders/route.ts
++++ b/src/app/api/orders/route.ts
+@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
+ 
+     let query = supabase
+       .from('orders')
+-      .select('id, title, job_type, salary_min, salary_max, location, description, agent_id, worker_id, customer_id, status, service_type, amount, start_date, reviewed, created_at')
++      .select('id, title, job_type, salary_min, salary_max, location, description, agent_id, worker_id, customer_id, recommender_id, status, service_type, amount, start_date, reviewed, created_at')
+       .order('created_at', { ascending: false });
+ 
+     if (status) query = query.eq('status', status);
+@@ -29,6 +29,29 @@ export async function GET(request: NextRequest) {
+       return NextResponse.json({ error: '查询失败' }, { status: 500 });
+     }
+ 
++    // JOIN users 表获取 recommender_name 和 recommender_role
++    if (data && data.length > 0) {
++      const recommenderIds = [...new Set(data.map((o: Record<string, unknown>) => o.recommender_id).filter(Boolean))] as string[];
++      if (recommenderIds.length > 0) {
++        const { data: usersData } = await supabase
++          .from('users')
++          .select('id, name, role')
++          .in('id', recommenderIds);
++
++        const userMap = new Map((usersData || []).map((u: Record<string, unknown>) => [u.id as string, u]));
++
++        for (const o of data) {
++          if (o.recommender_id) {
++            const recommender = userMap.get(o.recommender_id as string);
++            if (recommender) {
++              (o as Record<string, unknown>).recommender_name = recommender.name || '';
++              (o as Record<string, unknown>).recommender_role = recommender.role || '';
++            }
++          }
++        }
++      }
++    }
++
+     return NextResponse.json({ data: data || [] });
+   } catch (error: unknown) {
+     const message = error instanceof Error ? error.message : '查询失败';
+diff --git a/src/app/api/reviews/route.ts b/src/app/api/reviews/route.ts
+index a60c2ca..d7fcfb2 100644
+--- a/src/app/api/reviews/route.ts
++++ b/src/app/api/reviews/route.ts
+@@ -12,16 +12,18 @@ export async function GET(request: NextRequest) {
+     const targetUserId = request.nextUrl.searchParams.get('target_user_id');
+     const reviewerId = request.nextUrl.searchParams.get('reviewer_id');
+     const reviewerRole = request.nextUrl.searchParams.get('reviewer_role');
++    const targetType = request.nextUrl.searchParams.get('target_type');
+ 
+     let query = supabase
+       .from('reviews')
+-      .select('id, target_user_id, reviewer_id, reviewer_role, rating, content, hidden, created_at')
++      .select('id, target_user_id, target_type, reviewer_id, reviewer_role, rating, content, hidden, created_at')
+       .eq('hidden', false)
+       .order('created_at', { ascending: false });
+ 
+     if (targetUserId) query = query.eq('target_user_id', targetUserId);
+     if (reviewerId) query = query.eq('reviewer_id', reviewerId);
+     if (reviewerRole) query = query.eq('reviewer_role', reviewerRole);
++    if (targetType) query = query.eq('target_type', targetType);
+ 
+     const { data, error } = await query;
+ 
+@@ -84,8 +86,8 @@ export async function POST(request: NextRequest) {
+   if (!session) return unauthorizedResponse();
+   try {
+     const body = await request.json();
+-    const { target_user_id, reviewer_id, reviewer_role, rating, content, order_id, type } = body as {
+-      target_user_id?: string; reviewer_id?: string; reviewer_role?: string;
++    const { target_user_id, target_type, reviewer_id, reviewer_role, rating, content, order_id, type } = body as {
++      target_user_id?: string; target_type?: string; reviewer_id?: string; reviewer_role?: string;
+       rating: number; content?: string; order_id?: string; type?: string;
+     };
+ 
+@@ -105,6 +107,7 @@ export async function POST(request: NextRequest) {
+       .from('reviews')
+       .insert({
+         target_user_id: resolvedTarget,
++        target_type: target_type || 'user',
+         reviewer_id: resolvedReviewer,
+         reviewer_role: resolvedRole,
+         rating, content: content || '', hidden: false,
+diff --git a/src/app/api/workers/route.ts b/src/app/api/workers/route.ts
+index 1216875..d9b240f 100644
+--- a/src/app/api/workers/route.ts
++++ b/src/app/api/workers/route.ts
+@@ -42,6 +42,33 @@ export async function GET(request: NextRequest) {
+       return NextResponse.json({ error: '查询失败' }, { status: 500 });
+     }
+ 
++    // JOIN users 表获取 phone 和 creator_name
++    if (data && data.length > 0) {
++      const userIds = [...new Set(data.map((w: Record<string, unknown>) => w.user_id).filter(Boolean))] as string[];
++      const creatorIds = [...new Set(data.map((w: Record<string, unknown>) => w.creator_id).filter(Boolean))] as string[];
++      const allUserIds = [...new Set([...userIds, ...creatorIds])];
++
++      if (allUserIds.length > 0) {
++        const { data: usersData } = await supabase
++          .from('users')
++          .select('id, name, phone')
++          .in('id', allUserIds);
++
++        const userMap = new Map((usersData || []).map((u: Record<string, unknown>) => [u.id as string, u]));
++
++        for (const w of data) {
++          const userRow = userMap.get(w.user_id as string);
++          if (userRow) {
++            (w as Record<string, unknown>).phone = userRow.phone || w.phone || '';
++          }
++          const creatorRow = userMap.get(w.creator_id as string);
++          if (creatorRow) {
++            (w as Record<string, unknown>).creator_name = creatorRow.name || '';
++          }
++        }
++      }
++    }
++
+     return NextResponse.json({ data: data || [] });
+   } catch (error: unknown) {
+     const message = error instanceof Error ? error.message : '查询失败';
+@@ -179,7 +206,7 @@ export async function PUT(request: NextRequest) {
+ 
+     const { data, error } = await supabase
+       .from('workers')
+-      .update({ ...updates, updated_at: new Date().toISOString() })
++      .update({ ...safeUpdates, updated_at: new Date().toISOString() })
+       .eq('id', id)
+       .select();
+ 
+diff --git a/src/lib/auth-middleware.ts b/src/lib/auth-middleware.ts
+index e574df6..45183b3 100644
+--- a/src/lib/auth-middleware.ts
++++ b/src/lib/auth-middleware.ts
+@@ -22,7 +22,7 @@ import jwt from 'jsonwebtoken';
+ 
+ // JWT 配置
+ const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
+-const JWT_EXPIRES_IN = '7d'; // token 有效期 7 天
++const JWT_EXPIRES_IN = '24h'; // token 有效期 24 小时
+ 
+ export interface AuthSession {
+   userId: string;
+@@ -97,66 +97,13 @@ export async function verifyToken(token: string): Promise<AuthSession | null> {
+   }
+ }
+ 
+-// ============================================================
+-// 旧 token 兼容（平滑过渡）
+-// ============================================================
+-
+-/**
+- * 解析旧格式 token (base64 编码，非 JWT)
+- * 过渡期兼容，后续可移除
+- */
+-function parseLegacyToken(token: string): string | null {
+-  try {
+-    const parts = token.split('.');
+-    if (parts.length !== 2) return null;
+-    // JWT 有 3 个部分 (header.payload.signature)，旧 token 只有 2 个
+-    const decoded = Buffer.from(parts[0], 'base64url').toString('utf-8');
+-    const userId = decoded.split(':')[0];
+-    return userId || null;
+-  } catch {
+-    return null;
+-  }
+-}
+-
+-/**
+- * 兼容旧 token 的验证（过渡期使用）
+- */
+-async function verifyLegacyToken(token: string): Promise<AuthSession | null> {
+-  const userId = parseLegacyToken(token);
+-  if (!userId) return null;
+-  
+-  try {
+-    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+-    const supabase = getSupabaseClient();
+-    
+-    const { data, error } = await supabase
+-      .from('users')
+-      .select('id, name, phone, role, review_status, is_active')
+-      .eq('id', userId)
+-      .single();
+-    
+-    if (error || !data) return null;
+-    if (data.review_status === 'resigned' || !data.is_active) return null;
+-    
+-    return {
+-      userId: data.id,
+-      role: data.role,
+-      name: data.name,
+-      phone: data.phone || '',
+-      reviewStatus: data.review_status,
+-    };
+-  } catch {
+-    return null;
+-  }
+-}
+-
+ // ============================================================
+ // 角色权限矩阵
+ // ============================================================
+ 
+ export const ROLE_PERMISSIONS: Record<string, string[]> = {
+   // 阿姨相关
+-  'workers:read': ['admin', 'agent', 'recruiter', 'instructor', 'customer', 'worker_operator', 'training_supervisor'],
++  'workers:read': ['admin', 'agent', 'recruiter', 'instructor', 'customer', 'worker_operator', 'training_supervisor', 'worker'],
+   'workers:write': ['admin', 'agent', 'recruiter', 'worker_operator', 'training_supervisor'],
+   'workers:status': ['admin', 'agent', 'worker_operator', 'training_supervisor'],
+   'workers:credit': ['admin'],
+@@ -330,38 +277,16 @@ function extractToken(request: NextRequest): string | null {
+   return null;
+ }
+ 
+-/**
+- * 判断是否为 JWT 格式（3段 base64）
+- */
+-function isJWTFormat(token: string): boolean {
+-  return token.split('.').length === 3;
+-}
+-
+ /**
+  * 要求登录 - 返回session或null
+- * 支持 JWT 和旧格式 token（过渡期兼容）
++ * 仅支持 JWT 签名验证，无有效 token 则返回 null
+  */
+ export async function requireAuth(request: NextRequest): Promise<AuthSession | null> {
+-  const isDev = !process.env.SMS_PROVIDER && process.env.COZE_PROJECT_ENV !== 'PROD';
+   const token = extractToken(request);
+   
+-  if (!token) {
+-    return isDev ? { userId: 'admin001', role: 'admin', name: '管理员', phone: '13000000001', reviewStatus: 'approved' } : null;
+-  }
+-  
+-  // 优先尝试 JWT 验证
+-  let session: AuthSession | null = null;
+-  if (isJWTFormat(token)) {
+-    session = await verifyToken(token);
+-  } else {
+-    // 旧格式 token 兼容
+-    session = await verifyLegacyToken(token);
+-  }
+-  
+-  if (!session && isDev) {
+-    return { userId: 'admin001', role: 'admin', name: '管理员', phone: '13000000001', reviewStatus: 'approved' };
+-  }
++  if (!token) return null;
+   
++  const session = await verifyToken(token);
+   return session;
+ }
+ 
+diff --git a/src/lib/data-service.ts b/src/lib/data-service.ts
+index 23f7906..811b3ad 100644
+--- a/src/lib/data-service.ts
++++ b/src/lib/data-service.ts
+@@ -110,7 +110,7 @@ function splitStr(v: unknown): string[] {
+ 
+ // 转换数据库阿姨数据为前端WorkerProfile格式
+ function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
+-  const creatorRole = asStr(db.creator_role || db.creatorRole, 'agent');
++  const creatorRole = asStr(db.creatorRole, 'agent');
+   const validCreatorRole = (['agent', 'recruiter', 'instructor', 'customer'] as const).includes(creatorRole as WorkerProfile['creatorRole'])
+     ? creatorRole as WorkerProfile['creatorRole'] : 'agent';
+   return {
+@@ -122,28 +122,28 @@ function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
+     photo: asStr(db.photo) || '',
+     phone: asStr(db.phone) || '',
+     idCard: '',
+-    jobTypes: splitStr(db.job_types || db.jobTypes) as JobType[],
+-    experienceYears: asNum(db.experience_years || db.experienceYears),
++    jobTypes: splitStr(db.jobTypes) as JobType[],
++    experienceYears: asNum(db.experienceYears),
+     specialties: splitStr(db.specialties),
+     certifications: splitStr(db.certifications),
+-    expectedSalaryMin: asNum(db.expected_salary_min || db.expectedSalaryMin),
+-    expectedSalaryMax: asNum(db.expected_salary_max || db.expectedSalaryMax),
++    expectedSalaryMin: asNum(db.expectedSalaryMin),
++    expectedSalaryMax: asNum(db.expectedSalaryMax),
+     status: asStr(db.status, 'idle') as WorkerStatus,
+-    availableDate: asStr(db.available_date || db.availableDate) || '',
+-    creatorId: asStr(db.creator_id || db.creatorId),
+-    creatorName: asStr(db.creator_name || db.creatorName) || '',
++    availableDate: asStr(db.availableDate) || '',
++    creatorId: asStr(db.creatorId),
++    creatorName: asStr(db.creatorName) || '',
+     creatorRole: validCreatorRole,
+-    creatorCommissionRate: asNum(db.creator_commission_rate || db.creatorCommissionRate),
+-    creditScore: asNum(db.credit_score || db.creditScore, 1000),
++    creatorCommissionRate: asNum(db.creatorCommissionRate),
++    creditScore: asNum(db.creditScore, 1000),
+     creditRecords: [],
+     deposit: asNum(db.deposit),
+     points: asNum(db.points),
+     trainingRecords: [],
+     reviews: [],
+-    resumeReviewStatus: asStr(db.resume_review_status || db.resumeReviewStatus, 'pending') as ResumeReviewStatus,
+-    changeSummary: asStr(db.change_summary || db.changeSummary, ''),
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+-    updatedAt: (db.updated_at || db.updatedAt) ? asStr(db.updated_at || db.updatedAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    resumeReviewStatus: asStr(db.resumeReviewStatus, 'pending') as ResumeReviewStatus,
++    changeSummary: asStr(db.changeSummary, ''),
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    updatedAt: db.updatedAt ? asStr(db.updatedAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -166,10 +166,10 @@ function mapLeadFromDb(db: Record<string, unknown>): RecruiterLead {
+     level: validLevel,
+     source: asStr(db.source),
+     status: validStatus,
+-    recruiterId: asStr(db.recruiter_id || db.recruiterId),
+-    recruiterName: asStr(db.recruiter_name || db.recruiterName) || '',
++    recruiterId: asStr(db.recruiterId),
++    recruiterName: asStr(db.recruiterName) || '',
+     remark: asStr(db.note) || asStr(db.remark) || '',
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -184,19 +184,19 @@ function mapCourseFromDb(db: Record<string, unknown>): TrainingCourse {
+   return {
+     id: asStr(db.id),
+     name: asStr(db.name),
+-    instructorId: asStr(db.instructor_id || db.instructorId),
+-    instructorName: asStr(db.instructor_name || db.instructorName) || '',
++    instructorId: asStr(db.instructorId),
++    instructorName: asStr(db.instructorName) || '',
+     type: validType,
+-    maxStudents: asNum(db.max_students || db.maxStudents),
+-    currentStudents: asNum(db.current_students || db.currentStudents),
+-    startDate: asStr(db.start_date || db.startDate),
+-    endDate: asStr(db.end_date || db.endDate),
++    maxStudents: asNum(db.maxStudents),
++    currentStudents: asNum(db.currentStudents),
++    startDate: asStr(db.startDate),
++    endDate: asStr(db.endDate),
+     hours: asNum(db.hours),
+     price: asNum(db.price),
+     location: asStr(db.location),
+     status: validStatus,
+     certificateOptions: [],
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -208,47 +208,47 @@ function mapOrderFromDb(db: Record<string, unknown>): Order {
+   return {
+     id: asStr(db.id),
+     title: asStr(db.title),
+-    jobType: asStr(db.job_type || db.jobType) as JobType,
+-    salaryMin: asNum(db.salary_min || db.salaryMin),
+-    salaryMax: asNum(db.salary_max || db.salaryMax),
++    jobType: asStr(db.jobType) as JobType,
++    salaryMin: asNum(db.salaryMin),
++    salaryMax: asNum(db.salaryMax),
+     location: asStr(db.location),
+     description: asStr(db.description),
+-    agentId: asStr(db.agent_id || db.agentId),
+-    agentName: asStr(db.agent_name || db.agentName) || '',
+-    workerId: (db.worker_id || db.workerId) ? asStr(db.worker_id || db.workerId) : undefined,
+-    workerName: (db.worker_name || db.workerName) ? asStr(db.worker_name || db.workerName) : undefined,
+-    customerId: (db.customer_id || db.customerId) ? asStr(db.customer_id || db.customerId) : undefined,
+-    customerName: (db.customer_name || db.customerName) ? asStr(db.customer_name || db.customerName) : undefined,
++    agentId: asStr(db.agentId),
++    agentName: asStr(db.agentName) || '',
++    workerId: db.workerId ? asStr(db.workerId) : undefined,
++    workerName: db.workerName ? asStr(db.workerName) : undefined,
++    customerId: db.customerId ? asStr(db.customerId) : undefined,
++    customerName: db.customerName ? asStr(db.customerName) : undefined,
+     status: validStatus,
+-    serviceFee: asNum(db.service_fee || db.serviceFee),
+-    commissionRate: asNum(db.commission_rate || db.commissionRate),
+-    serviceType: asStr(db.service_type || db.serviceType) || undefined,
++    serviceFee: asNum(db.serviceFee),
++    commissionRate: asNum(db.commissionRate),
++    serviceType: asStr(db.serviceType) || undefined,
+     amount: asNum(db.amount) || undefined,
+-    startDate: asStr(db.start_date || db.startDate) || undefined,
++    startDate: asStr(db.startDate) || undefined,
+     reviewed: !!(db.reviewed),
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+-    updatedAt: (db.updated_at || db.updatedAt) ? asStr(db.updated_at || db.updatedAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    updatedAt: db.updatedAt ? asStr(db.updatedAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+ // 转换数据库评价数据
+ function mapReviewFromDb(db: Record<string, unknown>): Review {
+-  const role = asStr(db.reviewer_role || db.reviewerRole, 'customer');
++  const role = asStr(db.reviewerRole, 'customer');
+   const validRole = (['customer', 'agent', 'recruiter', 'instructor', 'worker'] as const).includes(role as ReviewSourceRole)
+     ? role as ReviewSourceRole : 'customer';
+   return {
+     id: asStr(db.id),
+-    targetId: asStr(db.target_user_id || db.targetUserId),
+-    targetName: asStr(db.target_name || db.targetName) || '',
+-    targetType: undefined,
++    targetId: asStr(db.targetUserId),
++    targetName: asStr(db.targetName) || '',
++    targetType: (asStr(db.targetType) || undefined) as Review['targetType'],
+     type: validRole,
+     sourceRole: validRole,
+-    reviewerName: asStr(db.reviewer_name || db.reviewerName) || '',
++    reviewerName: asStr(db.reviewerName) || '',
+     reviewerRole: role,
+     rating: asNum(db.rating, 5),
+     content: asStr(db.content),
+     hidden: !!db.hidden,
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -257,7 +257,7 @@ function mapAgentFromDb(db: Record<string, unknown>): AgentProfile {
+   const role = asStr(db.role, 'agent');
+   const validRole = (['agent', 'recruiter', 'training_supervisor', 'worker_operator'] as const).includes(role as AgentProfile['role'])
+     ? role as AgentProfile['role'] : 'agent';
+-  const reviewStatus = asStr(db.review_status || db.reviewStatus, 'pending');
++  const reviewStatus = asStr(db.reviewStatus, 'pending');
+   const validReviewStatus = (['pending', 'approved', 'rejected', 'resigned'] as const).includes(reviewStatus as AgentProfile['reviewStatus'])
+     ? reviewStatus as AgentProfile['reviewStatus'] : 'pending';
+   return {
+@@ -268,12 +268,12 @@ function mapAgentFromDb(db: Record<string, unknown>): AgentProfile {
+     reviewStatus: validReviewStatus,
+     experience: '',
+     performance: '',
+-    creditScore: asNum(db.credit_score || db.creditScore, 1000),
++    creditScore: asNum(db.creditScore, 1000),
+     deposit: asNum(db.deposit),
+     points: asNum(db.points),
+     workerCount: 0,
+     orderCount: 0,
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -285,9 +285,9 @@ function mapCustomerFromDb(db: Record<string, unknown>): CustomerProfile {
+     phone: asStr(db.phone),
+     requirement: asStr(db.requirement) || undefined,
+     address: asStr(db.address) || undefined,
+-    creditScore: asNum(db.credit_score || db.creditScore, 1000),
++    creditScore: asNum(db.creditScore, 1000),
+     orderCount: 0,
+-    createdAt: (db.created_at || db.createdAt) ? asStr(db.created_at || db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
++    createdAt: db.createdAt ? asStr(db.createdAt).split('T')[0] : new Date().toISOString().split('T')[0],
+   };
+ }
+ 
+@@ -357,13 +357,12 @@ export async function initDataFromApi(): Promise<void> {
+     // 转换并覆盖阿姨数据
+     if (workersData && workersData.length > 0) {
+       const workers = workersData.map(w => mapWorkerFromDb(w));
+-      // 关联评价
+-      if (reviewsData) {
+-        const reviews = reviewsData.map(r => mapReviewFromDb(r));
+-        workers.forEach(w => {
+-          w.reviews = reviews.filter(r => r.targetId === w.id);
+-        });
+-      }
++      // 注意：reviews.targetId 是 users.id，w.id 是 workers.id，两者不同
++      // 当前无法直接关联，需要 API 返回 worker.userId 才能正确匹配
++      // 暂时清空，避免错误关联
++      workers.forEach(w => {
++        w.reviews = [];  // TODO: 需要 API 支持 worker.userId 才能关联评价
++      });
+       replaceArray(mockWorkers, workers);
+     }
+ 
+diff --git a/src/lib/types.ts b/src/lib/types.ts
+index 4752896..310726a 100644
+--- a/src/lib/types.ts
++++ b/src/lib/types.ts
+@@ -148,7 +148,7 @@ export interface Review {
+   id: string;
+   targetId?: string; // 被评价对象ID（阿姨/课程等）
+   targetName?: string; // 被评价对象名称
+-  targetType?: 'worker' | 'course' | 'instructor'; // 被评价对象类型
++  targetType?: 'user' | 'worker' | 'course' | 'instructor'; // 被评价对象类型
+   type: ReviewSourceRole; // 评价来源角色（兼容字段）
+   sourceRole: ReviewSourceRole; // 评价来源角色
+   reviewerName: string;
+diff --git a/src/storage/database/shared/relations.ts b/src/storage/database/shared/relations.ts
+index 80768e2..9fa0aa4 100644
+--- a/src/storage/database/shared/relations.ts
++++ b/src/storage/database/shared/relations.ts
+@@ -1,3 +1,40 @@
+ import { relations } from "drizzle-orm/relations";
+-import {  } from "./schema";
++import { users, workers, worker_media, worker_work_experience, customers, leads, lead_follow_ups, courses, enrollments, orders, settlements, reviews } from "./schema";
+ 
++export const usersRelations = relations(users, ({ many, one }) => ({
++  worker: one(workers, { fields: [users.id], references: [workers.user_id] }),
++  customer: one(customers, { fields: [users.id], references: [customers.user_id] }),
++  workersAsCreator: many(workers),
++  ordersAsAgent: many(orders),
++}));
++
++export const workersRelations = relations(workers, ({ one, many }) => ({
++  user: one(users, { fields: [workers.user_id], references: [users.id] }),
++  creator: one(users, { fields: [workers.creator_id], references: [users.id] }),
++  maintainer: one(users, { fields: [workers.maintainer_id], references: [users.id] }),
++  referrer: one(users, { fields: [workers.referrer_id], references: [users.id] }),
++  media: many(worker_media),
++  workExperience: many(worker_work_experience),
++}));
++
++export const ordersRelations = relations(orders, ({ one, many }) => ({
++  agent: one(users, { fields: [orders.agent_id], references: [users.id] }),
++  settlements: many(settlements),
++  reviews: many(reviews),
++}));
++
++export const reviewsRelations = relations(reviews, ({ one }) => ({
++  targetUser: one(users, { fields: [reviews.target_user_id], references: [users.id] }),
++  reviewer: one(users, { fields: [reviews.reviewer_id], references: [users.id] }),
++  order: one(orders, { fields: [reviews.order_id], references: [orders.id] }),
++}));
++
++export const coursesRelations = relations(courses, ({ one, many }) => ({
++  instructor: one(users, { fields: [courses.instructor_id], references: [users.id] }),
++  enrollments: many(enrollments),
++}));
++
++export const leadsRelations = relations(leads, ({ one, many }) => ({
++  recruiter: one(users, { fields: [leads.recruiter_id], references: [users.id] }),
++  followUps: many(lead_follow_ups),
++}));
+diff --git a/src/storage/database/shared/schema.ts b/src/storage/database/shared/schema.ts
+index 9aecfb6..065976d 100644
+--- a/src/storage/database/shared/schema.ts
++++ b/src/storage/database/shared/schema.ts
+@@ -76,6 +76,8 @@ export const workers = pgTable(
+     points: integer("points").notNull().default(0),                        // 积分
+     resume_review_status: varchar("resume_review_status", { length: 20 }).notNull().default("draft"),  // draft / pending / approved / rejected
+     remark: text("remark"),
++    phone: varchar("phone", { length: 20 }),
++    change_summary: text("change_summary"),
+     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+     updated_at: timestamp("updated_at", { withTimezone: true }),
+   },
+@@ -268,7 +270,8 @@ export const orders = pgTable(
+     location: varchar("location", { length: 128 }),
+     description: text("description"),
+     agent_id: varchar("agent_id", { length: 36 }).notNull().references(() => users.id),
+-    worker_id: varchar("worker_id", { length: 36 }).references(() => users.id),
++    recommender_id: varchar("recommender_id", { length: 36 }).references(() => users.id),
++    worker_id: varchar("worker_id", { length: 36 }),
+     customer_id: varchar("customer_id", { length: 36 }).references(() => users.id),
+     status: varchar("status", { length: 20 }).notNull().default("created"),  // created/matched/confirmed/in_service/completed/cancelled
+     service_fee: numeric("service_fee", { precision: 10, scale: 2 }).default("0"),
+@@ -436,6 +439,7 @@ export const reviews = pgTable(
+   {
+     id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+     target_user_id: varchar("target_user_id", { length: 36 }).notNull().references(() => users.id),  // 被评价人
++    target_type: varchar("target_type", { length: 20 }).notNull().default("user"),
+     reviewer_id: varchar("reviewer_id", { length: 36 }).notNull().references(() => users.id),       // 评价人
+     reviewer_role: varchar("reviewer_role", { length: 20 }).notNull(),                              // 评价人角色
+     order_id: varchar("order_id", { length: 36 }).references(() => orders.id),

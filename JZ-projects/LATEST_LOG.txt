@@ -1,0 +1,10 @@
+ec3a0fd debug: phone-login加deploy-check日志确认部署环境NODE_ENV
+88dca64 debug: phone-login verifyCode添加调试日志，确认开发模式登录正常
+650a8be docs: DIFFLOG+CHANGELOG记录ee7ea8c(权限矩阵修复+验证码回退漏洞)
+ee7ea8c fix(security): 权限矩阵workers:read加入worker角色 + 修复验证码DB异常回退漏洞
+2acb039 feat: 保存文件变更
+20e6d2d docs: P1修复完成，更新DIFFLOG.md和CHANGELOG.md
+301235d docs: 更新DIFFLOG中commit hash为0883ecf
+0883ecf fix: P1数据架构硬伤修复(Batch 1-3) — Schema对齐+关系定义补全+数据映射清理+API增强+文档更新
+4c91f17 fix(api): P1 Batch 3/3 API路由修复 — workers GET加JOIN获取phone+creator_name, reviews GET/POST支持target_type, orders GET加JOIN获取recommender信息
+b92b565 fix(data-service): P1 Batch 2/3 清理死代码+修复评价关联 — 移除所有snake_case双路读取, 修正reviews.targetId与workers.id错配问题

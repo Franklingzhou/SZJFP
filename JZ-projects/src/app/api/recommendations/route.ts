@@ -1,0 +1,113 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { getSupabaseClient } from '@/storage/database/supabase-client';
+
+// GET /api/recommendations — 获取推荐列表
+export async function GET(request: NextRequest) {
+  const session = await checkPermission(request, 'recommendations:read');
+  if (!session) return unauthorizedResponse();
+
+  const supabase = getSupabaseClient();
+  try {
+    const { searchParams } = request.nextUrl;
+    const orderId = searchParams.get('order_id');
+    const status = searchParams.get('status');
+
+    let query = supabase
+      .from('recommendations')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (orderId) {
+      query = query.eq('order_id', orderId);
+    }
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('[recommendations GET] Error:', error.message);
+      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, data: data || [] });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '查询失败';
+    console.error('[recommendations GET] Error:', message);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
+
+// POST /api/recommendations — 创建推荐
+export async function POST(request: NextRequest) {
+  const session = await checkPermission(request, 'recommendations:write');
+  if (!session) return unauthorizedResponse();
+
+  const supabase = getSupabaseClient();
+  try {
+    const body = await request.json();
+    const { order_id, worker_id, notes } = body as {
+      order_id: string;
+      worker_id: string;
+      notes?: string;
+    };
+
+    if (!order_id || !worker_id) {
+      return NextResponse.json({ ok: false, error: '缺少必填字段：order_id, worker_id' }, { status: 400 });
+    }
+
+    // 检查订单是否存在
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('id', order_id)
+      .single();
+
+    if (orderError || !orderData) {
+      return NextResponse.json({ ok: false, error: '订单不存在' }, { status: 404 });
+    }
+
+    // 检查阿姨是否存在
+    const { data: workerData, error: workerError } = await supabase
+      .from('workers')
+      .select('id, creator_id')
+      .eq('id', worker_id)
+      .single();
+
+    if (workerError || !workerData) {
+      return NextResponse.json({ ok: false, error: '阿姨不存在' }, { status: 404 });
+    }
+
+    // A15 自动确认：经纪人推荐自己创建的阿姨，状态直接为 accepted
+    const autoAccepted = workerData.creator_id === session.userId;
+    const recStatus = autoAccepted ? 'accepted' : 'pending';
+
+    const { data, error } = await supabase
+      .from('recommendations')
+      .insert({
+        order_id,
+        worker_id,
+        recommender_id: session.userId,
+        recommender_role: session.role,
+        notes: notes || null,
+        status: recStatus,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[recommendations POST] Error:', error.message);
+      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, data, auto_accepted: autoAccepted });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '推荐失败';
+    console.error('[recommendations POST] Error:', message);
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
