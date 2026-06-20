@@ -36,6 +36,37 @@ export async function POST(
       return NextResponse.json({ ok: false, error: '线索不存在' }, { status: 404 });
     }
 
+    // 签约后自动创建worker记录
+    const { data: leadInfo } = await supabase
+      .from('leads')
+      .select('id, phone, name')
+      .eq('id', id)
+      .single();
+    if (leadInfo) {
+      // 检查是否已有worker记录
+      const { data: existingWorker } = await supabase
+        .from('workers')
+        .select('id')
+        .eq('phone', leadInfo.phone)
+        .maybeSingle();
+      if (!existingWorker) {
+        // 创建worker记录，状态pending待审核
+        await supabase
+          .from('workers')
+          .insert({
+            id: leadInfo.id,
+            user_id: leadInfo.id,
+            name: leadInfo.name || '新阿姨',
+            phone: leadInfo.phone,
+            status: 'idle',
+            resume_review_status: 'pending',
+            gender: '女',
+            creator_id: session.userId,
+            creator_role: session.role,
+          });
+      }
+    }
+
     return NextResponse.json({ ok: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '转化失败';

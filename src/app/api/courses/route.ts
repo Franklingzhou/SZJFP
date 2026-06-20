@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('courses')
-      .select('id, name, instructor_id, type, course_type, max_students, current_students, start_date, end_date, hours, price, description, location, status, approved_by, approved_at, created_by, created_at')
+      .select('id, name, instructor_id, type, course_type, max_students, current_students, start_date, end_date, hours, price, description, location, status, approved_by, approved_at, created_at')
       .order('created_at', { ascending: false });
 
     if (status) query = query.eq('status', status);
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       // 只能看自己负责的课程
       filteredData = filteredData.filter(course => 
         course.instructor_id === session.userId || 
-        course.created_by === session.userId
+        course.instructor_id === session.userId
       );
     }
     // 'all' 权限返回全部数据，'hidden' 返回空数组

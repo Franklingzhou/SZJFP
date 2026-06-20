@@ -81,6 +81,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: '缺少必填字段：order_id, worker_id' }, { status: 400 });
     }
 
+    // 推荐前，把同一订单同一阿姨的旧推荐标记为rejected
+    await supabase
+      .from('recommendations')
+      .update({ status: 'rejected', updated_at: new Date().toISOString() })
+      .eq('order_id', order_id)
+      .eq('worker_id', worker_id)
+      .neq('status', 'rejected');
+
     // 检查订单是否存在
     const { data: orderData, error: orderError } = await supabase
       .from('orders')

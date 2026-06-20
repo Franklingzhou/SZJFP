@@ -22,12 +22,33 @@ export async function GET(request: NextRequest) {
     // 查询报名记录（仅 enrollments 表实际列）
     let query = supabase
       .from('enrollments')
-      .select('id, course_id, student_id, score, status, completed_at, graded_at')
+      .select('id, course_id, student_id, student_name, enrolled_by, score, passed, certificate, status, completed_at, grade, graded_at, created_at')
       .order('id', { ascending: false });
 
     if (courseId) query = query.eq('course_id', courseId);
     if (studentId) query = query.eq('student_id', studentId);
     if (status) query = query.eq('status', status);
+
+    // 数据权限过滤：非admin只看自己相关的报名
+    if (session.role !== 'admin') {
+      if (session.role === 'instructor') {
+        // 讲师只看自己课程的学生：先查自己的课程ID列表，再过滤
+        const { data: myCourses } = await supabase
+          .from('courses')
+          .select('id')
+          .eq('instructor_id', session.userId);
+        if (myCourses && myCourses.length > 0) {
+          query = query.in('course_id', myCourses.map(c => c.id));
+        } else {
+          // 没有自己的课程，返回空
+          return NextResponse.json({ data: [] });
+        }
+      } else if (session.role === 'recruiter') {
+        // 招生只看自己招的学生
+        query = query.eq('enrolled_by', session.userId);
+      }
+      // training_supervisor 看全量，不加过滤
+    }
 
     const { data, error } = await query;
 

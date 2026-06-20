@@ -42,6 +42,26 @@ export async function GET(request: NextRequest) {
     if (partyBId) query = query.eq('party_b_id', partyBId);
     if (type) query = query.eq('type', type);
 
+    // 数据权限过滤：非admin只看自己相关的合同
+    if (session.role !== 'admin') {
+      if (session.role === 'agent') {
+        // 经纪人只看中介合同
+        query = query.eq('type', 'service').eq('party_a_id', session.userId);
+      } else if (session.role === 'recruiter') {
+        // 招生只看培训合同
+        query = query.eq('type', 'training');
+      } else if (session.role === 'training_supervisor') {
+        // 培训主管只看培训合同
+        query = query.eq('type', 'training');
+      } else if (session.role === 'worker') {
+        // 阿姨只看自己是乙方的合同
+        query = query.eq('party_b_id', session.userId);
+      } else if (session.role === 'customer') {
+        // 客户只看自己是甲方的合同
+        query = query.eq('party_a_id', session.userId);
+      }
+    }
+
     const { data, error } = await query;
 
     if (error) {

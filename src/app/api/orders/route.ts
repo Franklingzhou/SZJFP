@@ -37,6 +37,18 @@ export async function GET(request: NextRequest) {
     if (workerId) query = query.eq('worker_id', workerId);
     if (customerId) query = query.eq('customer_id', customerId);
 
+    // 数据权限过滤：非admin只看自己相关的订单
+    if (session.role !== 'admin') {
+      if (session.role === 'agent') {
+        query = query.eq('agent_id', session.userId);
+      } else if (session.role === 'worker') {
+        query = query.eq('worker_id', session.userId);
+      } else if (session.role === 'customer') {
+        query = query.eq('customer_id', session.userId);
+      }
+      // recruiter/instructor/training_supervisor/worker_operator 能看订单大厅全量，不加过滤
+    }
+
     const { data, error } = await query;
 
     if (error) {

@@ -44,7 +44,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'students:write': ['admin', 'recruiter', 'instructor', 'training_supervisor'],
 
   // === 阿姨简历库 ===
-  'workers:read':  ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
+  'workers:read':  ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
   'workers:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
 
   // === 课程管理 ===
@@ -60,7 +60,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'recommendations:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
 
   // === 报名/学员相关 ===
-  'enrollments:read':  ['admin', 'recruiter', 'instructor', 'training_supervisor', 'worker'],
+  'enrollments:read':  ['admin', 'recruiter', 'instructor', 'training_supervisor'],
   'enrollments:write': ['admin', 'recruiter', 'instructor', 'training_supervisor', 'worker'],  // 阿姨能自助报名
 
   // === 考核打分相关 ===

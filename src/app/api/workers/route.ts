@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('workers')
-      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, status, available_date, creator_id, creator_role, maintained_by, credit_score, deposit, points, resume_review_status, photo, created_at')
+      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, status, available_date, creator_id, creator_role, maintainer_id, credit_score, deposit, points, resume_review_status, photo, created_at')
       .order('created_at', { ascending: false });
 
     if (status) query = query.eq('status', status);
@@ -63,6 +63,11 @@ export async function GET(request: NextRequest) {
       query = query.eq('resume_review_status', reviewStatus);
     } else if (!creatorId && !userId && session.role !== 'admin' && visibility !== 'all') {
       query = query.eq('resume_review_status', 'approved');
+    }
+
+    // worker角色只能看自己的简历（我的简历）
+    if (session.role === 'worker' && !userId) {
+      query = query.eq('user_id', session.userId);
     }
 
     const { data, error } = await query;
@@ -123,7 +128,7 @@ export async function GET(request: NextRequest) {
       // 只能看自己录入/维护的阿姨
       filteredData = filteredData.filter(worker => 
         worker.creator_id === session.userId || 
-        worker.maintained_by === session.userId
+        worker.maintainer_id === session.userId
       );
     }
     // 'all' 权限返回全部数据，'hidden' 返回空数组
