@@ -163,7 +163,13 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('[enrollments POST] insert error:', error);
-      return NextResponse.json({ error: '创建报名失败' }, { status: 500 });
+      const err = error as unknown as Record<string, unknown>;
+      return NextResponse.json({ 
+        error: '创建报名失败', 
+        detail: error?.message || String(error),
+        code: err?.code,
+        hint: err?.hint 
+      }, { status: 500 });
     }
 
     // P5: 报名成功后更新课程人数，满员则自动关闭
