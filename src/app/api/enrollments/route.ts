@@ -122,11 +122,15 @@ export async function POST(request: NextRequest) {
     // 校验课程存在
     const { data: course, error: courseErr } = await supabase
       .from('courses')
-      .select('id')
+      .select('id, max_students, current_students, status')
       .eq('id', course_id)
       .maybeSingle();
     if (courseErr || !course) {
       return NextResponse.json({ error: '课程不存在' }, { status: 400 });
+    }
+    // 课程已关闭不允许报名
+    if (course.status === 'closed') {
+      return NextResponse.json({ error: '课程已满员，无法报名' }, { status: 400 });
     }
 
     // 防重复报名
@@ -160,6 +164,22 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('[enrollments POST] insert error:', error);
       return NextResponse.json({ error: '创建报名失败' }, { status: 500 });
+    }
+
+    // P5: 报名成功后更新课程人数，满员则自动关闭
+    if (data) {
+      const newCount = (course.current_students || 0) + 1;
+      const updateData: Record<string, unknown> = {
+        current_students: newCount,
+        updated_at: new Date().toISOString()
+      };
+      if (course.max_students && newCount >= course.max_students) {
+        updateData.status = 'closed';
+      }
+      await supabase
+        .from('courses')
+        .update(updateData)
+        .eq('id', course_id);
     }
 
     // A3: 报名课程后，学员状态 signed → training

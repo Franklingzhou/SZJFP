@@ -84,6 +84,16 @@ export async function POST(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    // P6: 手机号唯一性校验
+    const { data: existingCustomer } = await supabase
+      .from('customers')
+      .select('id, name')
+      .eq('phone', phone)
+      .maybeSingle();
+    if (existingCustomer) {
+      return NextResponse.json({ error: '该手机号已存在客户记录', existing: existingCustomer }, { status: 409 });
+    }
+
     const insertData: Record<string, unknown> = {
       name,
       phone,
