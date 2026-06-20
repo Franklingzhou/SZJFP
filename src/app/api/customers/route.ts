@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
 
 // POST /api/customers — 新建客户
 export async function POST(request: NextRequest) {
+  console.log('[CUSTOMERS POST] ===== V2 BUILD TEST =====');
   // 使用checkPermissionDetailed区分未登录和无权限
   const result = await checkPermissionDetailed(request, 'customers:write');
   if (!result.ok) {
@@ -84,14 +85,18 @@ export async function POST(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // P6: 手机号唯一性校验
-    const { data: existingCustomer } = await supabase
+    // P6: 手机号唯一性校验（用limit(1)替代maybeSingle，避免多条重复数据时error被忽略）
+    const { data: existingCustomers, error: checkErr } = await supabase
       .from('customers')
       .select('id, name')
       .eq('phone', phone)
-      .maybeSingle();
-    if (existingCustomer) {
-      return NextResponse.json({ error: '该手机号已存在客户记录', existing: existingCustomer }, { status: 409 });
+      .limit(1);
+    if (checkErr) {
+      console.error('[customers POST] P6查询出错:', checkErr);
+      return NextResponse.json({ error: '手机号校验查询失败' }, { status: 500 });
+    }
+    if (existingCustomers && existingCustomers.length > 0) {
+      return NextResponse.json({ error: '该手机号已存在客户记录', existing: existingCustomers[0] }, { status: 409 });
     }
 
     const insertData: Record<string, unknown> = {
