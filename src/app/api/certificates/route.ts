@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
     const userId = searchParams.get('user_id');
+    const workerId = searchParams.get('worker_id');
     const courseId = searchParams.get('course_id');
 
     let query = supabase
@@ -18,16 +19,18 @@ export async function GET(request: NextRequest) {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (userId) {
-      query = query.eq('user_id', userId);
-    }
-    if (courseId) {
-      query = query.eq('course_id', courseId);
-    }
+    if (userId) query = query.eq('user_id', userId);
+    if (workerId) query = query.eq('worker_id', workerId);
+    if (courseId) query = query.eq('course_id', courseId);
 
     const { data, error } = await query;
 
     if (error) {
+      // 表不存在 → 返回空列表（等待迁移）
+      if (error.message.includes('does not exist') || error.message.includes('schema cache')) {
+        console.warn('[certificates GET] Table not yet created, returning empty');
+        return NextResponse.json({ ok: true, data: [] });
+      }
       console.error('[certificates GET] Error:', error.message);
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }

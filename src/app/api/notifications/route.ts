@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('notifications')
       .insert({
+        id: crypto.randomUUID(),
         user_id,
         title,
         content,
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, success: true, data }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '发送失败';
     console.error('[notifications POST] Error:', message);

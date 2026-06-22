@@ -52,6 +52,13 @@
     </view>
   </view>
 
+  <!-- AI 智能助手入口 -->
+  <view class="ai-chat-btn" bindtap="onOpenChat">
+    <text class="ai-chat-icon">🤖</text>
+    <text class="ai-chat-text">AI 智能助手</text>
+    <text class="ai-chat-badge">NEW</text>
+  </view>
+
   <view class="admin-btn" bindtap="onOpenAdmin">
     <text>管理后台</text>
   </view>

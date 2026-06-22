@@ -50,12 +50,11 @@ export async function POST(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 查重：手机号+角色是否已存在
+    // 查重：手机号是否已存在（任何角色）
     const { data: existing, error: queryError } = await supabase
       .from('users')
       .select('id')
       .eq('phone', phone)
-      .eq('role', validRole)
       .maybeSingle();
 
     if (queryError) {
@@ -68,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: '该手机号已注册此角色，请直接登录', code: 'DUPLICATE_PHONE' },
+        { error: '该手机号已注册，请直接登录', code: 'DUPLICATE_PHONE' },
         { status: 409 }
       );
     }

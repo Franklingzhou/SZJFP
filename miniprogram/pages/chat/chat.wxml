@@ -1,0 +1,109 @@
+<!--pages/chat/chat.wxml-->
+<view class="chat-container">
+  <!-- 顶部导航栏 -->
+  <view class="chat-header">
+    <view class="header-back" bindtap="onBackHome">
+      <text class="back-icon">‹</text>
+    </view>
+    <view class="header-title">
+      <text class="ai-avatar">🤖</text>
+      <view class="ai-info">
+        <text class="ai-name">AI 智能助手</text>
+        <text class="ai-status">{{generating ? '正在输入...' : '在线'}}</text>
+      </view>
+    </view>
+    <view class="header-actions">
+      <view class="action-btn" bindtap="onRegenerate" wx:if="{{messages.length > 1 && !generating}}">
+        <text>🔄</text>
+      </view>
+      <view class="action-btn" bindtap="onClearChat">
+        <text>🗑</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- AI 模型未就绪提示 -->
+  <view class="ai-error-banner" wx:if="{{aiError}}">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">{{aiError}}</text>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view 
+    class="chat-messages" 
+    scroll-y 
+    scroll-into-view="{{scrollToView}}"
+    scroll-with-animation
+    enhanced
+    show-scrollbar="{{false}}"
+  >
+    <view class="messages-wrapper">
+      <view 
+        wx:for="{{messages}}" 
+        wx:key="index" 
+        id="msg-{{index}}"
+        class="message-item {{item.role === 'user' ? 'msg-user' : 'msg-assistant'}}"
+      >
+        <!-- 用户消息 -->
+        <block wx:if="{{item.role === 'user'}}">
+          <view class="msg-bubble user-bubble">
+            <text class="msg-text" user-select>{{item.content}}</text>
+          </view>
+          <view class="msg-avatar user-avatar">
+            <text>👤</text>
+          </view>
+        </block>
+
+        <!-- AI 消息 -->
+        <block wx:else>
+          <view class="msg-avatar ai-avatar-bubble">
+            <text>🤖</text>
+          </view>
+          <view class="msg-bubble ai-bubble">
+            <text class="msg-text" user-select>{{item.content}}</text>
+            <view class="streaming-indicator" wx:if="{{item.isStreaming}}">
+              <view class="dot"></view>
+              <view class="dot"></view>
+              <view class="dot"></view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-chat" wx:if="{{messages.length === 0 && !aiError}}">
+      <text class="empty-icon">💬</text>
+      <text class="empty-title">开始对话</text>
+      <text class="empty-desc">输入你的问题，AI 助手会为你解答</text>
+    </view>
+
+    <!-- 滚动到底部按钮 -->
+    <view class="scroll-bottom-btn" bindtap="onScrollToBottom" wx:if="{{messages.length > 3}}">
+      <text>↓</text>
+    </view>
+  </scroll-view>
+
+  <!-- 底部输入区 -->
+  <view class="chat-input-bar">
+    <view class="input-wrapper">
+      <input 
+        class="chat-input"
+        value="{{inputText}}"
+        placeholder="{{generating ? 'AI 正在回复...' : '输入你的问题...'}}"
+        bindinput="onInputChange"
+        bindconfirm="onSend"
+        disabled="{{generating}}"
+        confirm-type="send"
+        adjust-position="{{true}}"
+      />
+    </view>
+    <view 
+      class="send-btn {{inputText ? 'send-active' : ''}} {{generating ? 'send-disabled' : ''}}"
+      bindtap="onSend"
+    >
+      <text wx:if="{{!generating}}">发送</text>
+      <text wx:else>⏳</text>
+    </view>
+  </view>
+</view>

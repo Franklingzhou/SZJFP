@@ -102,8 +102,8 @@ export default function WorkerOpsHomePage() {
               <p className="text-sm font-medium text-slate-800 truncate">{o.title}</p>
               <p className="text-xs text-slate-400">{o.jobType} · {o.salaryMin}-{o.salaryMax}元/月</p>
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${o.status === 'created' ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-500'}`}>
-              {o.status === 'created' ? '待匹配' : '已匹配'}
+            <span className={`text-xs px-2 py-0.5 rounded-full ${o.status === 'open' ? 'bg-green-50 text-green-600' : 'bg-slate-50 text-slate-500'}`}>
+              {o.status === 'open' ? '待匹配' : '已匹配'}
             </span>
           </div>
         ))}

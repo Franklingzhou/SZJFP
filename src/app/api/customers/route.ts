@@ -149,8 +149,8 @@ export async function PUT(request: NextRequest) {
     }
 
     // status 枚举校验
-    if (safeUpdates.status && !['new', 'following', 'ordered', 'serving', 'completed', 'lost'].includes(safeUpdates.status as string)) {
-      return NextResponse.json({ error: '无效的状态值(允许: new/following/ordered/serving/completed/lost)' }, { status: 400 });
+    if (safeUpdates.status && !['new', 'following', 'matching', 'converted', 'completed', 'closed'].includes(safeUpdates.status as string)) {
+      return NextResponse.json({ error: '无效的状态值(允许: new/following/matching/converted/completed/closed)' }, { status: 400 });
     }
 
     safeUpdates.updated_at = new Date().toISOString();

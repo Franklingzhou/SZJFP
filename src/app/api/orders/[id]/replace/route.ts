@@ -41,11 +41,11 @@ export async function POST(
 
     const oldWorkerId = orderData?.signed_worker_id;
 
-    // A8: 旧阿姨状态 working → idle
+    // A8: 旧阿姨状态 busy → available
     if (oldWorkerId) {
       await supabase
         .from('workers')
-        .update({ work_status: 'idle', updated_at: new Date().toISOString() })
+        .update({ status: 'available', updated_at: new Date().toISOString() })
         .eq('id', oldWorkerId);
     }
 
@@ -84,7 +84,7 @@ export async function POST(
       return NextResponse.json({ ok: false, error: '订单不存在' }, { status: 404 });
     }
 
-    // A11: 新阿姨状态 idle → working（如果立即签约）
+    // A11: 新阿姨状态 available → busy（如果立即签约）
     // 这里暂时不自动签约，需要经纪人再次确认签约
 
     return NextResponse.json({ ok: true, data: { ...data, new_worker_name: worker.name } });

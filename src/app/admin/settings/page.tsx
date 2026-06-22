@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { PlatformInfo, CommissionRule, PointRule, CreditRule, ModuleConfig, TextConfig } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
-type TabKey = 'platform' | 'commission' | 'points' | 'modules' | 'texts' | 'page_access';
+type TabKey = 'platform' | 'commission' | 'points' | 'modules' | 'texts' | 'page_access' | 'certificate' | 'reminder';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'platform', label: '基本设置' },
@@ -12,6 +12,8 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'points', label: '积分规则' },
   { key: 'modules', label: '模块管理' },
   { key: 'texts', label: '文字管理' },
+  { key: 'certificate', label: '证书设置' },
+  { key: 'reminder', label: '提醒设置' },
   { key: 'page_access', label: '页面权限' },
 ];
 
@@ -136,6 +138,14 @@ export default function SettingsPage() {
   const [modules, setModules] = useState<ModuleConfig[]>(defaultModules.map(m => ({ ...m })));
   const [texts, setTexts] = useState<TextConfig[]>(defaultTexts.map(t => ({ ...t })));
   const [pageAccess, setPageAccess] = useState<Record<string, string[]>>({});
+  const [certMode, setCertMode] = useState<'auto' | 'manual'>('auto');
+  const [reminderSettings, setReminderSettings] = useState({
+    lead_unfollowed_hours: 24,
+    order_unmatched_hours: 48,
+    worker_inactive_days: 30,
+    contract_unsigned_hours: 72,
+    enrollment_unscheduled_days: 7,
+  });
 
   // 从API加载设置
   const loadSettings = useCallback(async () => {
@@ -182,6 +192,22 @@ export default function SettingsPage() {
       }
       if (settingsMap.page_access && typeof settingsMap.page_access === 'object') {
         setPageAccess(settingsMap.page_access as Record<string, string[]>);
+      }
+      if (settingsMap.certificate_issuance) {
+        const certSetting = settingsMap.certificate_issuance as Record<string, unknown>;
+        if (certSetting.mode === 'manual' || certSetting.mode === 'auto') {
+          setCertMode(certSetting.mode as 'auto' | 'manual');
+        }
+      }
+      if (settingsMap.reminder_settings && typeof settingsMap.reminder_settings === 'object') {
+        const rem = settingsMap.reminder_settings as Record<string, unknown>;
+        setReminderSettings(prev => ({
+          lead_unfollowed_hours: typeof rem.lead_unfollowed_hours === 'number' ? rem.lead_unfollowed_hours : prev.lead_unfollowed_hours,
+          order_unmatched_hours: typeof rem.order_unmatched_hours === 'number' ? rem.order_unmatched_hours : prev.order_unmatched_hours,
+          worker_inactive_days: typeof rem.worker_inactive_days === 'number' ? rem.worker_inactive_days : prev.worker_inactive_days,
+          contract_unsigned_hours: typeof rem.contract_unsigned_hours === 'number' ? rem.contract_unsigned_hours : prev.contract_unsigned_hours,
+          enrollment_unscheduled_days: typeof rem.enrollment_unscheduled_days === 'number' ? rem.enrollment_unscheduled_days : prev.enrollment_unscheduled_days,
+        }));
       }
     } catch {
       // API不可用，使用默认值
@@ -232,6 +258,8 @@ export default function SettingsPage() {
       {activeTab === 'points' && <PointsSettings pointRules={pointRules} setPointRules={setPointRules} creditRules={creditRules} setCreditRules={setCreditRules} />}
       {activeTab === 'modules' && <ModulesSettings modules={modules} setModules={setModules} />}
       {activeTab === 'texts' && <TextsSettings texts={texts} setTexts={setTexts} />}
+      {activeTab === 'certificate' && <CertificateSettings certMode={certMode} setCertMode={setCertMode} />}
+      {activeTab === 'reminder' && <ReminderSettings settings={reminderSettings} setSettings={setReminderSettings} />}
       {activeTab === 'page_access' && <PageAccessSettings pageAccess={pageAccess} setPageAccess={setPageAccess} />}
     </div>
   );
@@ -438,7 +466,6 @@ const ADMIN_PAGES = [
   { id: 'clients', label: '客户管理' },
   { id: 'leads', label: '线索管理' },
   { id: 'audits', label: '简历审核' },
-  { id: 'review-audits', label: '评价审核' },
   { id: 'commission', label: '佣金配置' },
   { id: 'settlement', label: '分账管理' },
   { id: 'hall', label: '订单大厅' },
@@ -720,6 +747,251 @@ function ModulesSettings({ modules, setModules }: { modules: ModuleConfig[]; set
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ==================== 证书设置 ==================== */
+function CertificateSettings({ certMode, setCertMode }: {
+  certMode: 'auto' | 'manual';
+  setCertMode: (v: 'auto' | 'manual') => void;
+}) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await saveSetting('certificate_issuance', { mode: certMode });
+    setSaving(false);
+    setSaved(ok);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
+          {saving ? '保存中...' : saved ? '已保存' : '保存设置'}
+        </button>
+      </div>
+      <div className="bg-white rounded-lg border p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-slate-800">证书颁发模式</h2>
+        <p className="text-sm text-slate-500">
+          设置学员课程考核通过（≥60分）后，证书是自动颁发还是由管理员手动颁发。
+        </p>
+        <div className="flex gap-6 mt-4">
+          <label className={cn(
+            'flex-1 border-2 rounded-lg p-5 cursor-pointer transition-all',
+            certMode === 'auto'
+              ? 'border-green-500 bg-green-50 shadow-sm'
+              : 'border-slate-200 hover:border-slate-300'
+          )}>
+            <input
+              type="radio"
+              name="certMode"
+              value="auto"
+              checked={certMode === 'auto'}
+              onChange={() => setCertMode('auto')}
+              className="sr-only"
+            />
+            <div className="flex items-center gap-3 mb-2">
+              <div className={cn(
+                'w-5 h-5 rounded-full border-2 flex items-center justify-center',
+                certMode === 'auto' ? 'border-green-500' : 'border-slate-300'
+              )}>
+                {certMode === 'auto' && <div className="w-3 h-3 rounded-full bg-green-500" />}
+              </div>
+              <h3 className={cn('font-semibold', certMode === 'auto' ? 'text-green-700' : 'text-slate-700')}>
+                🚀 自动颁发
+              </h3>
+            </div>
+            <p className="text-sm text-slate-500 ml-8">
+              讲师打分 ≥60 分后，系统自动生成并颁发结业证书，同时发送通知给学员。
+            </p>
+          </label>
+
+          <label className={cn(
+            'flex-1 border-2 rounded-lg p-5 cursor-pointer transition-all',
+            certMode === 'manual'
+              ? 'border-blue-500 bg-blue-50 shadow-sm'
+              : 'border-slate-200 hover:border-slate-300'
+          )}>
+            <input
+              type="radio"
+              name="certMode"
+              value="manual"
+              checked={certMode === 'manual'}
+              onChange={() => setCertMode('manual')}
+              className="sr-only"
+            />
+            <div className="flex items-center gap-3 mb-2">
+              <div className={cn(
+                'w-5 h-5 rounded-full border-2 flex items-center justify-center',
+                certMode === 'manual' ? 'border-blue-500' : 'border-slate-300'
+              )}>
+                {certMode === 'manual' && <div className="w-3 h-3 rounded-full bg-blue-500" />}
+              </div>
+              <h3 className={cn('font-semibold', certMode === 'manual' ? 'text-blue-700' : 'text-slate-700')}>
+                ✋ 手动确认
+              </h3>
+            </div>
+            <p className="text-sm text-slate-500 ml-8">
+              讲师打分后仅更新考核结果，管理员在「证书管理」页面手动审核并颁发证书。
+            </p>
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==================== 提醒设置 ==================== */
+function ReminderSettings({ settings, setSettings }: {
+  settings: {
+    lead_unfollowed_hours: number;
+    order_unmatched_hours: number;
+    worker_inactive_days: number;
+    contract_unsigned_hours: number;
+    enrollment_unscheduled_days: number;
+  };
+  setSettings: React.Dispatch<React.SetStateAction<typeof settings>>;
+}) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const update = (key: keyof typeof settings, value: number) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await saveSetting('reminder_settings', settings);
+    setSaving(false);
+    setSaved(ok);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
+          {saving ? '保存中...' : saved ? '已保存' : '保存设置'}
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg border p-6 space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-800">防遗忘提醒配置</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            设置各类超时提醒的阈值，定时任务会根据这些配置自动发送通知提醒相关人员处理。
+          </p>
+        </div>
+
+        {/* 线索未跟进 */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-slate-700">🔍 线索超时未跟进</h3>
+              <p className="text-xs text-slate-400 mt-0.5">线索创建后超过设定小时仍未跟进，提醒招生代理及时处理</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                max={720}
+                value={settings.lead_unfollowed_hours}
+                onChange={e => update('lead_unfollowed_hours', parseInt(e.target.value) || 1)}
+                className="w-20 px-3 py-1.5 border rounded-md text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">小时</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 订单未匹配 */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-slate-700">📦 订单超时未派单</h3>
+              <p className="text-xs text-slate-400 mt-0.5">订单创建后超过设定小时仍未分配阿姨，提醒经纪人尽快匹配</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                max={720}
+                value={settings.order_unmatched_hours}
+                onChange={e => update('order_unmatched_hours', parseInt(e.target.value) || 1)}
+                className="w-20 px-3 py-1.5 border rounded-md text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">小时</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 阿姨不活跃 */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-slate-700">😴 阿姨长期未活跃</h3>
+              <p className="text-xs text-slate-400 mt-0.5">阿姨超过设定天数无任何订单记录，提醒关联经纪人/招生代理召回</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                max={365}
+                value={settings.worker_inactive_days}
+                onChange={e => update('worker_inactive_days', parseInt(e.target.value) || 1)}
+                className="w-20 px-3 py-1.5 border rounded-md text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">天</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 合同未确认 */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-slate-700">📝 合同超时未确认</h3>
+              <p className="text-xs text-slate-400 mt-0.5">合同创建后超过设定小时未确认，提醒相关负责人审核（培训合同→培训主管，中介合同→经纪人）</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                max={720}
+                value={settings.contract_unsigned_hours}
+                onChange={e => update('contract_unsigned_hours', parseInt(e.target.value) || 1)}
+                className="w-20 px-3 py-1.5 border rounded-md text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">小时</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 报名未排课 */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-slate-700">📅 报名后超时未排课</h3>
+              <p className="text-xs text-slate-400 mt-0.5">学员报名课程后超过设定天数仍无排课安排，提醒招生代理协调讲师排课</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                max={90}
+                value={settings.enrollment_unscheduled_days}
+                onChange={e => update('enrollment_unscheduled_days', parseInt(e.target.value) || 1)}
+                className="w-20 px-3 py-1.5 border rounded-md text-sm text-center"
+              />
+              <span className="text-sm text-slate-500">天</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

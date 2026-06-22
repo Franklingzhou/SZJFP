@@ -305,12 +305,12 @@ export default function AgentOrdersPage() {
                   {formatCurrency(salaryMin)}-{formatCurrency(salaryMax)}
                 </span>
                 <div className="flex gap-2">
-                  {order.status === 'created' && (
+                  {order.status === 'open' && (
                     <Button size="sm" className="h-7 text-xs bg-blue-600 hover:bg-blue-700" onClick={() => setShowRecommend(order.id)}>
                       推荐阿姨
                     </Button>
                   )}
-                  {(order.status === 'matched' || order.status === 'confirmed') && (
+                  {(order.status === 'interviewing') && (
                     <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700" onClick={() => { setShowSign(order.id); setSignForm({ worker_id: '', worker_salary: '', work_start_date: '', contract_start_date: '', contract_end_date: '' }); }}>
                       签约
                     </Button>

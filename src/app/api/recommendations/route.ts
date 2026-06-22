@@ -71,40 +71,73 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabaseClient();
   try {
     const body = await request.json();
-    const { order_id, worker_id, notes } = body as {
-      order_id: string;
-      worker_id: string;
+    const { order_id, worker_id, notes, customer_id, reason } = body as {
+      order_id?: string;
+      worker_id?: string;
       notes?: string;
+      customer_id?: string;
+      reason?: string;
     };
 
-    if (!order_id || !worker_id) {
-      return NextResponse.json({ ok: false, error: '缺少必填字段：order_id, worker_id' }, { status: 400 });
+    // v14: 兼容 customer_id→order_id，reason→notes
+    const finalNotes = notes || reason || null;
+    const finalWorkerId = worker_id;
+    let finalOrderId = order_id;
+    
+    // 如果没传order_id但有customer_id，解析customer_id→user_id后查该客户最后一个订单
+    if (!finalOrderId && customer_id) {
+      // 先解析 customer_id 为 users.id（可能是customers表ID）
+      let customerUserId = customer_id;
+      const { data: custInfo } = await supabase
+        .from('customers')
+        .select('user_id')
+        .eq('id', customer_id)
+        .maybeSingle();
+      if (custInfo?.user_id) customerUserId = custInfo.user_id;
+      
+      const { data: lastOrder } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('customer_id', customerUserId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastOrder) finalOrderId = lastOrder.id;
+    }
+    
+    // 如果仍然没有order_id，允许仅凭 worker_id 和 customer_id 创建推荐
+    if (!finalWorkerId) {
+      return NextResponse.json({ ok: false, error: '缺少必填字段：worker_id' }, { status: 400 });
     }
 
     // 推荐前，把同一订单同一阿姨的旧推荐标记为rejected
-    await supabase
-      .from('recommendations')
-      .update({ status: 'rejected', updated_at: new Date().toISOString() })
-      .eq('order_id', order_id)
-      .eq('worker_id', worker_id)
-      .neq('status', 'rejected');
+    if (finalOrderId) {
+      await supabase
+        .from('recommendations')
+        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .eq('order_id', finalOrderId)
+        .eq('worker_id', finalWorkerId)
+        .neq('status', 'rejected');
+    }
 
     // 检查订单是否存在
-    const { data: orderData, error: orderError } = await supabase
-      .from('orders')
-      .select('id')
-      .eq('id', order_id)
-      .single();
+    if (finalOrderId) {
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('id', finalOrderId)
+        .single();
 
-    if (orderError || !orderData) {
-      return NextResponse.json({ ok: false, error: '订单不存在' }, { status: 404 });
+      if (orderError || !orderData) {
+        return NextResponse.json({ ok: false, error: '订单不存在' }, { status: 404 });
+      }
     }
 
     // 检查阿姨是否存在
     const { data: workerData, error: workerError } = await supabase
       .from('workers')
       .select('id, creator_id')
-      .eq('id', worker_id)
+      .eq('id', finalWorkerId)
       .single();
 
     if (workerError || !workerData) {
@@ -118,11 +151,11 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('recommendations')
       .insert({
-        order_id,
-        worker_id,
+        order_id: finalOrderId,
+        worker_id: finalWorkerId,
         recommender_id: session.userId,
         recommender_role: session.role,
-        notes: notes || null,
+        notes: finalNotes,
         status: recStatus,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -135,7 +168,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, data, auto_accepted: autoAccepted });
+    return NextResponse.json({ ok: true, success: true, data, auto_accepted: autoAccepted });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '推荐失败';
     console.error('[recommendations POST] Error:', message);

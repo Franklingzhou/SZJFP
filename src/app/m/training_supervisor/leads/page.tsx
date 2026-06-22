@@ -3,25 +3,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LEAD_STATUS_LABELS, JOB_TYPES } from '@/lib/types';
 import type { LeadStatus } from '@/lib/types';
-import { mockRecruiterLeads, mockAgents, convertLeadToResume } from '@/lib/data-service';
+import { mockRecruiterLeads, mockAgents } from '@/lib/data-service';
 import type { RecruiterLead } from '@/lib/data-service';
 import { initDataFromApi, createRecord, updateRecord, refreshData } from '@/lib/data-service';
 import { Search, Plus, Phone, X, Send, Mail, ScanLine, User, Filter, ArrowRightLeft } from 'lucide-react';
 
-type FollowFilter = 'all' | 'new' | 'contacted' | 'converted' | 'lost';
+type FollowFilter = 'all' | 'new' | 'following' | 'signed' | 'lost';
 
 const FOLLOW_FILTER_LABELS: Record<FollowFilter, string> = {
   all: '全部',
   new: '新线索',
-  contacted: '跟进中',
-  converted: '已成交',
+  following: '跟进中',
+  signed: '已签约',
   lost: '流失',
 };
 
 const FOLLOW_RESULT_OPTIONS = [
-  { value: 'contacted', label: '有意向' },
-  { value: 'training', label: '跟进中' },
-  { value: 'converted', label: '已成交' },
+  { value: 'following', label: '有意向' },
+  { value: 'signed', label: '已成交' },
   { value: 'lost', label: '流失' },
 ];
 
@@ -96,8 +95,8 @@ export default function TrainingSupervisorLeadsPage() {
   if (search) filteredLeads = filteredLeads.filter(l => l.name.includes(search) || l.phone.includes(search));
   if (filter !== 'all') {
     if (filter === 'new') filteredLeads = filteredLeads.filter(l => l.status === 'new');
-    else if (filter === 'contacted') filteredLeads = filteredLeads.filter(l => l.status === 'contacted' || l.status === 'training' || l.status === 'qualified');
-    else if (filter === 'converted') filteredLeads = filteredLeads.filter(l => l.status === 'converted');
+    else if (filter === 'following') filteredLeads = filteredLeads.filter(l => l.status === 'following');
+    else if (filter === 'signed') filteredLeads = filteredLeads.filter(l => l.status === 'signed');
     else if (filter === 'lost') filteredLeads = filteredLeads.filter(l => l.status === 'lost');
   }
   if (recruiterFilter !== 'all') {
@@ -106,11 +105,8 @@ export default function TrainingSupervisorLeadsPage() {
 
   const statusColors: Record<LeadStatus, string> = {
     new: 'bg-slate-50 text-slate-600',
-    contacted: 'bg-blue-50 text-blue-700',
-    signed: 'bg-indigo-50 text-indigo-700',
-    training: 'bg-amber-50 text-amber-700',
-    qualified: 'bg-purple-50 text-purple-700',
-    converted: 'bg-green-50 text-green-700',
+    following: 'bg-blue-50 text-blue-700',
+    signed: 'bg-green-50 text-green-700',
     lost: 'bg-red-50 text-red-700',
   };
 
@@ -176,23 +172,38 @@ export default function TrainingSupervisorLeadsPage() {
     setFollowResult('');
   };
 
-  const handleConvertToResume = async (leadId: string) => {
+  const handleSignLead = async (leadId: string) => {
     const lead = leads.find(l => l.id === leadId);
-    if (lead) {
-      try {
-        const result = await updateRecord('leads', leadId, { status: 'converted' });
-        if (result.success) {
-          await refreshData();
-          setLeads([...mockRecruiterLeads]);
-          alert(`已将 ${lead.name} 的线索转成正式简历！`);
-        } else {
-          alert('转简历失败：' + (result.error || '请重试'));
-        }
-      } catch {
-        alert('转简历失败，请重试');
-      }
-      setSelectedLead(null);
+    if (!lead) return;
+    if (lead.status === 'signed') {
+      alert('该线索已签约');
+      return;
     }
+    if (!confirm(`确认将 ${lead.name} 签约？签约后将自动创建待审核简历。`)) return;
+    try {
+      // 调用签约API（自动创建worker(pending) + contract + resume_review）
+      const res = await fetch(`/api/leads/${leadId}/convert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-session': localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token') || '' },
+        body: JSON.stringify({
+          job_types: lead.intention || '',
+          experience_years: 0,
+          expected_salary_min: 4000,
+          expected_salary_max: 6000,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        await refreshData();
+        setLeads([...mockRecruiterLeads]);
+        alert(`已签约！${lead.name} 的简历已自动创建，等待管理员审核。`);
+      } else {
+        alert('签约失败：' + (result.error || '请重试'));
+      }
+    } catch {
+      alert('签约失败，请重试');
+    }
+    setSelectedLead(null);
   };
 
   const [assigningLead, setAssigningLead] = useState<string | null>(null);
@@ -332,10 +343,10 @@ export default function TrainingSupervisorLeadsPage() {
                   <ArrowRightLeft className="h-3 w-3" /> 分配
                 </button>
                 <button
-                  onClick={e => { e.stopPropagation(); if (l.status !== 'converted') handleConvertToResume(l.id); }}
-                  className={`text-xs px-3 py-1.5 rounded-lg ${l.status === 'converted' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}
+                  onClick={e => { e.stopPropagation(); handleSignLead(l.id); }}
+                  className={`text-xs px-3 py-1.5 rounded-lg ${l.status === 'signed' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}
                 >
-                  {l.status === 'converted' ? '已转简历' : '转简历'}
+                  {l.status === 'signed' ? '已签约' : '签约'}
                 </button>
               </div>
               {selectedLead === l.id && (

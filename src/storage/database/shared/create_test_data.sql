@@ -15,8 +15,8 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 创建customers表记录
 INSERT INTO customers (id, user_id, name, phone, requirement, address, status, agent_id, created_at) VALUES
-  ('cust001', 'c001', '刘女士', '13900009876', '需要育婴师', '北京市朝阳区', 'ordered', 'a001', NOW()),
-  ('cust002', 'c002', '张女士', '13900001111', '需要保洁服务', '北京市海淀区', 'serving', 'a001', NOW()),
+  ('cust001', 'c001', '刘女士', '13900009876', '需要育婴师', '北京市朝阳区', 'converted', 'a001', NOW()),
+  ('cust002', 'c002', '张女士', '13900001111', '需要保洁服务', '北京市海淀区', 'matching', 'a001', NOW()),
   ('cust003', 'c003', '李女士', '13900002222', '需要月嫂', '北京市西城区', 'following', 'a001', NOW())
 ON CONFLICT (id) DO NOTHING;
 
@@ -79,7 +79,7 @@ ON CONFLICT (id) DO NOTHING;
 -- ============================================================
 -- 9. 报名数据
 -- ============================================================
-INSERT INTO enrollments (id, course_id, student_id, student_name, status, enrolled_by, created_at) VALUES
+INSERT INTO enrollments (id, course_id, worker_id, student_name, status, enrolled_by, created_at) VALUES
   ('e001', 'c001', 'w001', '王秀兰', 'completed', 'r001', NOW()),
   ('e002', 'c002', 'w001', '王秀兰', 'in_progress', 'r001', NOW())
 ON CONFLICT (id) DO NOTHING;

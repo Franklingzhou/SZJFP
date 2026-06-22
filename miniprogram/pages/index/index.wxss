@@ -200,3 +200,63 @@
 .admin-btn:active {
   opacity: 0.85;
 }
+
+/* AI 智能助手入口 */
+.ai-chat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  margin-top: 30rpx;
+  padding: 28rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-chat-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.ai-chat-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.ai-chat-icon {
+  font-size: 48rpx;
+}
+
+.ai-chat-text {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 600;
+}
+
+.ai-chat-badge {
+  font-size: 20rpx;
+  color: #764ba2;
+  background: #fff;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  font-weight: 700;
+}

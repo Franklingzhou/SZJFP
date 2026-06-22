@@ -23,8 +23,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '手机号或密码错误' }, { status: 401 });
     }
 
-    // 优先选择有密码的账号
-    const user = users.find((u: Record<string, unknown>) => u.password_hash) || users[0];
+    // 优先选择：is_active=true + 审核通过 + 有密码的账号
+    const user = users.find((u: Record<string, unknown>) => 
+      u.password_hash && u.is_active === true && u.review_status === 'approved'
+    ) || users.find((u: Record<string, unknown>) => u.password_hash) || users[0];
 
     // 校验密码
     if (!user.password_hash || user.password_hash !== password) {

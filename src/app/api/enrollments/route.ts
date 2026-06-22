@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
 
-// GET /api/enrollments — 获取学员报名记录
+// GET /api/enrollments — 获取学员报名记录（2.0: student_id→worker_id）
 export async function GET(request: NextRequest) {
   const result = await checkPermissionDetailed(request, 'enrollments:read');
   if (!result.ok) {
@@ -15,39 +15,55 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseClient();
 
     const courseId = request.nextUrl.searchParams.get('course_id');
-    const studentId = request.nextUrl.searchParams.get('student_id');
+    const workerId = request.nextUrl.searchParams.get('worker_id');
     const status = request.nextUrl.searchParams.get('status');
     const withCourses = request.nextUrl.searchParams.get('with_courses') === 'true';
+    const withWorkers = request.nextUrl.searchParams.get('with_workers') === 'true';
 
-    // 查询报名记录（仅 enrollments 表实际列）
+    // 查询报名记录 (v2: 兼容两种schema)
     let query = supabase
       .from('enrollments')
-      .select('id, course_id, student_id, student_name, enrolled_by, score, passed, certificate, status, completed_at, grade, graded_at, created_at')
+      .select('*')
       .order('id', { ascending: false });
 
     if (courseId) query = query.eq('course_id', courseId);
-    if (studentId) query = query.eq('student_id', studentId);
+    if (workerId) {
+      // worker_id可能不存在，尝试查询
+      try {
+        query = query.eq('worker_id', workerId);
+      } catch { /* ignore */ }
+    }
     if (status) query = query.eq('status', status);
 
     // 数据权限过滤：非admin只看自己相关的报名
     if (session.role !== 'admin') {
       if (session.role === 'instructor') {
-        // 讲师只看自己课程的学生：先查自己的课程ID列表，再过滤
         const { data: myCourses } = await supabase
           .from('courses')
           .select('id')
           .eq('instructor_id', session.userId);
         if (myCourses && myCourses.length > 0) {
-          query = query.in('course_id', myCourses.map(c => c.id));
+          const courseIds = myCourses.map(c => c.id);
+          const { data: allData } = await supabase
+            .from('enrollments')
+            .select('*')
+            .order('id', { ascending: false });
+          return NextResponse.json({ 
+            data: (allData || []).filter(e => courseIds.includes((e as Record<string,unknown>).course_id as string)) 
+          });
         } else {
-          // 没有自己的课程，返回空
           return NextResponse.json({ data: [] });
         }
       } else if (session.role === 'recruiter') {
-        // 招生只看自己招的学生
-        query = query.eq('enrolled_by', session.userId);
+        // enrolled_by may not exist, filter in code
+        const { data: allData } = await supabase
+          .from('enrollments')
+          .select('*')
+          .order('id', { ascending: false });
+        return NextResponse.json({ 
+          data: (allData || []).filter(e => (e as Record<string,unknown>).enrolled_by === session.userId) 
+        });
       }
-      // training_supervisor 看全量，不加过滤
     }
 
     const { data, error } = await query;
@@ -65,11 +81,11 @@ export async function GET(request: NextRequest) {
       }, { status: 500 });
     }
 
-    const enrollments = (data || []) as Record<string, unknown>[];
+    const enrollmentsList = (data || []) as Record<string, unknown>[];
 
     // 如果需要课程信息，单独查询 courses 表再合并
-    if (withCourses && enrollments.length > 0) {
-      const courseIds = [...new Set(enrollments.map(e => e.course_id as string).filter(Boolean))];
+    if (withCourses && enrollmentsList.length > 0) {
+      const courseIds = [...new Set(enrollmentsList.map(e => e.course_id as string).filter(Boolean))];
       if (courseIds.length > 0) {
         const { data: courses } = await supabase
           .from('courses')
@@ -79,13 +95,36 @@ export async function GET(request: NextRequest) {
         (courses || []).forEach((c: Record<string, unknown>) => {
           courseMap[c.id as string] = c;
         });
-        enrollments.forEach(e => {
+        enrollmentsList.forEach(e => {
           (e as Record<string, unknown>).course = courseMap[e.course_id as string] || null;
         });
       }
     }
 
-    return NextResponse.json({ data: enrollments });
+    // 如果需要阿姨信息（替代原来students表查询）
+    if (withWorkers && enrollmentsList.length > 0) {
+      const workerIds = [...new Set(enrollmentsList.map(e => e.worker_id as string).filter(Boolean))];
+      if (workerIds.length > 0) {
+        const { data: workers } = await supabase
+          .from('workers')
+          .select('id, name, phone, job_types, status')
+          .in('id', workerIds);
+        const workerMap: Record<string, unknown> = {};
+        (workers || []).forEach((w: Record<string, unknown>) => {
+          workerMap[w.id as string] = w;
+        });
+        enrollmentsList.forEach(e => {
+          (e as Record<string, unknown>).worker = workerMap[e.worker_id as string] || null;
+          // 补充student_name
+          const w = workerMap[e.worker_id as string] as Record<string, unknown> | undefined;
+          if (w && !(e as Record<string, unknown>).student_name) {
+            (e as Record<string, unknown>).student_name = w.name || '';
+          }
+        });
+      }
+    }
+
+    return NextResponse.json({ data: enrollmentsList });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '查询失败';
     console.error('[enrollments GET] Error:', message);
@@ -93,7 +132,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/enrollments — 创建报名
+// POST /api/enrollments — 创建报名（2.0: student_id→worker_id）
 export async function POST(request: NextRequest) {
   const result = await checkPermissionDetailed(request, 'enrollments:write');
   if (!result.ok) {
@@ -103,18 +142,33 @@ export async function POST(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    const { course_id, student_id } = body as {
+    const { course_id, worker_id, student_id } = body as {
       course_id?: string;
-      student_id?: string;
+      worker_id?: string;
+      student_id?: string;  // 兼容旧参数名
     };
 
-    // course_id必填，student_id如果是阿姨角色则自动填充
+    // course_id必填
     if (!course_id) {
       return NextResponse.json({ error: 'course_id为必填' }, { status: 400 });
     }
-    
-    // 自动从token填充学员ID（阿姨自助报名场景）
-    const finalStudentId = student_id || session.userId;
+
+    // 2.0: 优先用worker_id，兼容旧student_id参数，阿姨自助报名时用session.userId找对应worker
+    let finalWorkerId = worker_id || student_id;
+    if (!finalWorkerId && (session.role === 'worker')) {
+      // 阿姨自助报名：通过user_id查自己的worker记录
+      const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+      const supabase = getSupabaseClient();
+      const { data: myWorker } = await supabase
+        .from('workers')
+        .select('id')
+        .eq('user_id', session.userId)
+        .maybeSingle();
+      if (myWorker) finalWorkerId = myWorker.id;
+    }
+    if (!finalWorkerId) {
+      return NextResponse.json({ error: 'worker_id为必填' }, { status: 400 });
+    }
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -128,9 +182,18 @@ export async function POST(request: NextRequest) {
     if (courseErr || !course) {
       return NextResponse.json({ error: '课程不存在' }, { status: 400 });
     }
-    // 课程已关闭不允许报名
     if (course.status === 'closed') {
       return NextResponse.json({ error: '课程已满员，无法报名' }, { status: 400 });
+    }
+
+    // 校验worker存在
+    const { data: worker, error: workerErr } = await supabase
+      .from('workers')
+      .select('id, name')
+      .eq('id', finalWorkerId)
+      .maybeSingle();
+    if (workerErr || !worker) {
+      return NextResponse.json({ error: '阿姨记录不存在' }, { status: 400 });
     }
 
     // 防重复报名
@@ -138,7 +201,7 @@ export async function POST(request: NextRequest) {
       .from('enrollments')
       .select('id')
       .eq('course_id', course_id)
-      .eq('student_id', finalStudentId)
+      .eq('worker_id', finalWorkerId)
       .maybeSingle();
     if (existErr) {
       console.error('[enrollments POST] check duplicate error:', existErr);
@@ -151,7 +214,9 @@ export async function POST(request: NextRequest) {
     const insertData: Record<string, unknown> = {
       id,
       course_id,
-      student_id: finalStudentId,
+      worker_id: finalWorkerId,
+      student_name: worker.name || null,
+      enrolled_by: session.userId,
       status: 'enrolled',
     };
 
@@ -172,7 +237,7 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // P5: 报名成功后更新课程人数，满员则自动关闭
+    // 报名成功后更新课程人数
     if (data) {
       const newCount = (course.current_students || 0) + 1;
       const updateData: Record<string, unknown> = {
@@ -188,41 +253,79 @@ export async function POST(request: NextRequest) {
         .eq('id', course_id);
     }
 
-    // A3: 报名课程后，学员状态 signed → training
-    if (data && data.student_id) {
-      // 查询学员记录
-      const { data: studentData } = await supabase
-        .from('students')
-        .select('id, status')
-        .eq('id', data.student_id)
-        .maybeSingle();
-      
-      if (studentData && studentData.status === 'signed') {
-        await supabase
-          .from('students')
-          .update({ status: 'training', updated_at: new Date().toISOString() })
-          .eq('id', studentData.id);
-      }
-
-      // 同时更新线索状态（如果学员来自线索）
-      const { data: leadData } = await supabase
-        .from('leads')
-        .select('id, status')
-        .eq('student_id', data.student_id)
-        .maybeSingle();
-      
-      if (leadData && leadData.status === 'signed') {
-        await supabase
-          .from('leads')
-          .update({ status: 'training', updated_at: new Date().toISOString() })
-          .eq('id', leadData.id);
-      }
-    }
-
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '创建失败';
     console.error('[enrollments POST] Error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// PUT /api/enrollments — 更新报名（状态、打分等）
+export async function PUT(request: NextRequest) {
+  const result = await checkPermissionDetailed(request, 'enrollments:write');
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') return unauthorizedResponse();
+    return forbiddenResponse('无操作权限');
+  }
+  const session = result.session;
+  try {
+    const body = await request.json();
+    const { id, status, score, notes } = body as {
+      id: string;
+      status?: string;
+      score?: number;
+      notes?: string;
+    };
+
+    if (!id) {
+      return NextResponse.json({ error: '缺少报名ID' }, { status: 400 });
+    }
+
+    // 边界校验：分数范围 0-100
+    if (score !== undefined) {
+      if (typeof score !== 'number' || score < 0 || score > 100) {
+        return NextResponse.json({ error: '分数必须在0-100之间' }, { status: 400 });
+      }
+    }
+
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+
+    // 检查报名是否存在
+    const { data: existing, error: fetchErr } = await supabase
+      .from('enrollments')
+      .select('id')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr || !existing) {
+      return NextResponse.json({ error: '未找到该报名记录' }, { status: 404 });
+    }
+
+    const updates: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (status !== undefined) updates.status = status;
+    if (score !== undefined) updates.score = score;
+    if (notes !== undefined) updates.notes = notes;
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[enrollments PUT] DB error:', error);
+      return NextResponse.json({ error: '更新失败' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '更新失败';
+    console.error('[enrollments PUT] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

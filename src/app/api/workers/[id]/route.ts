@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
 
 // GET /api/workers/[id] — 公开获取阿姨详情（无需认证，用于简历分享页）
 export async function GET(
@@ -101,6 +102,69 @@ export async function GET(
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '查询失败';
     console.error('[workers/[id] GET] Error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// PATCH /api/workers/[id] — admin审核pending worker（status改为available）
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const result = await checkPermissionDetailed(request, 'workers:approve');
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') return unauthorizedResponse();
+    return forbiddenResponse('无操作权限');
+  }
+
+  try {
+    const { id } = await params;
+    const body = await request.json().catch(() => ({}));
+    const { status: newStatus, remark } = body as { status?: string; remark?: string };
+
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+
+    // 查worker
+    const { data: worker, error: findErr } = await supabase
+      .from('workers')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (findErr || !worker) {
+      return NextResponse.json({ error: '阿姨记录不存在' }, { status: 404 });
+    }
+
+    // 仅pending可审核
+    if (worker.status !== 'pending') {
+      return NextResponse.json({ error: '只有待审核状态才能审批' }, { status: 409 });
+    }
+
+    const now = new Date().toISOString();
+    const updates: Record<string, unknown> = {
+      status: newStatus || 'available',
+      resume_review_status: newStatus === 'rejected' ? 'rejected' : 'approved',
+      remark: remark || worker.remark,
+      updated_at: now,
+    };
+
+    const { data, error } = await supabase
+      .from('workers')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[workers/[id] PATCH] Error:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, data });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '审核失败';
+    console.error('[workers/[id] PATCH] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

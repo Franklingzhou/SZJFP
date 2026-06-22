@@ -1,0 +1,7 @@
+
+> szjfp@0.1.0 dev F:\CB-szjfp
+> next dev -p 3000 --no-turbo
+
+error: unknown option '--no-turbo'
+(Did you mean --turbo?)
+ ELIFECYCLE  Command failed with exit code 1.

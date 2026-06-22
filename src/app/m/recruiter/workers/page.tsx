@@ -23,10 +23,10 @@ export default function RecruiterWorkersPage() {
   const [filterSalaryMax, setFilterSalaryMax] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 我的学员 = 我创建的阿姨 + 已转简历的招生线索
+  // 我的学员 = 我创建的阿姨 + 已签约的招生线索
   const myStudents = mockWorkers.filter(w => w.creatorId === user?.id);
-  const convertedLeads = mockRecruiterLeads.filter(l => l.status === 'converted' && l.recruiterId === user?.id);
-  const allStudents = [...myStudents, ...convertedLeads.map(l => ({
+  const signedLeads = mockRecruiterLeads.filter(l => l.status === 'signed' && l.recruiterId === user?.id);
+  const allStudents = [...myStudents, ...signedLeads.map(l => ({
     id: l.id,
     name: l.name,
     phone: l.phone,
@@ -37,7 +37,7 @@ export default function RecruiterWorkersPage() {
     skills: [],
     expectedSalaryMin: 0,
     expectedSalaryMax: 0,
-    status: 'idle' as const,
+    status: 'pending' as const,
     creatorId: l.recruiterId,
     creatorName: l.recruiterName,
     createdAt: l.createdAt,

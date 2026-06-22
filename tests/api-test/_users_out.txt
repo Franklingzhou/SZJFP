@@ -1,0 +1,150 @@
+Total users: 21
+[
+  {
+    "id": "a001",
+    "phone": "13600001234",
+    "name": "张丽华",
+    "role": "agent",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "r001",
+    "phone": "13500003456",
+    "name": "陈招生",
+    "role": "recruiter",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "i001",
+    "phone": "13700007890",
+    "name": "李敏",
+    "role": "instructor",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "c001",
+    "phone": "13900009876",
+    "name": "刘女士",
+    "role": "customer",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "admin001",
+    "phone": "13000000001",
+    "name": "管理员",
+    "role": "admin",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "ts001",
+    "phone": "13100001111",
+    "name": "赵主管",
+    "role": "training_supervisor",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "wo001",
+    "phone": "13200002222",
+    "name": "周运营",
+    "role": "worker_operator",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "w001",
+    "phone": "13800005678",
+    "name": "王秀兰",
+    "role": "worker",
+    "password_hash": "$2a$10$dummyhashfordev"
+  },
+  {
+    "id": "u_wk_1781786112421",
+    "phone": "13800009999",
+    "name": "赵大姐",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_wk_1781787335645",
+    "phone": "13700009999",
+    "name": "刘阿姨",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_wk_1781787949870",
+    "phone": "",
+    "name": "测试阿姨",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_wk_1781791777604",
+    "phone": "13600008888",
+    "name": "陈大姐",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_wk_1781793679265",
+    "phone": "13900006666",
+    "name": "八轮测试阿姨",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_wk_1781796167067",
+    "phone": "13900007777",
+    "name": "九轮阿姨",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_1781799948354_1kdfwd",
+    "phone": "13900000001",
+    "name": "测试注册",
+    "role": "customer",
+    "password_hash": "123456"
+  },
+  {
+    "id": "u_1781832104785_g5ec54",
+    "phone": "13900009999",
+    "name": "新注册测试",
+    "role": "customer",
+    "password_hash": "123456"
+  },
+  {
+    "id": "u_wk_1781835467014",
+    "phone": "1380009999",
+    "name": "测试阿姨",
+    "role": "worker",
+    "password_hash": null
+  },
+  {
+    "id": "u_1781835472442_6t32nl",
+    "phone": "18900001616",
+    "name": "预注册测试",
+    "role": "worker",
+    "password_hash": "123456"
+  },
+  {
+    "id": "u_1781846709181_ci05tp",
+    "phone": "13900003333",
+    "name": "测试招生",
+    "role": "recruiter",
+    "password_hash": "123456"
+  },
+  {
+    "id": "u_1781846710000_f0x4ns",
+    "phone": "13700004444",
+    "name": "测试讲师",
+    "role": "instructor",
+    "password_hash": "123456"
+  },
+  {
+    "id": "u_1781846711521_l7nddk",
+    "phone": "13500005555",
+    "name": "测试客户",
+    "role": "customer",
+    "password_hash": "123456"
+  }
+]

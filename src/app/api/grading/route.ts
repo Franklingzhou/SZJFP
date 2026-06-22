@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('enrollments')
-      .select('id, course_id, student_id, student_name, status, grade, passed, graded_at, created_at, courses(name, type)')
+      .select('id, course_id, worker_id, student_name, status, grade, passed, graded_at, created_at, courses(name, type)')
       .order('created_at', { ascending: false });
 
     if (courseId) query = query.eq('course_id', courseId);
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         grade,
         passed,
         graded_at: new Date().toISOString(),
-        status: passed ? 'completed' : 'failed',
+        status: passed ? 'qualified' : 'failed',
       })
       .eq('id', enrollment_id)
       .select()

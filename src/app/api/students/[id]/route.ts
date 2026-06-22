@@ -60,6 +60,20 @@ export async function PATCH(
       return NextResponse.json({ error: '更新失败', detail: error.message }, { status: 500 });
     }
 
+    // 2.0: 结课考核合格 → 自动将 worker 状态设为 available
+    if (updates.status === 'qualified' || updates.passed === true) {
+      const workerId = (data as Record<string, unknown>)?.worker_id as string;
+      if (workerId) {
+        const { error: workerErr } = await supabase
+          .from('workers')
+          .update({ status: 'available', updated_at: new Date().toISOString() })
+          .eq('id', workerId);
+        if (workerErr) {
+          console.error('[students/[id] PATCH] 更新worker状态失败:', workerErr.message);
+        }
+      }
+    }
+
     return NextResponse.json({ success: true, data });
   } catch (err) {
     return NextResponse.json({ error: '服务器错误', detail: String(err) }, { status: 500 });

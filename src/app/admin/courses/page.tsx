@@ -226,7 +226,7 @@ export default function CoursesPage() {
       const res = await fetch('/api/enrollments', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ course_id: enrollCourseId, student_id: enrollStudentId }),
+        body: JSON.stringify({ course_id: enrollCourseId, worker_id: enrollStudentId }),
       });
       const data = await res.json();
       if (data.success) {

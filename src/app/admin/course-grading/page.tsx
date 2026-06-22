@@ -180,7 +180,7 @@ export default function CourseGradingPage() {
                 return (
                   <tr key={enr.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-slate-800">{enr.student_id}</div>
+                      <div className="font-medium text-slate-800">{enr.worker_id}</div>
                     </td>
                     <td className="px-4 py-3">
                       <Badge className={cn('text-xs', st.color)}>{st.label}</Badge>

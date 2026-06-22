@@ -1,0 +1,24 @@
+{
+  "name": "jiazheng-api-test",
+  "version": "2.0.0",
+  "description": "家政共创平台 REST API 完整测试套件",
+  "private": true,
+  "scripts": {
+    "test": "node run-all.js",
+    "test:auth": "node run-all.js --suite=auth",
+    "test:create": "node run-all.js --suite=create",
+    "test:read": "node run-all.js --suite=read",
+    "test:update": "node run-all.js --suite=update",
+    "test:delete": "node run-all.js --suite=delete",
+    "test:e2e": "node run-all.js --suite=e2e",
+    "test:verbose": "cross-env VERBOSE=true node run-all.js",
+    "test:report": "node run-all.js --report=html"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "cross-env": "^7.0.3",
+    "ora": "^8.2.0"
+  }
+}

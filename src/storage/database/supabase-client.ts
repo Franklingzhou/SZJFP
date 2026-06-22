@@ -1,6 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
-import { getReportBuffer, createWrappedFetch } from 'coze-coding-dev-sdk';
 
 let envLoaded = false;
 
@@ -88,13 +87,22 @@ function getSupabaseClient(token?: string): SupabaseClient {
   if (token) {
     globalOptions.headers = { Authorization: `Bearer ${token}` };
   }
+  // coze SDK is optional - silently skip if not available
+  let cozeMod: { getReportBuffer?: () => unknown; createWrappedFetch?: (...args: unknown[]) => unknown } = {};
   try {
-    const buffer = getReportBuffer();
-    if (buffer) {
-      globalOptions.fetch = createWrappedFetch(buffer, 'supabase');
-    }
+    cozeMod = require('coze-coding-dev-sdk');
   } catch {
-    // Silent — reporting setup failure should not block client creation
+    // coze-coding-dev-sdk not available in this runtime
+  }
+  if (cozeMod.getReportBuffer) {
+    try {
+      const buffer = cozeMod.getReportBuffer();
+      if (buffer && cozeMod.createWrappedFetch) {
+        globalOptions.fetch = cozeMod.createWrappedFetch(buffer, 'supabase');
+      }
+    } catch {
+      // Silent
+    }
   }
 
   return createClient(url, anonKey, {

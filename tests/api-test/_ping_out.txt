@@ -1,0 +1,3 @@
+[200] GET /api/ping -> {"ok":true,"time":1782061980731}
+---
+[500] GET /api/auth/password-login -> <!DOCTYPE html><html><head><meta charSet="utf-8" data-next-head=""/><meta name="viewport" content="width=device-width" data-next-head=""/><style data-next-hide-fouc="true">body{display:none}</style><n

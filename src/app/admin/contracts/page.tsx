@@ -123,6 +123,12 @@ export default function ContractsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [showDetail, setShowDetail] = useState<string | null>(null);
 
+  // 退款弹窗
+  const [showRefund, setShowRefund] = useState(false);
+  const [refundTarget, setRefundTarget] = useState<Contract | null>(null);
+  const [refundForm, setRefundForm] = useState({ amount: 0, reason: '' });
+  const [refunding, setRefunding] = useState(false);
+
   const [newContract, setNewContract] = useState({
     type: '' as ContractType | '',
     partyB: '',
@@ -247,6 +253,37 @@ export default function ContractsPage() {
       loadData();
     } catch (err) { console.error('模拟签署失败:', err); alert('操作失败，请重试'); }
   }
+
+  const handleRefund = async () => {
+    if (!refundTarget || refundForm.amount <= 0) return;
+    setRefunding(true);
+    try {
+      const res = await fetch('/api/refunds', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          refund_type: 'agency_fee',
+          amount: refundForm.amount,
+          reason: refundForm.reason || null,
+          related_type: 'contract',
+          related_id: refundTarget.id,
+          related_name: refundTarget.title || refundTarget.party_b_name || '',
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setShowRefund(false);
+        setRefundForm({ amount: 0, reason: '' });
+        alert('退款申请已提交，等待管理员审核');
+      } else {
+        alert('提交失败: ' + (data.error || '未知错误'));
+      }
+    } catch {
+      alert('提交失败');
+    } finally {
+      setRefunding(false);
+    }
+  };
 
   if (loading) return <div className="p-6 text-center text-muted-foreground">加载中...</div>;
 

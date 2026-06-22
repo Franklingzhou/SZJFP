@@ -51,8 +51,9 @@ export const workers = pgTable(
   "workers",
   {
     id: varchar("id", { length: 36 }).primaryKey(),
-    user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+    user_id: varchar("user_id", { length: 36 }).references(() => users.id),  // 可空：预注册时user_id=null，用户登录后认领绑定
     name: varchar("name", { length: 64 }).notNull(),
+    phone: varchar("phone", { length: 20 }),               // 手机号（签约时写入，用于去重）
     age: integer("age"),
     gender: varchar("gender", { length: 4 }),
     origin: varchar("origin", { length: 64 }),            // 籍贯
@@ -64,7 +65,7 @@ export const workers = pgTable(
     certifications: text("certifications"),                // 逗号分隔证书
     expected_salary_min: integer("expected_salary_min").default(0),
     expected_salary_max: integer("expected_salary_max").default(0),
-    status: varchar("status", { length: 20 }).notNull().default("idle"),  // idle / working / pending
+    status: varchar("status", { length: 20 }).notNull().default("pending"),  // pending / available / busy / inactive
     available_date: varchar("available_date", { length: 20 }),
     creator_id: varchar("creator_id", { length: 36 }).notNull().references(() => users.id),  // 录入人
     creator_role: varchar("creator_role", { length: 20 }).notNull(),       // agent / recruiter / instructor
@@ -73,6 +74,7 @@ export const workers = pgTable(
     maintainer_commission_rate: numeric("maintainer_commission_rate", { precision: 5, scale: 2 }),
     referrer_id: varchar("referrer_id", { length: 36 }).references(() => users.id),
     referrer_commission_rate: numeric("referrer_commission_rate", { precision: 5, scale: 2 }),
+    lead_id: varchar("lead_id", { length: 36 }).references(() => leads.id, { onDelete: "set null" }),  // 来源线索
     credit_score: integer("credit_score").notNull().default(1000),         // 诚信分
     deposit: numeric("deposit", { precision: 10, scale: 2 }).default("0"), // 保证金
     points: integer("points").notNull().default(0),                        // 积分
@@ -85,6 +87,8 @@ export const workers = pgTable(
     index("workers_user_id_idx").on(table.user_id),
     index("workers_creator_id_idx").on(table.creator_id),
     index("workers_status_idx").on(table.status),
+    index("workers_phone_idx").on(table.phone),
+    index("workers_lead_id_idx").on(table.lead_id),
     index("workers_job_types_idx").on(table.job_types),
     index("workers_credit_score_idx").on(table.credit_score),
   ]
@@ -173,9 +177,13 @@ export const leads = pgTable(
     gender: varchar("gender", { length: 4 }),                // 性别
     level: varchar("level", { length: 2 }).default("C"),     // 线索等级: A/B/C/D
     is_public: boolean("is_public").default(false),          // 是否在公海库
-    status: varchar("status", { length: 20 }).notNull().default("new"),  // new / contacted / training / qualified / converted / lost
+    status: varchar("status", { length: 20 }).notNull().default("new"),  // new / following / signed / lost（2.0: 签约自动创建worker）
     note: text("note"),
     recruiter_id: varchar("recruiter_id", { length: 36 }).notNull().references(() => users.id),
+    signed_at: timestamp("signed_at", { withTimezone: true }),         // 签约时间
+    signed_by: varchar("signed_by", { length: 36 }).references(() => users.id), // 签约操作人
+    sign_worker_id: varchar("sign_worker_id", { length: 36 }),         // 签约后生成的worker_id
+    want_training: boolean("want_training").default(false),            // 是否想培训
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }),
   },
@@ -183,6 +191,8 @@ export const leads = pgTable(
     index("leads_recruiter_id_idx").on(table.recruiter_id),
     index("leads_status_idx").on(table.status),
     index("leads_phone_idx").on(table.phone),
+    index("leads_signed_by_idx").on(table.signed_by),
+    index("leads_sign_worker_id_idx").on(table.sign_worker_id),
   ]
 );
 
@@ -253,14 +263,14 @@ export const coursePackageItems = pgTable(
   ]
 );
 
-/** 学员报名/培训记录 */
+/** 学员报名/培训记录 — 2.0: student_id → worker_id，关联workers表 */
 export const enrollments = pgTable(
   "enrollments",
   {
     id: varchar("id", { length: 36 }).primaryKey(),
     course_id: varchar("course_id", { length: 36 }).notNull().references(() => courses.id),
-    student_id: varchar("student_id", { length: 36 }).notNull().references(() => users.id),  // 可能是worker或lead对应的user
-    student_name: varchar("student_name", { length: 64 }),
+    worker_id: varchar("worker_id", { length: 36 }).notNull().references(() => workers.id),  // 2.0: 关联阿姨
+    student_name: varchar("student_name", { length: 64 }),     // 冗余，报名时的阿姨名
     enrolled_by: varchar("enrolled_by", { length: 36 }).references(() => users.id),  // 报名操作人
     score: integer("score"),                                  // 培训得分
     passed: boolean("passed"),                                // 是否通过
@@ -274,7 +284,7 @@ export const enrollments = pgTable(
   },
   (table) => [
     index("enrollments_course_id_idx").on(table.course_id),
-    index("enrollments_student_id_idx").on(table.student_id),
+    index("enrollments_worker_id_idx").on(table.worker_id),
     index("enrollments_status_idx").on(table.status),
   ]
 );
@@ -297,7 +307,7 @@ export const orders = pgTable(
     agent_id: varchar("agent_id", { length: 36 }).notNull().references(() => users.id),
     worker_id: varchar("worker_id", { length: 36 }).references(() => users.id),
     customer_id: varchar("customer_id", { length: 36 }).references(() => users.id),
-    status: varchar("status", { length: 20 }).notNull().default("created"),  // created/matched/confirmed/in_service/completed/cancelled
+    status: varchar("status", { length: 20 }).notNull().default("open"),  // open/interviewing/signed/completed/cancelled（2.0对齐）
     service_fee: numeric("service_fee", { precision: 10, scale: 2 }).default("0"),
     commission_rate: numeric("commission_rate", { precision: 5, scale: 2 }).default("30.00"),
     service_type: varchar("service_type", { length: 50 }),
@@ -483,6 +493,35 @@ export const deposits = pgTable(
   (table) => [
     index("deposits_user_id_idx").on(table.user_id),
     index("deposits_status_idx").on(table.status),
+  ]
+);
+
+/** 退款申请表（对齐业务规则2.0方案） */
+export const refunds = pgTable(
+  "refunds",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    refund_type: varchar("refund_type", { length: 50 }).notNull(),    // training_fee | agency_fee | deposit
+    amount: numeric("amount", { precision: 10, scale: 2 }).notNull(), // 退款金额（元）
+    reason: text("reason"),                                            // 退款原因
+    related_type: varchar("related_type", { length: 50 }).notNull(),   // lead_contract | contract | order | worker
+    related_id: varchar("related_id", { length: 36 }).notNull(),       // 关联记录ID
+    related_name: varchar("related_name", { length: 128 }),            // 关联名称（冗余，方便展示）
+    requester_id: varchar("requester_id", { length: 36 }).notNull().references(() => users.id), // 发起人
+    requester_role: varchar("requester_role", { length: 20 }),         // 发起人角色（冗余）
+    status: varchar("status", { length: 20 }).notNull().default("pending"), // pending | approved | completed | rejected
+    approver_id: varchar("approver_id", { length: 36 }).references(() => users.id), // 审核人
+    review_comment: text("review_comment"),                            // 审核意见
+    approved_at: timestamp("approved_at", { withTimezone: true }),     // 审批通过时间
+    completed_at: timestamp("completed_at", { withTimezone: true }),   // 线下打款确认时间
+    remark: text("remark"),                                            // 备注
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("refunds_status_idx").on(table.status),
+    index("refunds_related_type_idx").on(table.related_type),
+    index("refunds_requester_idx").on(table.requester_id),
   ]
 );
 

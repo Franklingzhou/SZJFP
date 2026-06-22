@@ -25,7 +25,7 @@ export default function WorkerCoursesPage() {
     try {
       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
       if (tab === 'enrolled') {
-        const res = await fetch(`/api/enrollments?student_id=${userId}&with_courses=true`, { headers: getAuthHeaders(false) });
+        const res = await fetch(`/api/enrollments?worker_id=${userId}&with_courses=true`, { headers: getAuthHeaders(false) });
         const data = await res.json();
         if (data.success) {
           const enrollments = data.data || [];
@@ -62,7 +62,7 @@ export default function WorkerCoursesPage() {
       const res = await fetch('/api/enrollments', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ student_id: userId, course_id: courseId, status: 'enrolled' }),
+        body: JSON.stringify({ worker_id: userId, course_id: courseId, status: 'enrolled' }),
       });
       const data = await res.json();
       if (data.success || data.data) {

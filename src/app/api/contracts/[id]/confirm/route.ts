@@ -41,7 +41,7 @@ export async function POST(
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    // A12: 线索签约后自动创建学员记录
+    // A12: 线索签约后自动创建阿姨记录 + 报名记录（2.0: student_id→worker_id）
     if (contract.lead_id) {
       // 获取线索信息
       const { data: leadData } = await supabase
@@ -51,29 +51,46 @@ export async function POST(
         .single();
 
       if (leadData) {
-        // 创建学员记录
-        const studentId = crypto.randomUUID();
+        const workerId = crypto.randomUUID();
+
+        // 创建worker记录
         await supabase
-          .from('students')
+          .from('workers')
           .insert({
-            id: studentId,
-            user_id: leadData.user_id || null,
-            student_no: `STU-${Date.now()}`,
+            id: workerId,
+            user_id: leadData.user_id || leadData.id,
             name: leadData.name,
             phone: leadData.phone || '',
             gender: leadData.gender || null,
             age: leadData.age || null,
-            source: 'lead_conversion',
-            recruiter_id: session.userId,
-            status: 'signed', // A13: 学员初始状态为signed
+            lead_id: contract.lead_id,
+            status: 'pending',
+            creator_id: session.userId,
+            creator_role: session.role,
+            resume_review_status: 'draft',
+            remark: '线索签约自动创建',
           });
+
+        // 如果有课程，创建enrollment
+        const courseId = (contract as Record<string, unknown>).course_id as string;
+        if (courseId) {
+          await supabase
+            .from('enrollments')
+            .insert({
+              id: crypto.randomUUID(),
+              course_id: courseId,
+              worker_id: workerId,
+              student_name: leadData.name,
+              status: 'enrolled',
+              enrolled_by: session.userId,
+            });
+        }
 
         // A14: 线索状态更新为 signed
         await supabase
           .from('leads')
           .update({ 
             status: 'signed', 
-            student_id: studentId,
             updated_at: new Date().toISOString() 
           })
           .eq('id', contract.lead_id);

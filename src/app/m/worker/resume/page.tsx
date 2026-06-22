@@ -7,7 +7,7 @@ import { JOB_TYPES } from '@/lib/types';
 import type { JobType, WorkExperience } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Share2, Pencil, Check, X, Plus, Trash2, Clock, XCircle, Camera, ImagePlus, Video, Play, Briefcase, ShieldCheck, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Share2, Pencil, Check, X, Plus, Trash2, Clock, XCircle, Camera, ImagePlus, Video, Play, Briefcase, ShieldCheck, ChevronDown, ChevronUp, RefreshCw, GraduationCap } from 'lucide-react';
 
 export default function WorkerResumePageWrapper() {
   return (
@@ -960,6 +960,24 @@ function WorkerResumePage() {
           </span>
         </div>
         <p className="text-xs text-slate-400 mt-1">状态可在首页切换</p>
+        {/* 再培训入口 */}
+        <div className="mt-3 pt-3 border-t border-slate-100">
+          {requestTrainingSent ? (
+            <p className="text-center text-sm text-green-600 bg-green-50 rounded-lg py-3">
+              <GraduationCap className="h-4 w-4 inline mr-1" />再培训申请已提交，招生将跟进处理
+            </p>
+          ) : (
+            <button
+              onClick={handleRequestTraining}
+              disabled={requestTrainingLoading}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 text-sm font-medium hover:from-amber-100 hover:to-orange-100 disabled:opacity-50"
+            >
+              <GraduationCap className="h-5 w-5" />
+              {requestTrainingLoading ? '提交中...' : '申请再培训'}
+            </button>
+          )}
+          <p className="text-xs text-slate-400 text-center mt-2">需要技能提升？提交后招生老师将联系您</p>
+        </div>
       </div>
     </div>
   );

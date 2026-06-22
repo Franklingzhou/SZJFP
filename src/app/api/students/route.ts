@@ -3,7 +3,7 @@ import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { getDataVisibilitySync } from '@/lib/data-permissions';
 
-// GET /api/students — 获取学员列表（enrollments）
+// GET /api/students — 获取学员列表（enrollments JOIN workers）2.0: student_id→worker_id
 export async function GET(request: NextRequest) {
   const result = await checkPermissionDetailed(request, 'students:read');
   if (!result.ok) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl;
     const status = url.searchParams.get('status');
     const course_id = url.searchParams.get('course_id');
-    const student_id = url.searchParams.get('student_id');
+    const worker_id = url.searchParams.get('worker_id');
     const keyword = url.searchParams.get('keyword');
 
     let query = supabase
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     if (status) query = query.eq('status', status);
     if (course_id) query = query.eq('course_id', course_id);
-    if (student_id) query = query.eq('student_id', student_id);
+    if (worker_id) query = query.eq('worker_id', worker_id);
 
     const { data, error } = await query;
 
@@ -35,62 +35,55 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '查询失败', detail: error.message }, { status: 500 });
     }
 
-    // 如果有关键词搜索，需要关联查学员名
-    let result = data || [];
-    if (keyword && result.length > 0) {
-      const studentIds = [...new Set(result.map((r: Record<string, unknown>) => r.student_id as string))];
-      const { data: workers } = await supabase
-        .from('workers')
-        .select('id, name')
-        .in('id', studentIds);
+    let result2 = data || [];
 
-      const workerMap = new Map((workers || []).map((w: Record<string, unknown>) => [w.id as string, w.name as string]));
-      result = result.map((r: Record<string, unknown>) => ({
-        ...r,
-        student_name: r.student_name || workerMap.get(r.student_id as string) || '未知',
-      })).filter((r: Record<string, unknown>) => {
-        const name = (r.student_name || '') as string;
-        return name.includes(keyword!);
-      });
-    }
+    // 补充阿姨名和课程名（从workers和courses表）
+    if (result2.length > 0) {
+      const workerIds = [...new Set(result2.map((r: Record<string, unknown>) => r.worker_id as string))];
+      const courseIds = [...new Set(result2.map((r: Record<string, unknown>) => r.course_id as string))];
 
-    // 补充学员名和课程名
-    if (result.length > 0) {
-      const studentIds = [...new Set(result.map((r: Record<string, unknown>) => r.student_id as string))];
-      const courseIds = [...new Set(result.map((r: Record<string, unknown>) => r.course_id as string))];
-
-      const { data: workers } = await supabase.from('workers').select('id, name, phone').in('id', studentIds);
-      const { data: courses } = await supabase.from('courses').select('id, title').in('id', courseIds);
+      const { data: workers } = await supabase.from('workers').select('id, name, phone').in('id', workerIds);
+      const { data: courses } = await supabase.from('courses').select('id, title, name').in('id', courseIds);
 
       const workerMap = new Map((workers || []).map((w: Record<string, unknown>) => [w.id as string, w]));
       const courseMap = new Map((courses || []).map((c: Record<string, unknown>) => [c.id as string, c]));
 
-      result = result.map((r: Record<string, unknown>) => ({
-        ...r,
-        student_name: r.student_name || workerMap.get(r.student_id as string)?.name || '未知',
-        student_phone: workerMap.get(r.student_id as string)?.phone || '',
-        course_title: courseMap.get(r.course_id as string)?.title || '未知课程',
-      }));
+      result2 = result2.map((r: Record<string, unknown>) => {
+        const w = workerMap.get(r.worker_id as string);
+        const c = courseMap.get(r.course_id as string);
+        return {
+          ...r,
+          student_id: r.worker_id,  // 兼容旧字段
+          student_name: r.student_name || (w as Record<string, unknown>)?.name || '未知',
+          student_phone: (w as Record<string, unknown>)?.phone || '',
+          course_title: (c as Record<string, unknown>)?.title || (c as Record<string, unknown>)?.name || '未知课程',
+        };
+      });
+
+      // 关键词搜索
+      if (keyword) {
+        result2 = result2.filter((r: Record<string, unknown>) => {
+          const name = (r.student_name || '') as string;
+          return name.includes(keyword);
+        });
+      }
     }
 
-    // 应用数据权限过滤
+    // 应用数据权限过滤（2.0: enrollment关联worker_id）
     const visibility = getDataVisibilitySync(session.role, 'students');
     if (visibility === 'own') {
-      // 只能看自己录入/负责的学员
-      result = result.filter((r: Record<string, unknown>) => 
-        r.recruiter_id === session.userId || 
-        r.instructor_id === session.userId
+      result2 = result2.filter((r: Record<string, unknown>) => 
+        r.worker_id === session.userId
       );
     }
-    // 'all' 权限返回全部数据，'hidden' 返回空数组
 
-    return NextResponse.json({ success: true, data: result });
+    return NextResponse.json({ success: true, data: result2 });
   } catch (err) {
     return NextResponse.json({ error: '服务器错误', detail: String(err) }, { status: 500 });
   }
 }
 
-// POST /api/students — 新建报名（enrollment）
+// POST /api/students — 新建报名（enrollment）2.0: student_id→worker_id
 export async function POST(request: NextRequest) {
   const result = await checkPermissionDetailed(request, 'students:write');
   if (!result.ok) {
@@ -101,9 +94,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { course_id, student_id } = body;
+    const { course_id, student_id, worker_id } = body;
 
-    if (!course_id || !student_id) {
+    // 兼容新旧参数名
+    const finalWorkerId = worker_id || student_id;
+    if (!course_id || !finalWorkerId) {
       return NextResponse.json({ error: '课程ID和学员ID为必填项' }, { status: 400 });
     }
 
@@ -114,18 +109,18 @@ export async function POST(request: NextRequest) {
       .from('enrollments')
       .select('id')
       .eq('course_id', course_id)
-      .eq('student_id', student_id)
+      .eq('worker_id', finalWorkerId)
       .maybeSingle();
 
     if (existing) {
       return NextResponse.json({ error: '该学员已报名此课程' }, { status: 409 });
     }
 
-    // 获取学员名
+    // 获取阿姨名
     const { data: worker } = await supabase
       .from('workers')
       .select('name')
-      .eq('id', student_id)
+      .eq('id', finalWorkerId)
       .single();
 
     const id = crypto.randomUUID();
@@ -134,7 +129,8 @@ export async function POST(request: NextRequest) {
       .insert({
         id,
         course_id,
-        student_id,
+        worker_id: finalWorkerId,
+        student_name: worker?.name || null,
         status: 'enrolled',
       })
       .select()

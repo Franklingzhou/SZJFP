@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, Plus, Eye } from 'lucide-react';
+import { Search, FileText, Plus, Eye, DollarSign } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,12 @@ export default function LeadContractsPage() {
   const [showDetail, setShowDetail] = useState(false);
   const [detail, setDetail] = useState<any>(null);
 
+  // 退款弹窗
+  const [showRefund, setShowRefund] = useState(false);
+  const [refundTarget, setRefundTarget] = useState<any>(null);
+  const [refundForm, setRefundForm] = useState({ amount: 0, reason: '' });
+  const [refunding, setRefunding] = useState(false);
+
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
@@ -64,6 +71,37 @@ export default function LeadContractsPage() {
       console.error('合同数据加载失败:', e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefund = async () => {
+    if (!refundTarget || refundForm.amount <= 0) return;
+    setRefunding(true);
+    try {
+      const res = await fetch('/api/refunds', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          refund_type: 'training_fee',
+          amount: refundForm.amount,
+          reason: refundForm.reason || null,
+          related_type: refundTarget.type === 'training' ? 'lead_contract' : 'contract',
+          related_id: refundTarget.id,
+          related_name: refundTarget.title || refundTarget.party_b_name || '',
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setShowRefund(false);
+        setRefundForm({ amount: 0, reason: '' });
+        alert('退款申请已提交，等待管理员审核');
+      } else {
+        alert('提交失败: ' + (data.error || '未知错误'));
+      }
+    } catch (e) {
+      alert('提交失败');
+    } finally {
+      setRefunding(false);
     }
   };
 
@@ -198,6 +236,17 @@ export default function LeadContractsPage() {
                         loadData();
                       }}>终止合同</Button>
                     )}
+                    {/* 发起退款（招生可见培训费退款） */}
+                    {['signed', 'active'].includes(c.status) && (
+                      <Button size="sm" variant="outline" onClick={(e) => {
+                        e.stopPropagation();
+                        setRefundTarget(c);
+                        setRefundForm({ amount: c.price || 0, reason: '' });
+                        setShowRefund(true);
+                      }}>
+                        <DollarSign className="h-3 w-3 mr-1" />退款
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -291,6 +340,32 @@ export default function LeadContractsPage() {
               <div><span className="text-slate-500">创建时间：</span>{detail.created_at?.slice(0, 10)}</div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 退款弹窗 */}
+      <Dialog open={showRefund} onOpenChange={setShowRefund}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>发起退款申请</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-slate-500">
+              合同：{refundTarget?.title} | 类型：培训费退款
+            </p>
+            <div>
+              <Label>退款金额（元）*</Label>
+              <Input type="number" min={1} value={refundForm.amount || ''} onChange={e => setRefundForm(f => ({ ...f, amount: Number(e.target.value) }))} placeholder="输入退款金额" />
+            </div>
+            <div>
+              <Label>退款原因</Label>
+              <Textarea value={refundForm.reason} onChange={e => setRefundForm(f => ({ ...f, reason: e.target.value }))} placeholder="请输入退款原因" rows={3} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRefund(false)}>取消</Button>
+            <Button onClick={handleRefund} disabled={refunding || refundForm.amount <= 0}>
+              {refunding ? '提交中...' : '提交申请'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -114,7 +114,7 @@ export default function AdminRecommendationsPage() {
       const wData = await wRes.json();
       const oData = await oRes.json();
       setAvailableWorkers((wData.data || []).filter((w: Record<string, unknown>) => w.status === 'idle' || w.status === 'available'));
-      setAvailableOrders((oData.data || []).filter((o: Record<string, unknown>) => o.status === 'open' || o.status === 'created'));
+      setAvailableOrders((oData.data || []).filter((o: Record<string, unknown>) => o.status === 'open'));
     } catch (e) {
       console.error('加载选项失败:', e);
     }

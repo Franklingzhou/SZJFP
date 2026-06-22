@@ -13,10 +13,12 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 // 阿姨状态: idle(空闲) → working(在户) → paused(暂停)
-export type WorkerStatus = 'idle' | 'working' | 'paused' | 'blacklisted';
+export type WorkerStatus = 'pending' | 'available' | 'busy' | 'inactive' | 'paused' | 'blacklisted';
 export const WORKER_STATUS_LABELS: Record<WorkerStatus, string> = {
-  idle: '空闲',
-  working: '在户',
+  pending: '待审核',
+  available: '空闲可用',
+  busy: '上户中',
+  inactive: '停用',
   paused: '暂停',
   blacklisted: '黑名单',
 };
@@ -57,15 +59,14 @@ export interface ResumeReviewRecord {
   status: ResumeReviewStatus;
 }
 
-// 订单状态: created(待匹配) → open(已发布) → interviewing(面试中) → signed(已签约) → completed(已完成) → closed(已关闭)
-export type OrderStatus = 'created' | 'open' | 'interviewing' | 'signed' | 'completed' | 'closed';
+// 订单状态 2.0: open(已发布) → interviewing(面试中) → signed(已签约) → completed(已完成) / cancelled(已取消)
+export type OrderStatus = 'open' | 'interviewing' | 'signed' | 'completed' | 'cancelled';
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  created: '待匹配',
   open: '已发布',
   interviewing: '面试中',
   signed: '已签约',
   completed: '已完成',
-  closed: '已关闭',
+  cancelled: '已取消',
 };
 
 // 评价来源角色分类
@@ -117,7 +118,7 @@ export interface WorkerProfile {
   availableDate: string;
   creatorId: string; // 录入人ID（1年保护期）
   creatorName: string; // 录入人名称
-  creatorRole: 'agent' | 'recruiter' | 'instructor' | 'customer'; // 录入人角色
+  creatorRole: 'agent' | 'recruiter' | 'instructor' | 'training_supervisor' | 'worker_operator'; // 录入人角色
   creatorCommissionRate: number; // 录入人佣金比例(%)
   maintainerId?: string; // 维护人ID
   maintainerName?: string; // 维护人名称
@@ -133,6 +134,7 @@ export interface WorkerProfile {
   trainingRecords: TrainingRecord[];
   reviews: Review[];
   resumeReviewStatus: ResumeReviewStatus; // 简历审核状态
+  leadId?: string; // 来源线索ID（签约自动创建时写入）
   changeSummary?: string; // 变更摘要（修改了哪些字段）
   skills?: string[]; // 技能特长
   remark?: string; // 备注
@@ -268,30 +270,28 @@ export interface ReferralRecord {
   createdAt: string;
 }
 
-// 招生线索: new(新线索) → contacted(已联系) → signed(已签约) → training(培训中) → qualified(已合格) → converted(已转简历) / lost(已流失)
-export type LeadStatus = 'new' | 'contacted' | 'signed' | 'training' | 'qualified' | 'converted' | 'lost';
+// 招生线索 2.0: new(新线索) → following(跟进中) → signed(已签约) → lost(已流失)
+// 签约后自动创建worker(pending)，不再走 training→qualified→converted 手动转化流程
+export type LeadStatus = 'new' | 'following' | 'signed' | 'lost';
 export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   new: '新线索',
-  contacted: '已联系',
+  following: '跟进中',
   signed: '已签约',
-  training: '培训中',
-  qualified: '已合格',
-  converted: '已转简历',
   lost: '已流失',
 };
 
 // 线索等级
 export type LeadLevel = 'A' | 'B' | 'C' | 'D';
 
-// 客户状态: new(新客户) → following(跟进中) → ordered(已下单) → serving(服务中) → completed(已完成) / lost(已流失)
-export type CustomerStatus = 'new' | 'following' | 'ordered' | 'serving' | 'completed' | 'lost';
+// 客户状态 2.0: new(新客户) → following(跟进中) → matching(匹配中) → converted(已转化) → completed(已完成) / closed(已关闭)
+export type CustomerStatus = 'new' | 'following' | 'matching' | 'converted' | 'completed' | 'closed';
 export const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
   new: '新客户',
   following: '跟进中',
-  ordered: '已下单',
-  serving: '服务中',
+  matching: '匹配中',
+  converted: '已转化',
   completed: '已完成',
-  lost: '已流失',
+  closed: '已关闭',
 };
 
 // 推荐状态: pending(待审核) → accepted(已通过) / rejected(已拒绝) / signed(已签约)
@@ -310,13 +310,12 @@ export const ORDER_SIGNING_STATUS_LABELS: Record<OrderSigningStatus, string> = {
   replaced: '已替换',
 };
 
-// 学员/报名状态: enrolled(已报名) → in_training(培训中) → completed(已结课) → passed(已通过) / failed(未通过) / dropped(已退学)
-export type EnrollmentStatus = 'enrolled' | 'in_training' | 'completed' | 'passed' | 'failed' | 'dropped';
+// 学员/报名状态 2.0: enrolled(已报名) → attending(学习中) → qualified(已通过) / failed(未通过) / dropped(已退学)
+export type EnrollmentStatus = 'enrolled' | 'attending' | 'qualified' | 'failed' | 'dropped';
 export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
   enrolled: '已报名',
-  in_training: '培训中',
-  completed: '已结课',
-  passed: '已通过',
+  attending: '学习中',
+  qualified: '已通过',
   failed: '未通过',
   dropped: '已退学',
 };
@@ -358,6 +357,59 @@ export interface Lead {
   recruiterId: string;
   recruiterName: string;
   inPublicPool: boolean; // 是否在公海库
+  signedAt?: string; // 签约时间
+  signedBy?: string; // 签约操作人ID
+  signWorkerId?: string; // 签约后生成的worker_id
+  wantTraining?: boolean; // 是否想培训
+  createdAt: string;
+  updatedAt: string;
+}
+
+// 退款类型
+export type RefundType = 'training_fee' | 'agency_fee' | 'deposit';
+export const REFUND_TYPE_LABELS: Record<RefundType, string> = {
+  training_fee: '培训费',
+  agency_fee: '中介费',
+  deposit: '保证金',
+};
+
+// 退款关联类型
+export type RefundRelatedType = 'lead_contract' | 'contract' | 'order' | 'worker';
+export const REFUND_RELATED_TYPE_LABELS: Record<RefundRelatedType, string> = {
+  lead_contract: '培训合同',
+  contract: '中介合同',
+  order: '订单',
+  worker: '阿姨简历',
+};
+
+// 退款状态
+export type RefundStatus = 'pending' | 'approved' | 'rejected' | 'completed';
+export const REFUND_STATUS_LABELS: Record<RefundStatus, string> = {
+  pending: '待审核',
+  approved: '已通过',
+  rejected: '已驳回',
+  completed: '已退款',
+};
+
+// 退款记录（对齐业务规则2.0方案）
+export interface Refund {
+  id: string;
+  refundType: RefundType;
+  amount: number;
+  reason: string;
+  relatedType: RefundRelatedType;
+  relatedId: string;
+  relatedName?: string;
+  requesterId: string;
+  requesterName?: string;
+  requesterRole?: string;
+  status: RefundStatus;
+  approverId?: string;
+  approverName?: string;
+  reviewComment?: string;
+  approvedAt?: string;
+  completedAt?: string;
+  remark?: string;
   createdAt: string;
   updatedAt: string;
 }

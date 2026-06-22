@@ -1,0 +1,618 @@
+{
+  "summary": {
+    "total": 34,
+    "pass": 0,
+    "fail": 34,
+    "byCategory": {
+      "正向功能": 14,
+      "参数异常": 9,
+      "边界值": 5,
+      "重复操作": 2,
+      "权限校验": 4
+    },
+    "byModule": {
+      "auth": 34
+    }
+  },
+  "results": [
+    {
+      "label": "A01-admin密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1616,
+      "timestamp": "2026-06-21T16:59:54.958Z"
+    },
+    {
+      "label": "R01-招生密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13500003456",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1591,
+      "timestamp": "2026-06-21T16:59:56.550Z"
+    },
+    {
+      "label": "T01-讲师密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13700007890",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1586,
+      "timestamp": "2026-06-21T16:59:58.137Z"
+    },
+    {
+      "label": "S01-培训主管密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13100001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1599,
+      "timestamp": "2026-06-21T16:59:59.736Z"
+    },
+    {
+      "label": "B01-经纪人密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1621,
+      "timestamp": "2026-06-21T17:00:01.357Z"
+    },
+    {
+      "label": "W01-阿姨运营密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13200005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1562,
+      "timestamp": "2026-06-21T17:00:02.920Z"
+    },
+    {
+      "label": "K01-阿姨密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1595,
+      "timestamp": "2026-06-21T17:00:04.515Z"
+    },
+    {
+      "label": "C01-客户密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1588,
+      "timestamp": "2026-06-21T17:00:06.103Z"
+    },
+    {
+      "label": "登录返回token含user字段",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1622,
+      "timestamp": "2026-06-21T17:00:07.725Z"
+    },
+    {
+      "label": "缺少手机号",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1601,
+      "timestamp": "2026-06-21T17:00:09.327Z"
+    },
+    {
+      "label": "缺少密码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1629,
+      "timestamp": "2026-06-21T17:00:10.956Z"
+    },
+    {
+      "label": "空请求体",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1595,
+      "timestamp": "2026-06-21T17:00:12.552Z"
+    },
+    {
+      "label": "手机号格式错误(含字母)",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "abc12345678",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1582,
+      "timestamp": "2026-06-21T17:00:14.134Z"
+    },
+    {
+      "label": "密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "password": "wrongpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1574,
+      "timestamp": "2026-06-21T17:00:15.708Z"
+    },
+    {
+      "label": "手机号不存在",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19900000000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1572,
+      "timestamp": "2026-06-21T17:00:17.280Z"
+    },
+    {
+      "label": "超长手机号(20位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111222233334",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1564,
+      "timestamp": "2026-06-21T17:00:18.844Z"
+    },
+    {
+      "label": "超短手机号(5位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1560,
+      "timestamp": "2026-06-21T17:00:20.404Z"
+    },
+    {
+      "label": "密码最小长度1位",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "password": "1"
+      },
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1581,
+      "timestamp": "2026-06-21T17:00:21.985Z"
+    },
+    {
+      "label": "空字符串手机号",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1577,
+      "timestamp": "2026-06-21T17:00:23.562Z"
+    },
+    {
+      "label": "同一账号连续登录2次",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1573,
+      "timestamp": "2026-06-21T17:00:25.135Z"
+    },
+    {
+      "label": "有效token获取session",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 13,
+      "timestamp": "2026-06-21T17:00:25.149Z"
+    },
+    {
+      "label": "获取用户profile",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/profile",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 14,
+      "timestamp": "2026-06-21T17:00:25.163Z"
+    },
+    {
+      "label": "无token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1586,
+      "timestamp": "2026-06-21T17:00:26.749Z"
+    },
+    {
+      "label": "伪造token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1591,
+      "timestamp": "2026-06-21T17:00:28.340Z"
+    },
+    {
+      "label": "过期token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1608,
+      "timestamp": "2026-06-21T17:00:29.948Z"
+    },
+    {
+      "label": "A25-修改密码-正向",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "999999"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 14,
+      "timestamp": "2026-06-21T17:00:29.962Z"
+    },
+    {
+      "label": "改密后恢复原密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "999999",
+        "new_password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 14,
+      "timestamp": "2026-06-21T17:00:29.976Z"
+    },
+    {
+      "label": "改密-当前密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "wrong",
+        "new_password": "newpass"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 13,
+      "timestamp": "2026-06-21T17:00:29.990Z"
+    },
+    {
+      "label": "改密-新密码太短",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "12"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 14,
+      "timestamp": "2026-06-21T17:00:30.004Z"
+    },
+    {
+      "label": "改密-未登录",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "123456"
+      },
+      "expectStatus": 401,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1589,
+      "timestamp": "2026-06-21T17:00:31.593Z"
+    },
+    {
+      "label": "A13-新用户注册",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000002680",
+        "name": "测试用户",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 201,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1606,
+      "timestamp": "2026-06-21T17:00:33.199Z"
+    },
+    {
+      "label": "注册-手机号格式错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "123",
+        "name": "测试",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1583,
+      "timestamp": "2026-06-21T17:00:34.782Z"
+    },
+    {
+      "label": "注册-已存在手机号",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000001111",
+        "name": "重复",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 409,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1591,
+      "timestamp": "2026-06-21T17:00:36.373Z"
+    },
+    {
+      "label": "注册-缺少验证码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009999",
+        "name": "测试",
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "[500] \"<!DOCTYPE html><html><head><meta charSet=\\\"utf-8\\\" data-next-head=\\\"\\\"/><meta name=\\\"viewport\\\" content=\\\"width=device-width\\\" data-next-head=\\\"\\\"/><style data-next-hide-fouc=\\\"true\\\">body{display:no",
+      "duration": 1589,
+      "timestamp": "2026-06-21T17:00:37.963Z"
+    }
+  ]
+}

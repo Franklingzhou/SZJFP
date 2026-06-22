@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS workers (
   id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
   user_id VARCHAR(36) NOT NULL REFERENCES users(id),
   name VARCHAR(64) NOT NULL,
+  phone VARCHAR(20),
   age INTEGER,
   gender VARCHAR(4),
   origin VARCHAR(64),
@@ -54,7 +55,7 @@ CREATE TABLE IF NOT EXISTS workers (
   certifications TEXT,
   expected_salary_min INTEGER DEFAULT 0,
   expected_salary_max INTEGER DEFAULT 0,
-  status VARCHAR(20) NOT NULL DEFAULT 'idle',
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
   available_date VARCHAR(20),
   creator_id VARCHAR(36) NOT NULL REFERENCES users(id),
   creator_role VARCHAR(20) NOT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE IF NOT EXISTS workers (
   maintainer_commission_rate NUMERIC(5,2),
   referrer_id VARCHAR(36) REFERENCES users(id),
   referrer_commission_rate NUMERIC(5,2),
+  lead_id VARCHAR(36) REFERENCES leads(id) ON DELETE SET NULL,
   credit_score INTEGER NOT NULL DEFAULT 1000,
   deposit NUMERIC(10,2) DEFAULT '0',
   points INTEGER NOT NULL DEFAULT 0,
@@ -75,6 +77,8 @@ CREATE TABLE IF NOT EXISTS workers (
 CREATE INDEX IF NOT EXISTS workers_user_id_idx ON workers(user_id);
 CREATE INDEX IF NOT EXISTS workers_creator_id_idx ON workers(creator_id);
 CREATE INDEX IF NOT EXISTS workers_status_idx ON workers(status);
+CREATE INDEX IF NOT EXISTS workers_phone_idx ON workers(phone);
+CREATE INDEX IF NOT EXISTS workers_lead_id_idx ON workers(lead_id);
 CREATE INDEX IF NOT EXISTS workers_job_types_idx ON workers(job_types);
 CREATE INDEX IF NOT EXISTS workers_credit_score_idx ON workers(credit_score);
 
@@ -150,6 +154,10 @@ CREATE TABLE IF NOT EXISTS leads (
   status VARCHAR(20) NOT NULL DEFAULT 'new',
   note TEXT,
   recruiter_id VARCHAR(36) NOT NULL REFERENCES users(id),
+  signed_at TIMESTAMPTZ,
+  signed_by VARCHAR(36) REFERENCES users(id),
+  sign_worker_id VARCHAR(36),
+  want_training BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ
 );
@@ -157,6 +165,8 @@ CREATE TABLE IF NOT EXISTS leads (
 CREATE INDEX IF NOT EXISTS leads_recruiter_id_idx ON leads(recruiter_id);
 CREATE INDEX IF NOT EXISTS leads_status_idx ON leads(status);
 CREATE INDEX IF NOT EXISTS leads_phone_idx ON leads(phone);
+CREATE INDEX IF NOT EXISTS leads_signed_by_idx ON leads(signed_by);
+CREATE INDEX IF NOT EXISTS leads_sign_worker_id_idx ON leads(sign_worker_id);
 
 -- 9. 线索跟进记录
 CREATE TABLE IF NOT EXISTS lead_follow_ups (
@@ -196,23 +206,26 @@ CREATE INDEX IF NOT EXISTS courses_instructor_id_idx ON courses(instructor_id);
 CREATE INDEX IF NOT EXISTS courses_status_idx ON courses(status);
 CREATE INDEX IF NOT EXISTS courses_type_idx ON courses(type);
 
--- 11. 学员报名/培训记录
+-- 11. 学员报名/培训记录（2.0: student_id→worker_id，关联workers表）
 CREATE TABLE IF NOT EXISTS enrollments (
   id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
   course_id VARCHAR(36) NOT NULL REFERENCES courses(id),
-  student_id VARCHAR(36) NOT NULL REFERENCES users(id),
+  worker_id VARCHAR(36) NOT NULL REFERENCES workers(id),
   student_name VARCHAR(64),
   enrolled_by VARCHAR(36) REFERENCES users(id),
   score INTEGER,
   passed BOOLEAN,
   certificate VARCHAR(128),
   status VARCHAR(20) NOT NULL DEFAULT 'enrolled',
+  grade VARCHAR(20),
+  graded_by VARCHAR(36) REFERENCES users(id),
+  graded_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS enrollments_course_id_idx ON enrollments(course_id);
-CREATE INDEX IF NOT EXISTS enrollments_student_id_idx ON enrollments(student_id);
+CREATE INDEX IF NOT EXISTS enrollments_worker_id_idx ON enrollments(worker_id);
 CREATE INDEX IF NOT EXISTS enrollments_status_idx ON enrollments(status);
 
 -- 12. 订单表
@@ -370,7 +383,35 @@ CREATE TABLE IF NOT EXISTS deposits (
 CREATE INDEX IF NOT EXISTS deposits_user_id_idx ON deposits(user_id);
 CREATE INDEX IF NOT EXISTS deposits_status_idx ON deposits(status);
 
--- 20. 评价表
+-- 20. 退款申请表（对齐业务规则2.0方案）
+CREATE TABLE IF NOT EXISTS refunds (
+  id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  refund_type VARCHAR(50) NOT NULL,                  -- training_fee | agency_fee | deposit
+  amount NUMERIC(10,2) NOT NULL,                     -- 退款金额（元）
+  reason TEXT,                                        -- 退款原因
+  related_type VARCHAR(50) NOT NULL,                  -- lead_contract | contract | order | worker
+  related_id VARCHAR(36) NOT NULL,                    -- 关联记录ID
+  related_name VARCHAR(128),                          -- 关联名称（冗余，方便展示）
+  requester_id VARCHAR(36) NOT NULL REFERENCES users(id), -- 发起人
+  requester_role VARCHAR(20),                         -- 发起人角色（冗余）
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',      -- pending | approved | completed | rejected
+  approver_id VARCHAR(36) REFERENCES users(id),       -- 审核人
+  review_comment TEXT,                                -- 审核意见
+  approved_at TIMESTAMPTZ,                            -- 审批通过时间
+  completed_at TIMESTAMPTZ,                           -- 线下打款确认时间
+  remark TEXT,                                        -- 备注
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ,
+  CONSTRAINT chk_related_type CHECK (related_type IN ('lead_contract','contract','order','worker')),
+  CONSTRAINT chk_refund_type CHECK (refund_type IN ('training_fee','agency_fee','deposit')),
+  CONSTRAINT chk_refund_status CHECK (status IN ('pending','approved','completed','rejected'))
+);
+
+CREATE INDEX IF NOT EXISTS refunds_status_idx ON refunds(status);
+CREATE INDEX IF NOT EXISTS refunds_related_type_idx ON refunds(related_type);
+CREATE INDEX IF NOT EXISTS refunds_requester_idx ON refunds(requester_id);
+
+-- 21. 评价表
 CREATE TABLE IF NOT EXISTS reviews (
   id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
   target_user_id VARCHAR(36) NOT NULL REFERENCES users(id),
@@ -457,5 +498,5 @@ INSERT INTO users (id, name, phone, password_hash, role, review_status, is_activ
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
--- 完成！全部23张表 + 索引 + 测试数据已创建
+-- 完成！全部24张表 + 索引 + 测试数据已创建
 -- ============================================================

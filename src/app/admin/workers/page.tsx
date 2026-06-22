@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Eye, Edit, Share2, Phone, X, GraduationCap, BookOpen, Pause, Play, Ban, PauseCircle, PlayCircle, ShieldBan, Plus } from 'lucide-react';
+import { Search, Filter, Eye, Edit, Share2, Phone, X, GraduationCap, BookOpen, Pause, Play, Ban, PauseCircle, PlayCircle, ShieldBan, Plus, XCircle, DollarSign, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { REVIEW_SOURCE_LABELS, RESUME_REVIEW_STATUS_LABELS } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { cn, formatCurrency, getCreditScoreColor, getCreditScoreBg, getStatusColor } from '@/lib/utils';
@@ -20,6 +21,7 @@ export default function WorkersPage() {
   const [search, setSearch] = useState('');
   const [jobFilter, setJobFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [reviewTab, setReviewTab] = useState<'all' | 'pending_review'>('all');
   const [selectedWorker, setSelectedWorker] = useState<WorkerProfile | null>(null);
   const [editingWorker, setEditingWorker] = useState<WorkerProfile | null>(null);
   const [shareWorker, setShareWorker] = useState<WorkerProfile | null>(null);
@@ -91,8 +93,11 @@ export default function WorkersPage() {
       !search || w.name.includes(search) || (w.origin || '').includes(search) || (w.phone || '').includes(search);
     const matchJob = jobFilter === 'all' || (w.jobTypes || []).includes(jobFilter as never);
     const matchStatus = statusFilter === 'all' || w.status === statusFilter;
-    return matchSearch && matchJob && matchStatus;
+    const matchReview = reviewTab === 'all' || w.resumeReviewStatus === 'pending' || w.status === 'pending';
+    return matchSearch && matchJob && matchStatus && matchReview;
   });
+
+  const pendingReviewCount = workers.filter(w => w.resumeReviewStatus === 'pending' || w.status === 'pending').length;
 
   const handleEdit = (worker: WorkerProfile) => {
     setEditingWorker(worker);
@@ -252,6 +257,26 @@ export default function WorkersPage() {
         </Button>
       </div>
 
+      {/* Review Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={() => setReviewTab('all')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            reviewTab === 'all' ? 'bg-slate-600 text-white shadow-sm' : 'bg-white text-slate-600 border hover:bg-slate-50'
+          }`}
+        >
+          全部 ({workers.length})
+        </button>
+        <button
+          onClick={() => setReviewTab('pending_review')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            reviewTab === 'pending_review' ? 'bg-amber-500 text-white shadow-sm' : 'bg-white text-slate-600 border hover:bg-slate-50'
+          }`}
+        >
+          待审核简历 ({pendingReviewCount})
+        </button>
+      </div>
+
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
@@ -282,9 +307,12 @@ export default function WorkersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">全部状态</SelectItem>
-                <SelectItem value="idle">空闲</SelectItem>
-                <SelectItem value="working">在户</SelectItem>
-                <SelectItem value="pending">待定</SelectItem>
+                <SelectItem value="pending">待审核</SelectItem>
+                <SelectItem value="available">空闲</SelectItem>
+                <SelectItem value="busy">在户</SelectItem>
+                <SelectItem value="paused">暂停</SelectItem>
+                <SelectItem value="inactive">停用</SelectItem>
+                <SelectItem value="blacklisted">黑名单</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -310,8 +338,41 @@ export default function WorkersPage() {
                     <Badge className={cn('text-xs', getStatusColor(worker.status))}>
                       {WORKER_STATUS_LABELS[worker.status]}
                     </Badge>
+                    {/* 审核通过/拒绝按钮（pending状态） */}
+                    {worker.status === 'pending' && (
+                      <>
+                        <Button size="sm" className="h-6 text-xs bg-green-500 hover:bg-green-600 text-white"
+                          onClick={async () => {
+                            if (!confirm(`确认审核通过 ${worker.name} 的简历？`)) return;
+                            const res = await fetch(`/api/workers/${worker.id}/approve`, {
+                              method: 'POST',
+                              headers: getAuthHeaders(),
+                            });
+                            const data = await res.json();
+                            if (data.ok) { alert('审核通过'); loadData(); }
+                            else alert(data.error || '操作失败');
+                          }}>
+                          <PlayCircle className="w-3 h-3 mr-1" />通过
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-6 text-xs border-red-300 text-red-500 hover:bg-red-50"
+                          onClick={async () => {
+                            const reason = prompt('请输入拒绝原因：');
+                            if (!reason) return;
+                            const res = await fetch(`/api/workers/${worker.id}/reject`, {
+                              method: 'POST',
+                              headers: getAuthHeaders(),
+                              body: JSON.stringify({ reason }),
+                            });
+                            const data = await res.json();
+                            if (data.ok) { alert('已拒绝'); loadData(); }
+                            else alert(data.error || '操作失败');
+                          }}>
+                          <XCircle className="w-3 h-3 mr-1" />拒绝
+                        </Button>
+                      </>
+                    )}
                     {/* 暂停/恢复/拉黑按钮 */}
-                    {(worker.status === 'idle') ? (
+                    {(worker.status === 'available') ? (
                       <Button size="sm" variant="outline" className="h-6 text-xs border-amber-300 text-amber-600 hover:bg-amber-50"
                         onClick={() => { setPauseWorker(worker); setPauseAction('pause'); setShowPauseDialog(true); }}>
                         <PauseCircle className="w-3 h-3 mr-1" />暂停
@@ -662,6 +723,12 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
   const [activeTab, setActiveTab] = useState<'info' | 'courses'>('info');
   const [courseEnrollments, setCourseEnrollments] = useState<any[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
+  const [trainingReqLoading, setTrainingReqLoading] = useState(false);
+  const [trainingReqSent, setTrainingReqSent] = useState(false);
+  // 保证金退款
+  const [showDepositRefund, setShowDepositRefund] = useState(false);
+  const [depositRefundForm, setDepositRefundForm] = useState({ amount: 0, reason: '' });
+  const [depositRefunding, setDepositRefunding] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'courses' && worker?.user_id) {
@@ -669,13 +736,47 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
       const headers: Record<string, string> = {};
       const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
       if (token) headers['x-session'] = token;
-      fetch(`/api/enrollments?student_id=${worker.user_id}`, { headers })
+      fetch(`/api/enrollments?worker_id=${worker.user_id}`, { headers })
         .then(r => r.json())
         .then(data => setCourseEnrollments(data.data || []))
         .catch(() => setCourseEnrollments([]))
         .finally(() => setCoursesLoading(false));
     }
   }, [activeTab, worker?.user_id]);
+
+  const handleDepositRefund = async () => {
+    if (!worker || depositRefundForm.amount <= 0) return;
+    setDepositRefunding(true);
+    try {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch('/api/refunds', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          refund_type: 'deposit',
+          amount: depositRefundForm.amount,
+          reason: depositRefundForm.reason || null,
+          related_type: 'worker',
+          related_id: worker.id,
+          related_name: `${worker.name} 保证金退款`,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setShowDepositRefund(false);
+        setDepositRefundForm({ amount: 0, reason: '' });
+        alert('保证金退款申请已提交，等待管理员审核');
+      } else {
+        alert('提交失败: ' + (data.error || '未知错误'));
+      }
+    } catch {
+      alert('提交失败');
+    } finally {
+      setDepositRefunding(false);
+    }
+  };
 
   if (!worker) return null;
 
@@ -816,6 +917,50 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
           <Button className="gap-1 bg-[#1e3a5f] hover:bg-[#1e3a5f]/90" onClick={() => onShare(worker)}>
             <Share2 className="h-4 w-4" /> 分享简历
           </Button>
+          {(worker.deposit ?? 0) > 0 && (
+            <Button
+              variant="outline"
+              className="gap-1 border-red-400 text-red-600 hover:bg-red-50"
+              disabled={depositRefunding}
+              onClick={() => {
+                setDepositRefundForm({ amount: worker.deposit || 0, reason: '' });
+                setShowDepositRefund(true);
+              }}
+            >
+              <RotateCcw className="h-4 w-4" /> 申请退保证金
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            className="gap-1 border-amber-400 text-amber-600 hover:bg-amber-50"
+            disabled={trainingReqLoading || trainingReqSent}
+            onClick={async () => {
+              setTrainingReqLoading(true);
+              try {
+                const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+                const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                const res = await fetch(`/api/workers/${worker.id}/request-training`, {
+                  method: 'POST',
+                  headers,
+                  body: JSON.stringify({ message: '管理员协助发起再培训申请' }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                  setTrainingReqSent(true);
+                } else {
+                  alert(data.error || '提交失败');
+                }
+              } catch {
+                alert('网络错误');
+              } finally {
+                setTrainingReqLoading(false);
+              }
+            }}
+          >
+            <GraduationCap className="h-4 w-4" />
+            {trainingReqSent ? '已申请' : '想培训'}
+          </Button>
         </div>
         </>)}
 
@@ -862,6 +1007,32 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
           </div>
         )}
       </div>
+
+      {/* 保证金退款弹窗 */}
+      <Dialog open={showDepositRefund} onOpenChange={setShowDepositRefund}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>申请保证金退款</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-slate-500">
+              阿姨：{worker?.name} | 当前保证金：{formatCurrency(worker?.deposit || 0)}
+            </p>
+            <div>
+              <Label>退款金额（元）*</Label>
+              <Input type="number" min={1} max={worker?.deposit || 0} value={depositRefundForm.amount || ''} onChange={e => setDepositRefundForm(f => ({ ...f, amount: Number(e.target.value) }))} placeholder="输入退款金额" />
+            </div>
+            <div>
+              <Label>退款原因</Label>
+              <Textarea value={depositRefundForm.reason} onChange={e => setDepositRefundForm(f => ({ ...f, reason: e.target.value }))} placeholder="请输入退款原因" rows={3} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDepositRefund(false)}>取消</Button>
+            <Button onClick={handleDepositRefund} disabled={depositRefunding || depositRefundForm.amount <= 0}>
+              {depositRefunding ? '提交中...' : '提交申请'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </>
   );

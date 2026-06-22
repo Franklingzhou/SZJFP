@@ -221,11 +221,17 @@ function LoginContent() {
           setError('账号已被停用，请联系管理员');
           return;
         }
-        handleLoginSuccess(data.user, data.token);
+        // 自动创建的用户：简短欢迎过渡
+        if (data.autoCreated) {
+          setSmsMsg('验证通过！已自动创建账号，正在跳转...');
+          setTimeout(() => handleLoginSuccess(data.user, data.token), 800);
+        } else {
+          handleLoginSuccess(data.user, data.token);
+        }
       } else if (data.isNewUser) {
-        // 新用户，切换到注册模式
+        // 新用户（自动创建失败兜底），切换到注册模式
         setMode('register');
-        setError('');
+        setError('自动创建账号失败，请手动选择角色注册');
       }
     } catch {
       setError('网络错误，请重试');
@@ -319,7 +325,7 @@ function LoginContent() {
           </h1>
           <p className="text-white/70 text-sm">
             {mode === 'login'
-              ? '登录后进入您的工作台'
+              ? '手机号+验证码即可快速登录'
               : '选择角色并注册，审核通过后即可使用'}
           </p>
         </div>

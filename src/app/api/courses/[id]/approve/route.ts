@@ -17,17 +17,33 @@ export async function POST(
 
     const supabase = getSupabaseClient();
 
-    const { data, error } = await supabase
+    // v13: try with review_reason first, fallback if column missing
+    const updatePayload: Record<string, unknown> = {
+      status: approved ? 'approved' : 'rejected',
+      reviewed_by: session.userId,
+      reviewed_at: new Date().toISOString(),
+    };
+    if (reason) updatePayload.review_reason = reason;
+
+    let { data, error } = await supabase
       .from('courses')
-      .update({
-        status: approved ? 'approved' : 'rejected',
-        review_reason: reason || null,
-        reviewed_by: session.userId,
-        reviewed_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq('id', id)
       .select()
       .single();
+
+    // fallback: review_reason column not in schema yet
+    if (error && error.message?.includes('review_reason')) {
+      delete updatePayload.review_reason;
+      const retry = await supabase
+        .from('courses')
+        .update(updatePayload)
+        .eq('id', id)
+        .select()
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });

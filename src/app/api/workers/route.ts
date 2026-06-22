@@ -59,10 +59,17 @@ export async function GET(request: NextRequest) {
     // 但如果用户有'all'权限，则不过滤
     const visibility = getDataVisibilitySync(session.role, 'workers');
     const reviewStatus = request.nextUrl.searchParams.get('resume_review_status');
+    const excludePending = request.nextUrl.searchParams.get('exclude_pending');
+    
     if (reviewStatus) {
       query = query.eq('resume_review_status', reviewStatus);
     } else if (!creatorId && !userId && session.role !== 'admin' && visibility !== 'all') {
       query = query.eq('resume_review_status', 'approved');
+    }
+    
+    // 订单大厅默认排除pending（支持exclude_pending=false查看全部）
+    if (excludePending !== 'false' && session.role !== 'admin') {
+      query = query.neq('status', 'pending');
     }
 
     // worker角色只能看自己的简历（我的简历）
@@ -98,7 +105,7 @@ export async function GET(request: NextRequest) {
             user_id: userId,
             name: workerName,
             phone: workerPhone,
-            status: 'idle',
+            status: 'pending',
             resume_review_status: 'none',
             gender: '女',
             experience_years: 0,
@@ -165,6 +172,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '缺少必要参数(姓名)' }, { status: 400 });
     }
 
+    // 年龄边界校验
+    if (age !== undefined && (typeof age !== 'number' || age < 18 || age > 100)) {
+      return NextResponse.json({ error: '年龄需在18-100之间' }, { status: 400 });
+    }
+
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
@@ -196,7 +208,7 @@ export async function POST(request: NextRequest) {
       expected_salary_min: expected_salary_min || 0,
       expected_salary_max: expected_salary_max || 0,
       remark: intro || null,
-      status: 'idle',
+      status: 'pending',
       credit_score: 1000,
       deposit: 0,
       points: 0,
@@ -204,52 +216,30 @@ export async function POST(request: NextRequest) {
       creator_role: session.role,
     };
 
-    // 先创建关联用户
-    const userId = `u_wk_${Date.now()}`;
-    let resolvedUserId = userId;
-    const { error: userErr } = await supabase
-      .from('users')
-      .insert({
-        id: userId,
-        name, phone: phone || '',
-        role: 'worker',
-        review_status: 'pending',
-        is_active: true,
-      });
-    if (userErr) {
-      console.warn('[workers POST] Create user skipped:', userErr.message);
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('role', 'worker')
-        .limit(1);
-      if (existingUser && existingUser.length > 0) {
-        resolvedUserId = existingUser[0].id;
-      } else {
-        return NextResponse.json({ error: '创建关联用户失败' }, { status: 500 });
-      }
-    }
-
-    // 创建workers记录
+    // 创建workers记录（user_id绑定到当前登录用户）
     const workerId = `wk_${Date.now()}`;
+    // v13: truncate strings to fit DB varchar constraints (gender=varchar(4), status=varchar(10) etc.)
+    const safeGender = (gender || '女').substring(0, 4);
+    const safeStatus = 'pend';  // 'pending' may exceed varchar(4)
+    const safeReviewStatus = 'pend';
     const { data: workerData, error: workerErr } = await supabase
       .from('workers')
       .insert({
         id: workerId,
-        user_id: resolvedUserId,
+        user_id: session.userId,
         name,
         phone: phone || '',
         age: age || null,
-        gender: gender || '女',
-        origin: origin || null,
-        job_types: jobTypesStr,
+        gender: safeGender,
+        origin: origin ? origin.substring(0, 100) : null,
+        job_types: jobTypesStr ? jobTypesStr.substring(0, 200) : '',
         experience_years: experience_years || 0,
-        specialties: specialties ? (Array.isArray(specialties) ? specialties.join(',') : specialties) : '',
-        certifications: certifications ? (Array.isArray(certifications) ? certifications.join(',') : certifications) : '',
+        specialties: specialties ? (Array.isArray(specialties) ? specialties.join(',') : specialties).substring(0, 200) : '',
+        certifications: certifications ? (Array.isArray(certifications) ? certifications.join(',') : certifications).substring(0, 200) : '',
         expected_salary_min: expected_salary_min || 0,
         expected_salary_max: expected_salary_max || 0,
-        status: 'idle',
-        resume_review_status: 'pending',
+        status: safeStatus,
+        resume_review_status: safeReviewStatus,
         credit_score: 1000,
         deposit: 0,
         points: 0,
@@ -260,8 +250,8 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (workerErr) {
-      console.error('[workers POST] Create worker error:', workerErr);
-      return NextResponse.json({ error: '创建阿姨记录失败' }, { status: 500 });
+      console.error('[workers POST] Create worker error:', JSON.stringify(workerErr));
+      return NextResponse.json({ error: `创建阿姨记录失败: ${workerErr.message || workerErr.code || JSON.stringify(workerErr)}` }, { status: 500 });
     }
 
     // 提交审核记录（proposed_data存完整新值）
@@ -326,7 +316,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // 显式白名单：只允许更新以下字段
-    const allowedFields = ['name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'expected_salary_min', 'expected_salary_max', 'status', 'available_date', 'credit_score', 'deposit', 'points', 'resume_review_status', 'photo', 'remark', 'id_card'];
+    const allowedFields = ['name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'expected_salary_min', 'expected_salary_max', 'status', 'available_date', 'credit_score', 'deposit', 'points', 'resume_review_status', 'photo', 'remark', 'id_card', 'lead_id'];
     const proposedUpdates: Record<string, unknown> = {};
     const changedFields: string[] = [];
     for (const key of allowedFields) {
@@ -338,6 +328,14 @@ export async function PUT(request: NextRequest) {
 
     if (changedFields.length === 0) {
       return NextResponse.json({ error: '没有需要更新的字段' }, { status: 400 });
+    }
+
+    // 年龄边界校验
+    if (proposedUpdates.age !== undefined) {
+      const ageVal = proposedUpdates.age as number;
+      if (typeof ageVal !== 'number' || ageVal < 18 || ageVal > 100) {
+        return NextResponse.json({ error: '年龄需在18-100之间' }, { status: 400 });
+      }
     }
 
     // 手机号唯一性校验（修改手机号时）

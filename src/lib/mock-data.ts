@@ -50,7 +50,7 @@ export const mockWorkers: WorkerProfile[] = [
     certifications: ['高级月嫂证', '育婴师证'],
     expectedSalaryMin: 12000,
     expectedSalaryMax: 15000,
-    status: 'idle',
+    status: 'available',
     availableDate: '2026-06-15',
     creatorId: 'a001',
     creatorName: '张丽华',
@@ -161,7 +161,7 @@ export const mockWorkers: WorkerProfile[] = [
     certifications: ['高级育婴师证', '营养师证'],
     expectedSalaryMin: 10000,
     expectedSalaryMax: 13000,
-    status: 'idle',
+    status: 'available',
     availableDate: '2026-06-01',
     creatorId: 'a001',
     creatorName: '张丽华',
@@ -234,7 +234,7 @@ export const mockWorkers: WorkerProfile[] = [
     certifications: ['养老护理员证'],
     expectedSalaryMin: 8000,
     expectedSalaryMax: 10000,
-    status: 'idle',
+    status: 'available',
     availableDate: '2026-06-10',
     creatorId: 'a003',
     creatorName: '赵明',
@@ -423,7 +423,7 @@ export interface RecruiterLead {
   intention?: string;
   level: 'A' | 'B' | 'C' | 'D'; // 线索等级
   source: string; // 来源
-  status: 'new' | 'contacted' | 'signed' | 'training' | 'qualified' | 'converted' | 'lost'; // 状态
+  status: 'new' | 'following' | 'signed' | 'lost'; // 状态（2.0: 签约后自动创建worker）
   recruiterId: string;
   recruiterName: string;
   advisor?: string; // 招生顾问
@@ -434,11 +434,11 @@ export interface RecruiterLead {
 
 export const mockRecruiterLeads: RecruiterLead[] = [
   { id: 'rl001', name: '小红', phone: '15812345678', age: 35, gender: '女', origin: '湖南', intention: '月嫂', level: 'A', source: '58同城', status: 'new', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-20', remark: '想做月嫂' },
-  { id: 'rl002', name: '李姐', phone: '15900006789', age: 42, gender: '女', origin: '安徽', intention: '保姆', level: 'B', source: '转介绍', status: 'contacted', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-18', remark: '有经验，需培训升级' },
-  { id: 'rl003', name: '王阿姨', phone: '15700007890', age: 45, gender: '女', origin: '四川', intention: '育儿嫂', level: 'B', source: '朋友圈', status: 'training', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-15', remark: '正在学育儿嫂课程' },
-  { id: 'rl004', name: '张大姐', phone: '15600008901', age: 38, gender: '女', origin: '河南', intention: '钟点工', level: 'C', source: '线下推广', status: 'converted', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-10', remark: '已上户，客户满意' },
+  { id: 'rl002', name: '李姐', phone: '15900006789', age: 42, gender: '女', origin: '安徽', intention: '保姆', level: 'B', source: '转介绍', status: 'following', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-18', remark: '有经验，需培训升级' },
+  { id: 'rl003', name: '王阿姨', phone: '15700007890', age: 45, gender: '女', origin: '四川', intention: '育儿嫂', level: 'B', source: '朋友圈', status: 'following', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-15', remark: '正在学育儿嫂课程' },
+  { id: 'rl004', name: '张大姐', phone: '15600008901', age: 38, gender: '女', origin: '河南', intention: '钟点工', level: 'C', source: '线下推广', status: 'signed', recruiterId: 'r001', recruiterName: '陈招生', createdAt: '2026-05-10', remark: '已上户，客户满意' },
   { id: 'rl005', name: '刘阿姨', phone: '15500009012', age: 50, gender: '女', origin: '江西', intention: '保洁', level: 'D', source: '58同城', status: 'lost', recruiterId: 'r001', recruiterName: '陈招生', inPublicPool: true, createdAt: '2026-05-08', remark: '回老家了' },
-  { id: 'rl006', name: '赵姐', phone: '13811112222', age: 33, gender: '女', origin: '湖北', intention: '月嫂', level: 'A', source: 'BOSS直聘', status: 'contacted', recruiterId: 'r002', recruiterName: '李招生', createdAt: '2026-05-22', remark: '想转行做月嫂' },
+  { id: 'rl006', name: '赵姐', phone: '13811112222', age: 33, gender: '女', origin: '湖北', intention: '月嫂', level: 'A', source: 'BOSS直聘', status: 'following', recruiterId: 'r002', recruiterName: '李招生', createdAt: '2026-05-22', remark: '想转行做月嫂' },
   { id: 'rl007', name: '孙大姐', phone: '13922223333', age: 46, gender: '女', origin: '山东', intention: '老人护理', level: 'C', source: '转介绍', status: 'lost', recruiterId: 'r002', recruiterName: '李招生', inPublicPool: true, createdAt: '2026-05-12', remark: '嫌远不想来了' },
 ];
 
@@ -996,11 +996,11 @@ export const mockReviews: Review[] = [
   { id: 'ir4', type: 'worker', sourceRole: 'worker', reviewerName: '赵阿姨', reviewerRole: '阿姨', rating: 3, content: '课程节奏有点快', hidden: true, createdAt: '2025-01-02', targetId: 'inst1', targetType: 'instructor' },
 ];
 
-// 招生线索转简历：将线索状态改为converted，同步到阿姨库
+// 招生线索签约转简历（2.0: 签约后自动创建worker，此函数仅用于mock回退）
 export function convertLeadToResume(leadId: string): boolean {
   const lead = mockRecruiterLeads.find(l => l.id === leadId);
-  if (lead && (lead.status === 'qualified' || lead.status === 'training')) {
-    lead.status = 'converted';
+  if (lead && lead.status !== 'signed' && lead.status !== 'lost') {
+    lead.status = 'signed';
     // 同步添加到阿姨库
     const newWorker: WorkerProfile = {
       id: `w_new_${Date.now()}`,
@@ -1017,7 +1017,7 @@ export function convertLeadToResume(leadId: string): boolean {
       certifications: [],
       expectedSalaryMin: 4000,
       expectedSalaryMax: 6000,
-      status: 'idle',
+      status: 'pending',
       availableDate: '',
       creatorId: lead.recruiterId,
       creatorName: lead.recruiterName,
@@ -1071,6 +1071,7 @@ const defaultModules: ModuleConfig[] = [
   { id: 'admin_settlement', name: '分账管理', label: '分账管理', description: '分账记录与结算', enabled: true, category: 'pc' },
   { id: 'admin_credit', name: '信用分管理', label: '信用分管理', description: '诚信分增减记录', enabled: true, category: 'pc' },
   { id: 'admin_deposit', name: '保证金管理', label: '保证金管理', description: '保证金缴纳/退还', enabled: true, category: 'pc' },
+  { id: 'admin_refunds', name: '退款管理', label: '退款管理', description: '退款申请审批', enabled: true, category: 'pc' },
   { id: 'admin_points', name: '积分系统', label: '积分系统', description: '积分规则/记录', enabled: true, category: 'pc' },
   { id: 'admin_orders', name: '订单管理', label: '订单管理', description: '全平台订单', enabled: true, category: 'pc' },
   { id: 'admin_training', name: '培训管理', label: '培训管理', description: '课程/培训管理', enabled: true, category: 'pc' },

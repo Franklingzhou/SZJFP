@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Search, Plus, FileText, Check, X, Eye } from 'lucide-react';
+import { Search, Plus, FileText, Check, X, Eye, RotateCcw } from 'lucide-react';
 
 const STATUS_LABELS: Record<string, string> = {
   draft: '草稿',
@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<string, string> = {
 interface TrainingContract {
   id: string;
   course_id: string;
-  student_id: string;
+  worker_id: string;
   student_name?: string;
   student_name_resolved?: string;
   course_name?: string;
@@ -58,9 +58,15 @@ export default function TrainingContractsPage() {
   const [selected, setSelected] = useState<TrainingContract | null>(null);
   const [saving, setSaving] = useState(false);
   const [createForm, setCreateForm] = useState({
-    course_id: '', student_id: '', student_name: '', course_name: '',
+    course_id: '', worker_id: '', student_name: '', course_name: '',
     party_a_id: '', party_b_id: '', amount: '', start_date: '', end_date: '', terms: '',
   });
+
+  // 退款弹窗
+  const [showRefund, setShowRefund] = useState(false);
+  const [refundTarget, setRefundTarget] = useState<TrainingContract | null>(null);
+  const [refundForm, setRefundForm] = useState({ amount: '', reason: '' });
+  const [refunding, setRefunding] = useState(false);
 
   // 选项数据
   const [courses, setCourses] = useState<Array<{ id: string; name: string }>>([]);
@@ -91,12 +97,12 @@ export default function TrainingContractsPage() {
       const headers = getAuthHeaders();
       const [cRes, sRes] = await Promise.all([
         fetch('/api/courses', { headers }),
-        fetch('/api/students', { headers }),
+        fetch('/api/workers', { headers }),
       ]);
       const cData = await cRes.json();
       const sData = await sRes.json();
       setCourses((cData.data || []).map((c: Record<string, unknown>) => ({ id: c.id as string, name: (c.name || c.title || '') as string })));
-      setStudents((sData.data || []).map((s: Record<string, unknown>) => ({ id: (s.id || s.student_id || '') as string, name: (s.name || s.student_name || '') as string })));
+      setStudents((sData.data || []).map((s: Record<string, unknown>) => ({ id: (s.id || s.worker_id || '') as string, name: (s.name || s.student_name || '') as string })));
     } catch (e) {
       console.error('加载选项失败', e);
     }
@@ -121,7 +127,7 @@ export default function TrainingContractsPage() {
   }
 
   const handleCreate = async () => {
-    if (!createForm.course_id || !createForm.student_id) {
+    if (!createForm.course_id || !createForm.worker_id) {
       alert('请选择课程和学员');
       return;
     }
@@ -138,7 +144,7 @@ export default function TrainingContractsPage() {
       const result = await res.json();
       if (result.ok) {
         setShowCreate(false);
-        setCreateForm({ course_id: '', student_id: '', student_name: '', course_name: '', party_a_id: '', party_b_id: '', amount: '', start_date: '', end_date: '', terms: '' });
+        setCreateForm({ course_id: '', worker_id: '', student_name: '', course_name: '', party_a_id: '', party_b_id: '', amount: '', start_date: '', end_date: '', terms: '' });
         loadData();
       } else {
         alert('创建失败：' + (result.error || ''));
@@ -172,6 +178,48 @@ export default function TrainingContractsPage() {
       console.error('操作失败', e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // 发起退款
+  const openRefund = (contract: TrainingContract) => {
+    setRefundTarget(contract);
+    setRefundForm({ amount: String(contract.amount || ''), reason: '' });
+    setShowRefund(true);
+  };
+
+  const handleRefund = async () => {
+    if (!refundTarget || !refundForm.amount || parseFloat(refundForm.amount) <= 0) {
+      alert('请输入有效退款金额');
+      return;
+    }
+    setRefunding(true);
+    try {
+      const res = await fetch('/api/refunds', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          refund_type: 'training_fee',
+          amount: parseFloat(refundForm.amount),
+          reason: refundForm.reason || null,
+          related_type: 'contract',
+          related_id: refundTarget.id,
+          related_name: refundTarget.course_name || refundTarget.course_name_resolved || '',
+        }),
+      });
+      const result = await res.json();
+      if (result.ok) {
+        setShowRefund(false);
+        setRefundForm({ amount: '', reason: '' });
+        alert('退款申请已提交，等待管理员审核');
+      } else {
+        alert('提交失败: ' + (result.error || '未知错误'));
+      }
+    } catch (e) {
+      console.error('退款失败:', e);
+      alert('退款申请失败');
+    } finally {
+      setRefunding(false);
     }
   };
 
@@ -227,7 +275,7 @@ export default function TrainingContractsPage() {
                       <Badge className={STATUS_COLORS[c.status] || 'bg-slate-100 text-slate-700'}>{STATUS_LABELS[c.status] || c.status}</Badge>
                     </div>
                     <div className="text-xs text-slate-500 mt-1">
-                      学员：{c.student_name || c.student_name_resolved || c.student_id}
+                      学员：{c.student_name || c.student_name_resolved || c.worker_id}
                       {c.amount ? <span className="ml-3">金额：¥{c.amount}</span> : ''}
                       {c.start_date ? <span className="ml-3">期限：{c.start_date} ~ {c.end_date || '?'}</span> : ''}
                     </div>
@@ -236,6 +284,13 @@ export default function TrainingContractsPage() {
                     <Button size="sm" variant="ghost" onClick={() => { setSelected(c); setShowDetail(true); }}>
                       <Eye className="w-4 h-4" />
                     </Button>
+                    {/* 退款按钮：已签约/生效中的合同可退款 */}
+                    {(c.status === 'signed' || c.status === 'active') && (
+                      <Button size="sm" variant="outline" className="text-xs text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={() => openRefund(c)}>
+                        <RotateCcw className="w-3 h-3 mr-0.5" />退款
+                      </Button>
+                    )}
                     {c.status === 'draft' && (
                       <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white text-xs"
                         disabled={saving} onClick={() => handleStatusUpdate(c.id, 'pending_approval')}>提交审核</Button>
@@ -290,6 +345,12 @@ export default function TrainingContractsPage() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDetail(false)}>关闭</Button>
+            {(selected?.status === 'signed' || selected?.status === 'active') && (
+              <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                onClick={() => { setShowDetail(false); openRefund(selected); }}>
+                <RotateCcw className="w-4 h-4 mr-1" />申请退款
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -314,10 +375,10 @@ export default function TrainingContractsPage() {
             <div>
               <Label>选择学员 *</Label>
               <select className="w-full border rounded-lg px-3 py-2 text-sm mt-1"
-                value={createForm.student_id}
+                value={createForm.worker_id}
                 onChange={e => {
                   const s = students.find(x => x.id === e.target.value);
-                  setCreateForm(p => ({ ...p, student_id: e.target.value, student_name: s?.name || '' }));
+                  setCreateForm(p => ({ ...p, worker_id: e.target.value, student_name: s?.name || '' }));
                 }}>
                 <option value="">请选择学员</option>
                 {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -354,9 +415,44 @@ export default function TrainingContractsPage() {
           <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setShowCreate(false)}>取消</Button>
             <Button className="bg-amber-500 hover:bg-amber-600 text-white"
-              disabled={saving || !createForm.course_id || !createForm.student_id}
+              disabled={saving || !createForm.course_id || !createForm.worker_id}
               onClick={handleCreate}>
               {saving ? '创建中...' : '创建合同'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 退款弹窗 */}
+      <Dialog open={showRefund} onOpenChange={setShowRefund}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>申请退款</DialogTitle></DialogHeader>
+          {refundTarget && (
+            <div className="space-y-3 text-sm">
+              <div className="bg-slate-50 p-3 rounded-lg">
+                <div className="font-medium">{refundTarget.course_name || refundTarget.course_name_resolved || '未知课程'}</div>
+                <div className="text-slate-500 mt-1">学员：{refundTarget.student_name || refundTarget.student_name_resolved || '-'}</div>
+                <div className="text-slate-500">合同金额：¥{refundTarget.amount || 0}</div>
+              </div>
+              <div>
+                <Label>退款金额 *</Label>
+                <Input type="number" className="mt-1" value={refundForm.amount}
+                  onChange={e => setRefundForm(p => ({ ...p, amount: e.target.value }))}
+                  placeholder="输入退款金额" />
+              </div>
+              <div>
+                <Label>退款原因</Label>
+                <textarea className="mt-1 w-full rounded-md border p-2 text-sm min-h-[60px]"
+                  value={refundForm.reason} onChange={e => setRefundForm(p => ({ ...p, reason: e.target.value }))}
+                  placeholder="请说明退款原因..." />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRefund(false)}>取消</Button>
+            <Button variant="destructive" disabled={refunding || !refundForm.amount}
+              onClick={handleRefund}>
+              {refunding ? '提交中...' : '提交退款申请'}
             </Button>
           </DialogFooter>
         </DialogContent>

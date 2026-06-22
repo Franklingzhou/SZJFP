@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Eye, X, Plus, Copy, UserRoundX, Check, UserPlus, FileSignature, RefreshCw, Clock } from 'lucide-react';
+import { Search, Eye, X, Plus, Copy, UserRoundX, Check, UserPlus, FileSignature, RefreshCw, Clock, DollarSign } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { cn, formatCurrency, getStatusColor } from '@/lib/utils';
@@ -73,6 +74,12 @@ export default function OrdersPage() {
   const [replaceWorkers, setReplaceWorkers] = useState<any[]>([]);
   const [replaceWorkersLoading, setReplaceWorkersLoading] = useState(false);
   const [replaceWorkerSearch, setReplaceWorkerSearch] = useState('');
+
+  // 退款弹窗
+  const [showRefund, setShowRefund] = useState(false);
+  const [refundOrder, setRefundOrder] = useState<any>(null);
+  const [refundForm, setRefundForm] = useState({ amount: 0, reason: '' });
+  const [refunding, setRefunding] = useState(false);
 
   // 新建订单弹窗
   const [showCreate, setShowCreate] = useState(false);
@@ -215,6 +222,39 @@ export default function OrdersPage() {
       } catch {
         alert('复制失败，请重试');
       }
+    }
+  };
+
+  // 发起退款
+  const handleRefund = async () => {
+    if (!refundOrder || refundForm.amount <= 0) return;
+    setRefunding(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/refunds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          refund_type: 'agency_fee',
+          amount: refundForm.amount,
+          reason: refundForm.reason || null,
+          related_type: 'order',
+          related_id: refundOrder.id,
+          related_name: refundOrder.title || '',
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setShowRefund(false);
+        setRefundForm({ amount: 0, reason: '' });
+        alert('退款申请已提交，等待管理员审核');
+      } else {
+        alert('提交失败: ' + (data.error || '未知错误'));
+      }
+    } catch (e) {
+      alert('提交失败');
+    } finally {
+      setRefunding(false);
     }
   };
 
@@ -720,12 +760,12 @@ export default function OrdersPage() {
                 <Button size="sm" variant="outline" className="gap-1" onClick={() => handleCopyText(selected)}>
                   <Copy className="h-3 w-3" /> 复制文本
                 </Button>
-                {(selected.status === 'created' || selected.status === 'open') && (
+                {selected.status === 'open' && (
                   <Button size="sm" variant="outline" className="gap-1" onClick={() => openRecommendModal(selected.id)}>
                     <UserPlus className="h-3 w-3" /> 推荐阿姨
                   </Button>
                 )}
-                {(selected.status === 'created' || selected.status === 'open' || selected.status === 'interviewing') && !selected.signed_worker_id && (
+                {(selected.status === 'open' || selected.status === 'interviewing') && !selected.signed_worker_id && (
                   <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600" onClick={() => openSigningModal(selected.id)}>
                     <FileSignature className="h-3 w-3" /> 签约
                   </Button>
@@ -733,6 +773,15 @@ export default function OrdersPage() {
                 {selected.status === 'signed' && selected.signed_worker_id && (
                   <Button size="sm" variant="outline" className="gap-1 text-orange-600 hover:text-orange-700" onClick={() => handleReplaceWorker(selected.id)}>
                     <RefreshCw className="h-3 w-3" /> 更换阿姨
+                  </Button>
+                )}
+                {['signed', 'completed'].includes(selected.status) && (
+                  <Button size="sm" variant="outline" className="gap-1" onClick={() => {
+                    setRefundOrder(selected);
+                    setRefundForm({ amount: selected.service_fee || 0, reason: '' });
+                    setShowRefund(true);
+                  }}>
+                    <DollarSign className="h-3 w-3" /> 退款
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" onClick={() => { setDetailOrder(null); setSignings([]); }}><X className="h-4 w-4" /></Button>
@@ -1153,6 +1202,32 @@ export default function OrdersPage() {
             <Button variant="outline" onClick={() => setShowSigning(false)}>取消</Button>
             <Button className="bg-amber-500 hover:bg-amber-600" onClick={handleSignContract} disabled={submitting || !signingWorkerId}>
               {submitting ? '签约中...' : '确认签约'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== 退款弹窗 ===== */}
+      <Dialog open={showRefund} onOpenChange={setShowRefund}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>发起退款申请</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-slate-500">
+              订单：{refundOrder?.title} | 类型：中介费退款
+            </p>
+            <div>
+              <Label>退款金额（元）*</Label>
+              <Input type="number" min={1} value={refundForm.amount || ''} onChange={e => setRefundForm(f => ({ ...f, amount: Number(e.target.value) }))} placeholder="输入退款金额" />
+            </div>
+            <div>
+              <Label>退款原因</Label>
+              <Textarea value={refundForm.reason} onChange={e => setRefundForm(f => ({ ...f, reason: e.target.value }))} placeholder="请输入退款原因" rows={3} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRefund(false)}>取消</Button>
+            <Button onClick={handleRefund} disabled={refunding || refundForm.amount <= 0}>
+              {refunding ? '提交中...' : '提交申请'}
             </Button>
           </DialogFooter>
         </DialogContent>

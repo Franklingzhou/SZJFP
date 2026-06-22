@@ -174,47 +174,98 @@ export async function POST(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    // 同时支持 comment 和 content 字段名
-    const { target_user_id, reviewer_id, reviewer_role, rating, content, comment, order_id, target_role } = body as {
-      target_user_id: string; reviewer_id?: string; reviewer_role?: string;
-      rating: number; content?: string; comment?: string; order_id?: string; target_role?: string;
+    // 同时支持 comment 和 content 字段名，兼容 target_id/target_user_id
+    const { target_user_id, target_id, reviewer_id, reviewer_role, rating, content, comment, order_id, target_role, target_type } = body as {
+      target_user_id?: string; target_id?: string; reviewer_id?: string; reviewer_role?: string;
+      rating: number; content?: string; comment?: string; order_id?: string; target_role?: string; target_type?: string;
     };
 
     if (!rating) {
       return NextResponse.json({ error: '缺少必要参数(评分)' }, { status: 400 });
     }
+    // 评分范围校验
+    if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+      return NextResponse.json({ error: '评分需在1-5之间' }, { status: 400 });
+    }
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 从session取评价人信息，禁止硬编码fallback
+    // v13: 兼容 target_id 别名
+    let resolvedTarget = target_user_id || target_id;
+    if (!resolvedTarget) {
+      return NextResponse.json({ error: '缺少被评价人ID(target_user_id或target_id)' }, { status: 400 });
+    }
+
+    // v14: 解析目标用户ID — reviews.target_user_id 有 FK 约束指向 users.id
+    // 如果传入的是 worker ID 或其他ID，自动转为对应的 users.id
+    const { data: targetUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', resolvedTarget)
+      .maybeSingle();
+    if (!targetUser) {
+      // 不在users表中 → 尝试从workers表查关联user_id
+      const { data: workerInfo } = await supabase
+        .from('workers')
+        .select('user_id, id')
+        .eq('id', resolvedTarget)
+        .maybeSingle();
+      if (workerInfo?.user_id) {
+        resolvedTarget = workerInfo.user_id;
+      } else {
+        // v14: 也不在workers表 → 尝试从customers表查关联user_id
+        const { data: custInfo } = await supabase
+          .from('customers')
+          .select('user_id, id')
+          .eq('id', resolvedTarget)
+          .maybeSingle();
+        if (custInfo?.user_id) {
+          resolvedTarget = custInfo.user_id;
+        } else {
+          // 也不在customers表 → 尝试从users按phone/name查找
+        const { data: userByPhone } = await supabase
+          .from('users')
+          .select('id')
+          .or(`phone.eq.${resolvedTarget},name.eq.${resolvedTarget}`)
+          .limit(1)
+          .maybeSingle();
+        if (userByPhone) {
+          resolvedTarget = userByPhone.id;
+        } else {
+          return NextResponse.json({ error: `未找到目标用户: ${resolvedTarget}（需为有效的用户ID、阿姨ID、手机号或姓名）` }, { status: 400 });
+        }
+      }
+    }
+  }
+    // 如果提供了target_type，用作target_role
+    const resolvedTargetRole = target_role || target_type || null;
+    // 优先使用content，fallback到comment
+    const resolvedContent = content || comment || '';
+    // 从session取评价人信息
     const resolvedReviewer = reviewer_id || session.userId;
     const resolvedRole = reviewer_role || session.role;
 
-    if (!target_user_id) {
-      return NextResponse.json({ error: '缺少被评价人ID(target_user_id)' }, { status: 400 });
-    }
-    const resolvedTarget = target_user_id;
-    // 优先使用content，fallback到comment
-    const resolvedContent = content || comment || '';
-
+    const reviewId = crypto.randomUUID();
     const { data, error } = await supabase
       .from('reviews')
       .insert({
+        id: reviewId,
         target_user_id: resolvedTarget,
-        target_role: target_role || null,
+        target_role: resolvedTargetRole,
         reviewer_id: resolvedReviewer,
         reviewer_role: resolvedRole,
         rating, content: resolvedContent, hidden: false,
         order_id: order_id || null,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .select()
       .single();
 
     if (error) {
-      console.error('[reviews POST] DB error:', error);
-      return NextResponse.json({ error: '创建失败' }, { status: 500 });
+      console.error('[reviews POST] DB error:', JSON.stringify(error));
+      return NextResponse.json({ error: `创建失败: ${error.message || error.code || ''}` }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data });

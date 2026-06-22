@@ -46,6 +46,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   // === 阿姨简历库 ===
   'workers:read':  ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
   'workers:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
+  'workers:approve': ['admin'],
 
   // === 课程管理 ===
   'courses:read':  ['admin', 'recruiter', 'instructor', 'training_supervisor', 'worker'],
@@ -122,8 +123,13 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'commission:settle': ['admin'],
   'settlement:read': ['admin'],
   'settlement:write': ['admin'],
-  'deposit:read': ['admin'],
+  'deposit:read': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
   'deposit:write': ['admin'],
+  'credit:read': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
+  'credit:write': ['admin'],
+  'refunds:read': ['admin', 'agent', 'recruiter', 'worker_operator', 'training_supervisor'],
+  'refunds:write': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
+  'refunds:approve': ['admin'],
   'points:read': ['admin', 'worker'],
   'points:write': ['admin'],
 
@@ -139,6 +145,10 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'enrollments:grade': ['admin', 'instructor', 'training_supervisor'],
   'enrollments:transfer': ['admin', 'training_supervisor'],
 
+  // === 场地管理 ===
+  'venues:read': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor'],
+  'venues:write': ['admin', 'training_supervisor'],
+
   // === 分账结算 ===
   'commission-settlements:read': ['admin', 'agent'],
   'commission-settlements:write': ['admin'],
@@ -150,6 +160,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   // === 订单取消 ===
   'orders:cancel': ['admin', 'agent'],
   'orders:accept': ['admin', 'worker'],
+
 };
 
 /**
@@ -244,17 +255,20 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession | n
   const token = extractToken(request);
   
   if (!token) {
-    // 生产环境必须登录，有环境变量SMS_PROVIDER且非PROD时才用dev mode
-    const isDev = !isProd;
-    if (isDev) {
-      return { userId: 'admin001', role: 'admin', name: '管理员', phone: '13000000001', reviewStatus: 'approved' };
-    }
+    // v2: dev模式下无token仍然返回null（需要登录），让测试能正确校验401
+    // 如需本地免登录调试，在请求头中传 Authorization: Bearer dev-admin
     return null;
+  }
+  
+  // dev模式下：特殊token "dev-admin" 直接返回管理员session
+  if (!isProd && token === 'dev-admin') {
+    return { userId: 'admin001', role: 'admin', name: '管理员', phone: '13000000001', reviewStatus: 'approved' };
   }
   
   const session = await verifyToken(token);
   if (!session && !isProd) {
-    return { userId: 'admin001', role: 'admin', name: '管理员', phone: '13000000001', reviewStatus: 'approved' };
+    // dev模式下无效token返回guest角色session（权限最低）
+    return { userId: token, role: 'guest', name: 'DevUser', phone: '', reviewStatus: 'approved' };
   }
   
   return session;

@@ -75,6 +75,11 @@ export async function PUT(request: NextRequest) {
     }
     safeUpdates.updated_at = new Date().toISOString();
 
+    // 边界校验：价格不能为负
+    if (safeUpdates.price !== undefined && (typeof safeUpdates.price !== 'number' || safeUpdates.price < 0)) {
+      return NextResponse.json({ error: '价格不能为负数' }, { status: 400 });
+    }
+
     const { data, error } = await supabase
       .from('courses')
       .update(safeUpdates)
@@ -113,10 +118,26 @@ export async function POST(request: NextRequest) {
   if (!session) return unauthorizedResponse();
   try {
     const body = await request.json();
-    const { name, instructor_id, type, course_type, max_students, start_date, end_date, hours, price, description, location } = body as Record<string, unknown>;
+    const raw = body as Record<string, unknown>;
+    // v14: 兼容 title→name, content→description, category→type
+    const name = (raw.name || raw.title) as string;
+    const instructor_id = raw.instructor_id as string || session.userId;
+    const type = (raw.type || raw.category || '技能提升') as string;
+    const course_type = (raw.course_type || 'single') as string;
+    const max_students = (raw.max_students || 20) as number;
+    const start_date = raw.start_date as string | undefined;
+    const end_date = raw.end_date as string | undefined;
+    const hours = (raw.hours || 0) as number;
+    const price = (raw.price !== undefined ? raw.price : 0) as number;
+    const description = (raw.description || raw.content || null) as string | null;
+    const location = (raw.location || null) as string | null;
 
+    // 边界校验：价格不能为负
+    if (price !== undefined && (typeof price !== 'number' || price < 0)) {
+      return NextResponse.json({ error: '价格不能为负数' }, { status: 400 });
+    }
     if (!name || !instructor_id) {
-      return NextResponse.json({ ok: false, error: '缺少课程名称或讲师ID' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: `缺少课程名称(name/title)或讲师ID(instructor_id)` }, { status: 400 });
     }
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
@@ -167,7 +188,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, success: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '创建失败';
     console.error('[courses POST] Error:', message);

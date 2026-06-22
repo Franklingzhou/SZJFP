@@ -88,19 +88,27 @@ export async function POST(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    const { title, job_type, salary_min, salary_max, location, description, agent_id, worker_id, customer_id, service_type, amount, start_date, salary_type, work_duration, contact_name, contact_phone } = body as {
+    const { title, job_type, salary_min, salary_max, location, description, agent_id, worker_id, customer_id, service_type, amount, price, start_date, salary_type, work_duration, contact_name, contact_phone } = body as {
       title: string; job_type?: string; salary_min?: number; salary_max?: number;
       location?: string; description?: string; agent_id?: string;
       worker_id?: string; customer_id?: string; service_type?: string;
-      amount?: number; start_date?: string;
+      amount?: number; price?: number; start_date?: string;
       salary_type?: string; work_duration?: string;
       contact_name?: string; contact_phone?: string;
     };
 
     // 同时支持 job_type 和 service_type（优先使用 job_type）
     const finalJobType = job_type || service_type;
-    if (!title || !finalJobType) {
-      return NextResponse.json({ error: '缺少必要参数(标题、工种/job_type或service_type)' }, { status: 400 });
+    // 自动生成title（如果未提供）
+    const finalTitle = title || `订单-${finalJobType || '未分类'}-${Date.now().toString(36)}`;
+    if (!finalJobType) {
+      return NextResponse.json({ error: '缺少必要参数(工种/job_type或service_type)' }, { status: 400 });
+    }
+
+    // 边界校验：金额/价格不能为负
+    const finalAmount = amount || price || null;
+    if (finalAmount !== null && finalAmount !== undefined && finalAmount < 0) {
+      return NextResponse.json({ error: '价格不能为负数' }, { status: 400 });
     }
 
     const finalAgentId = agent_id || session.userId;
@@ -111,12 +119,29 @@ export async function POST(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    // v14: 解析 worker_id 和 customer_id 为 users.id（DB FK 指向 users 表）
+    let finalWorkerId = worker_id || null;
+    let finalCustomerId = customer_id || null;
+    let customerTableId: string | null = null; // 保留原 customers 表 ID，用于状态更新
+
+    if (worker_id) {
+      const { data: wk } = await supabase.from('workers').select('user_id').eq('id', worker_id).maybeSingle();
+      if (wk) finalWorkerId = wk.user_id;
+    }
+    if (customer_id) {
+      const { data: cust } = await supabase.from('customers').select('user_id').eq('id', customer_id).maybeSingle();
+      if (cust) {
+        finalCustomerId = cust.user_id;
+        customerTableId = customer_id; // 原表ID用于后续状态更新
+      }
+    }
+
     const { data, error } = await supabase
       .from('orders')
       .insert({
-        title, job_type: finalJobType, salary_min: salary_min || 0, salary_max: salary_max || 0, location: location || null, description: description || null,
-        agent_id: finalAgentId, worker_id: worker_id || null, customer_id: customer_id || null,
-        service_type: service_type || finalJobType, amount: amount || null, start_date: start_date || null,
+        title: finalTitle, job_type: finalJobType, salary_min: salary_min || 0, salary_max: salary_max || 0, location: location || null, description: description || null,
+        agent_id: finalAgentId, worker_id: finalWorkerId, customer_id: finalCustomerId,
+        service_type: service_type || finalJobType, amount: finalAmount, start_date: start_date || null,
         salary_type: salary_type || null, work_duration: work_duration || null,
         contact_name: contact_name || null, contact_phone: contact_phone || null,
         status: 'open', // A1: 发单后订单状态为open（待匹配）
@@ -131,14 +156,14 @@ export async function POST(request: NextRequest) {
     }
 
     // A5: 发单后客户status → matching（仅更新new/following状态的客户）
-    if (data && data.customer_id) {
+    if (data && customerTableId) {
       try {
         const { getSupabaseClient: getSupabase2 } = await import('@/storage/database/supabase-client');
         const supabase2 = getSupabase2();
         const { error: custErr } = await supabase2
           .from('customers')
           .update({ status: 'matching', updated_at: new Date().toISOString() })
-          .eq('id', data.customer_id)
+          .eq('id', customerTableId)
           .or('status.eq.new,status.eq.following');
         if (custErr) console.error('[orders POST] customer status update failed:', custErr.message);
       } catch (e: unknown) {
@@ -181,6 +206,11 @@ export async function PUT(request: NextRequest) {
       if (key in body) safeUpdates[key] = body[key];
     }
     safeUpdates.updated_at = new Date().toISOString();
+
+    // 边界校验：金额不能为负
+    if (safeUpdates.amount !== undefined && (typeof safeUpdates.amount !== 'number' || safeUpdates.amount < 0)) {
+      return NextResponse.json({ error: '金额不能为负数' }, { status: 400 });
+    }
 
     const { data, error } = await supabase
       .from('orders')

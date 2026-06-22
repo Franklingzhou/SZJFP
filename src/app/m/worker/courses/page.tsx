@@ -26,7 +26,7 @@ const ENROLLMENT_STATUS_COLORS: Record<string, string> = {
 
 interface Enrollment {
   id: string;
-  student_id: string;
+  worker_id: string;
   course_id: string;
   status: string;
   enrolled_at: string;
@@ -60,8 +60,8 @@ const TABS = [
   { key: 'finished', label: '已完成' },
 ] as const;
 
-const ACTIVE_STATUSES = ['enrolled', 'in_training'];
-const FINISHED_STATUSES = ['completed', 'passed', 'failed', 'dropped'];
+const ACTIVE_STATUSES = ['enrolled', 'attending'];
+const FINISHED_STATUSES = ['qualified', 'failed', 'dropped'];
 
 export default function WorkerCoursesPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -81,7 +81,7 @@ export default function WorkerCoursesPage() {
         setEnrollments([]);
         return;
       }
-      const res = await fetch(`/api/enrollments?student_id=${userId}&with_courses=true`, {
+      const res = await fetch(`/api/enrollments?worker_id=${userId}&with_courses=true`, {
         headers: getAuthHeaders(),
       });
       const result = await res.json();

@@ -18,12 +18,28 @@ export async function POST(
   try {
     const { id } = await params;
 
-    const { data, error } = await supabase
+    // v13: try with confirmed_at, fallback if column missing
+    const updatePayload: Record<string, unknown> = {
+      status: 'confirmed',
+      confirmed_by: session.userId,
+    };
+    let { data, error } = await supabase
       .from('platform_fees')
-      .update({ status: 'confirmed', confirmed_at: new Date().toISOString(), confirmed_by: session.userId })
+      .update({ ...updatePayload, confirmed_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
+
+    if (error && error.message?.includes('confirmed_at')) {
+      const retry = await supabase
+        .from('platform_fees')
+        .update(updatePayload)
+        .eq('id', id)
+        .select()
+        .single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error('[platform-fees confirm] Error:', error.message);

@@ -12,7 +12,7 @@ import { updateRecord } from '@/lib/data-service';
 export default function WorkerHomePage() {
   const { userName, userId } = useMiniApp();
   const worker = mockWorkers.find(w => w.id === userId) || mockWorkers[0];
-  const availableJobs = mockOrders.filter((o) => o.status === 'created');
+  const availableJobs = mockOrders.filter((o) => o.status === 'open');
   const completedOrders = mockOrders.filter((o) => o.status === 'completed' && o.workerId === worker.id);
 
   const [status, setStatus] = useState<WorkerStatus>(worker.status);
@@ -73,7 +73,7 @@ export default function WorkerHomePage() {
             <p className="text-xs text-muted-foreground mt-0.5">切换状态影响接单大厅可见性</p>
           </div>
           <div className="flex gap-2">
-            {(['idle', 'working', 'paused'] as WorkerStatus[]).map((s) => (
+            {(['available', 'busy', 'paused'] as WorkerStatus[]).map((s) => (
               <button
                 key={s}
                 onClick={async () => { setStatus(s); await updateRecord('workers', { id: worker.id, status: s }); }}
@@ -118,6 +118,10 @@ export default function WorkerHomePage() {
                     {isAccepted ? (
                       <span className="text-xs text-green-600 font-medium flex items-center gap-0.5">
                         <CheckCircle className="h-3 w-3" /> 已接单
+                      </span>
+                    ) : status === 'pending' ? (
+                      <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg" title="简历审核通过后方可接单">
+                        待审核
                       </span>
                     ) : (
                       <button

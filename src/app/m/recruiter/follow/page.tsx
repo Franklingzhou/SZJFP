@@ -3,26 +3,25 @@
 import React, { useState, useEffect } from 'react';
 import { LEAD_STATUS_LABELS } from '@/lib/types';
 import type { LeadStatus } from '@/lib/types';
-import { mockRecruiterLeads, convertLeadToResume } from '@/lib/data-service';
+import { mockRecruiterLeads } from '@/lib/data-service';
 import type { RecruiterLead } from '@/lib/data-service';
 import { initDataFromApi, createRecord, updateRecord, fetchData } from '@/lib/data-service';
 import { Search, Plus, Phone, X, Send, Mail, ScanLine, User } from 'lucide-react';
 
-type FollowFilter = 'all' | 'new' | 'contacted' | 'converted' | 'lost';
+type FollowFilter = 'all' | 'new' | 'following' | 'signed' | 'lost';
 
 const FOLLOW_FILTER_LABELS: Record<FollowFilter, string> = {
   all: '全部',
   new: '新线索',
-  contacted: '跟进中',
-  converted: '已成交',
+  following: '跟进中',
+  signed: '已签约',
   lost: '流失',
 };
 
-// 跟进结果单选选项
+// 跟进结果单选选项（2.0对齐）
 const FOLLOW_RESULT_OPTIONS = [
-  { value: 'contacted', label: '有意向' },
-  { value: 'training', label: '跟进中' },
-  { value: 'converted', label: '已成交' },
+  { value: 'following', label: '有意向' },
+  { value: 'signed', label: '已成交' },
   { value: 'lost', label: '流失' },
 ];
 
@@ -110,18 +109,15 @@ export default function RecruiterFollowPage() {
   if (search) filteredLeads = filteredLeads.filter(l => l.name.includes(search) || l.phone.includes(search));
   if (filter !== 'all') {
     if (filter === 'new') filteredLeads = filteredLeads.filter(l => l.status === 'new');
-    else if (filter === 'contacted') filteredLeads = filteredLeads.filter(l => l.status === 'contacted' || l.status === 'training' || l.status === 'qualified');
-    else if (filter === 'converted') filteredLeads = filteredLeads.filter(l => l.status === 'converted');
+    else if (filter === 'following') filteredLeads = filteredLeads.filter(l => l.status === 'following');
+    else if (filter === 'signed') filteredLeads = filteredLeads.filter(l => l.status === 'signed');
     else if (filter === 'lost') filteredLeads = filteredLeads.filter(l => l.status === 'lost');
   }
 
   const statusColors: Record<LeadStatus, string> = {
     new: 'bg-slate-50 text-slate-600',
-    contacted: 'bg-blue-50 text-blue-700',
-    signed: 'bg-indigo-50 text-indigo-700',
-    training: 'bg-amber-50 text-amber-700',
-    qualified: 'bg-purple-50 text-purple-700',
-    converted: 'bg-green-50 text-green-700',
+    following: 'bg-blue-50 text-blue-700',
+    signed: 'bg-green-50 text-green-700',
     lost: 'bg-red-50 text-red-700',
   };
 
@@ -190,34 +186,36 @@ export default function RecruiterFollowPage() {
     setFollowResult('');
   };
 
-  const handleConvertToResume = async (leadId: string) => {
+  const handleSignLead = async (leadId: string) => {
     const lead = leads.find(l => l.id === leadId);
-    if (lead) {
-      try {
-        // 创建worker简历
-        const workerResult = await createRecord('workers', {
-          name: lead.name,
-          phone: lead.phone,
-          age: lead.age || null,
-          origin: lead.origin || null,
-          job_types: lead.intention || null,
-          gender: '女',
-          status: 'idle',
-          resume_review_status: 'pending',
-          change_summary: `线索转简历（来源：${lead.name}）`,
-        } as Record<string, unknown>);
-        if (workerResult?.success) {
-          // 更新线索状态为已转简历
-          await updateRecord('leads', leadId, { status: 'converted' } as Record<string, unknown>);
-          setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'converted' as LeadStatus } : l));
-          alert(`已将 ${lead.name} 的线索转成正式简历！需等待审核通过后生效。`);
-          setSelectedLead(null);
-        } else {
-          alert('转简历失败：' + (workerResult?.error || '请重试'));
-        }
-      } catch {
-        alert('转简历失败，请重试');
+    if (!lead) return;
+    if (lead.status === 'signed') {
+      alert('该线索已签约');
+      return;
+    }
+    if (!confirm(`确认将 ${lead.name} 签约？签约后将自动创建待审核简历。`)) return;
+    try {
+      // 调用签约API（自动创建worker(pending) + contract + resume_review）
+      const res = await fetch(`/api/leads/${leadId}/convert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-session': localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token') || '' },
+        body: JSON.stringify({
+          job_types: lead.intention || '',
+          experience_years: 0,
+          expected_salary_min: 4000,
+          expected_salary_max: 6000,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'signed' as LeadStatus } : l));
+        alert(`已签约！${lead.name} 的简历已自动创建，等待管理员审核。`);
+        setSelectedLead(null);
+      } else {
+        alert('签约失败：' + (result.error || '请重试'));
       }
+    } catch {
+      alert('签约失败，请重试');
     }
   };
 
@@ -347,7 +345,7 @@ export default function RecruiterFollowPage() {
               </div>
               <a href={`tel:${l.phone}`} onClick={e => e.stopPropagation()} className="p-2 rounded-lg bg-green-50 text-green-600"><Phone className="h-4 w-4" /></a>
             </div>
-            {/* 转简历/编辑按钮 - 电话下方 */}
+            {/* 签约/编辑按钮 - 电话下方 */}
             <div className="mt-2 flex justify-end gap-2">
               <button
                 onClick={e => { e.stopPropagation(); startEditLead(l.id); }}
@@ -356,10 +354,10 @@ export default function RecruiterFollowPage() {
                 编辑
               </button>
               <button
-                onClick={e => { e.stopPropagation(); if (l.status !== 'converted') handleConvertToResume(l.id); }}
-                className={`text-xs px-3 py-1.5 rounded-lg ${l.status === 'converted' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}
+                onClick={e => { e.stopPropagation(); handleSignLead(l.id); }}
+                className={`text-xs px-3 py-1.5 rounded-lg ${l.status === 'signed' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}
               >
-                {l.status === 'converted' ? '已转简历' : '转简历'}
+                {l.status === 'signed' ? '已签约' : '签约'}
               </button>
             </div>
             {/* 展开详情 - 左右两模块 */}

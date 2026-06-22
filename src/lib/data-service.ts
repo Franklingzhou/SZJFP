@@ -103,7 +103,7 @@ function splitStr(v: unknown): string[] {
 // 转换数据库阿姨数据为前端WorkerProfile格式
 function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
   const creatorRole = asStr(db.creator_role || db.creatorRole, 'agent');
-  const validCreatorRole = (['agent', 'recruiter', 'instructor', 'customer'] as const).includes(creatorRole as WorkerProfile['creatorRole'])
+  const validCreatorRole = (['agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator'] as const).includes(creatorRole as WorkerProfile['creatorRole'])
     ? creatorRole as WorkerProfile['creatorRole'] : 'agent';
   return {
     id: asStr(db.id),
@@ -120,7 +120,7 @@ function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
     certifications: splitStr(db.certifications),
     expectedSalaryMin: asNum(db.expected_salary_min || db.expectedSalaryMin),
     expectedSalaryMax: asNum(db.expected_salary_max || db.expectedSalaryMax),
-    status: asStr(db.status, 'idle') as WorkerStatus,
+    status: asStr(db.status, 'pending') as WorkerStatus,
     availableDate: asStr(db.available_date || db.availableDate) || '',
     creatorId: asStr(db.creator_id || db.creatorId),
     creatorName: asStr(db.creator_name || db.creatorName) || '',
@@ -142,7 +142,7 @@ function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
 // 转换数据库线索数据为RecruiterLead格式（mock-data.ts定义的类型）
 function mapLeadFromDb(db: Record<string, unknown>): RecruiterLead {
   const status = asStr(db.status, 'new');
-  const validStatus = (['new', 'contacted', 'signed', 'training', 'qualified', 'converted', 'lost'] as const).includes(status as RecruiterLead['status'])
+  const validStatus = (['new', 'following', 'signed', 'lost'] as const).includes(status as RecruiterLead['status'])
     ? status as RecruiterLead['status'] : 'new';
   const level = asStr(db.level, 'C');
   const validLevel = (['A', 'B', 'C', 'D'] as const).includes(level as RecruiterLead['level'])
@@ -193,11 +193,11 @@ function mapCourseFromDb(db: Record<string, unknown>): TrainingCourse {
   };
 }
 
-// 转换数据库订单数据
+// 转换数据库订单数据（2.0: open/interviewing/signed/completed/cancelled）
 function mapOrderFromDb(db: Record<string, unknown>): Order {
-  const status = asStr(db.status, 'created');
-  const validStatus: OrderStatus = ['created', 'matched', 'confirmed', 'in_progress', 'completed', 'cancelled'].includes(status)
-    ? status as OrderStatus : 'created';
+  const status = asStr(db.status, 'open');
+  const validStatus: OrderStatus = ['open', 'interviewing', 'signed', 'completed', 'cancelled'].includes(status)
+    ? status as OrderStatus : 'open';
   return {
     id: asStr(db.id),
     title: asStr(db.title),
@@ -286,7 +286,7 @@ function mapCustomerFromDb(db: Record<string, unknown>): CustomerProfile {
 
 // 转换为ReferralRecord格式（types.ts定义）
 function mapReferralFromLead(lead: Record<string, unknown>, idx: number): ReferralRecord {
-  const status = asStr(lead.status) === 'converted' ? 'settled' as const : 'pending' as const;
+  const status = asStr(lead.status) === 'signed' ? 'settled' as const : 'pending' as const;
   return {
     id: `ref_${idx}`,
     orderId: '',
@@ -408,7 +408,7 @@ export async function initDataFromApi(): Promise<void> {
       }
       if (leadsData && leadsData.length > 0) {
         leadsData
-          .filter(l => ['converted', 'training'].includes(asStr(l.status)))
+          .filter(l => asStr(l.status) === 'signed')
           .forEach((l, i) => { allRefs.push(mapReferralFromLead(l, i + 100)); });
       }
       if (allRefs.length > 0) replaceArray(mockReferrals, allRefs);

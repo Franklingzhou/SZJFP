@@ -1,6 +1,17 @@
 // app.js
 App({
   onLaunch() {
+    // 初始化 CloudBase 云开发环境
+    if (wx.cloud) {
+      wx.cloud.init({
+        env: 'cloudbase-d3ge7qrp56fc83a76',
+        traceUser: true
+      });
+      console.log('[app] CloudBase 初始化成功');
+    } else {
+      console.warn('[app] wx.cloud 不可用，请确保基础库版本 >= 2.2.3');
+    }
+    
     // 小程序启动时自动获取微信登录code
     this.loginWechat();
   },
@@ -8,6 +19,8 @@ App({
   globalData: {
     // H5首页地址 - 生产环境使用正式域名
     h5BaseUrl: 'https://cxjz.online',
+    // CloudBase 环境 ID
+    cloudEnvId: 'cloudbase-d3ge7qrp56fc83a76',
     // 微信登录code
     wxLoginCode: '',
     // 用户信息

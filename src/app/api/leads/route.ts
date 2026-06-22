@@ -18,20 +18,47 @@ export async function GET(request: NextRequest) {
     const recruiterId = request.nextUrl.searchParams.get('recruiter_id');
     const level = request.nextUrl.searchParams.get('level');
 
-    let query = supabase
+    // v10: 先尝试完整列查询，失败则用基础列（兼容迁移状态）
+    const fullColumns = 'id, name, phone, age, origin, intention, source, gender, level, is_public, status, note, recruiter_id, signed_at, signed_by, sign_worker_id, want_training, created_at, updated_at';
+    const basicColumns = 'id, name, phone, source, gender, is_public, status, created_at, updated_at';
+    
+    // 先试完整列
+    let { data, error } = await supabase
       .from('leads')
-      .select('id, name, phone, age, origin, intention, source, gender, level, is_public, status, note, recruiter_id, created_at, updated_at')
+      .select(fullColumns)
       .order('created_at', { ascending: false });
 
-    if (status) query = query.eq('status', status);
-    if (recruiterId) query = query.eq('recruiter_id', recruiterId);
-    if (level) query = query.eq('level', level);
-
-    const { data, error } = await query;
+    // 如果完整列失败（可能缺少迁移列），用基础列重试
+    if (error) {
+      console.warn('[leads GET] full columns failed, falling back to basic:', error.message);
+      const retry = await supabase
+        .from('leads')
+        .select(basicColumns)
+        .order('created_at', { ascending: false });
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error('[leads GET] DB error:', error);
       return NextResponse.json({ error: '查询失败' }, { status: 500 });
+    }
+
+    if (status) {
+      const baseData = (data || []) as Record<string, unknown>[];
+      data = baseData.filter(d => d.status === status);
+    }
+    if (recruiterId) {
+      const baseData = (data || []) as Record<string, unknown>[];
+      data = baseData.filter(d => 
+        (d as Record<string, unknown>).recruiter_id === recruiterId
+      );
+    }
+    if (level) {
+      const baseData = (data || []) as Record<string, unknown>[];
+      data = baseData.filter(d => 
+        (d as Record<string, unknown>).level === level
+      );
     }
 
     // 应用数据权限过滤
@@ -40,7 +67,9 @@ export async function GET(request: NextRequest) {
     
     if (visibility === 'own') {
       // 只能看自己录入/负责的线索
-      filteredData = filteredData.filter(lead => lead.recruiter_id === session.userId);
+      filteredData = filteredData.filter(lead => 
+        (lead as Record<string, unknown>).recruiter_id === session.userId
+      );
     }
     // 'all' 权限返回全部数据，'hidden' 返回空数组
 
@@ -69,6 +98,10 @@ export async function POST(request: NextRequest) {
 
     if (!name) {
       return NextResponse.json({ error: '缺少必要参数(姓名)' }, { status: 400 });
+    }
+    // v13: validate max name length to avoid DB varchar constraint errors
+    if (name.length > 50) {
+      return NextResponse.json({ error: '姓名长度不能超过50个字符' }, { status: 400 });
     }
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
@@ -135,8 +168,8 @@ export async function PUT(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 显式白名单：只允许更新以下字段
-    const allowedFields = ['name', 'phone', 'age', 'origin', 'intention', 'source', 'gender', 'level', 'is_public', 'status', 'note', 'recruiter_id'];
+    // 显式白名单：只允许更新以下字段（含签约相关字段）
+    const allowedFields = ['name', 'phone', 'age', 'origin', 'intention', 'source', 'gender', 'level', 'is_public', 'status', 'note', 'recruiter_id', 'want_training', 'signed_at', 'signed_by', 'sign_worker_id'];
     const safeUpdates: Record<string, unknown> = {};
     for (const key of allowedFields) {
       if (key in body) safeUpdates[key] = body[key];

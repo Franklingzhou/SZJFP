@@ -1,0 +1,4 @@
+[200] GET / -> HTML(33325b)
+[401] POST /api/auth/password-login -> {"error":"手机号或密码错误"}
+[200] POST /api/auth/init-users -> {"success":true,"results":[{"id":"w001","name":"王秀兰","role":"worker","openid":"dev_wx_worker","success":true},{"id":"a001","name":"张丽华","role":"agent","openid":"dev_wx_agent","success":true},{"id":"r001","name":"陈招生","role":"recruiter","openid":"dev_wx_recruiter","success":true},{"id":"i001","name":
+[200] GET /api/settings -> {"ok":true,"data":[{"key":"commission_defaults","value":{"creator_rate":30,"referrer_rate":50,"maintainer_rate":20},"updated_at":"2026-06-18T05:43:58.216521+00:00"},{"key":"credit_rules","value":{"min_score":0,"initial_score":1000,"blacklist_threshold":300},"updated_at":"2026-06-18T05:43:58.216521+0

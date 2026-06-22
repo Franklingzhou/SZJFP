@@ -12,15 +12,20 @@ export async function GET(request: NextRequest) {
     const status = request.nextUrl.searchParams.get('status');
     const workerId = request.nextUrl.searchParams.get('worker_id');
     const type = request.nextUrl.searchParams.get('type');
+    const source = request.nextUrl.searchParams.get('source'); // 'lead' | 'direct'
 
     let query = supabase
       .from('resume_reviews')
-      .select('id, worker_id, type, review_type, old_data, new_data, changes, status, reviewer_id, review_note, reviewed_at, created_at, workers(name, job_types, origin)')
+      .select('id, worker_id, type, review_type, old_data, new_data, changes, status, reviewer_id, review_note, reviewed_at, created_at, workers(name, job_types, origin, lead_id)')
       .order('created_at', { ascending: false });
 
     if (status) query = query.eq('status', status);
     if (workerId) query = query.eq('worker_id', workerId);
     if (type) query = query.eq('type', type);
+
+    // 来源筛选：lead=线索签约，direct=直接提交
+    if (source === 'lead') query = query.not('workers.lead_id', 'is', null);
+    if (source === 'direct') query = query.is('workers.lead_id', null);
 
     const { data, error } = await query;
 

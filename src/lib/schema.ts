@@ -219,6 +219,7 @@ export const courseSchedules = pgTable('course_schedules', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+/** @deprecated 2.0: students 表已废弃，业务统一走 enrollments + workers 表 */
 export const students = pgTable('students', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
@@ -235,9 +236,10 @@ export const students = pgTable('students', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// 2.0: student_id → worker_id，关联 workers 表取代已废弃的 students 表
 export const enrollments = pgTable('enrollments', {
   id: uuid('id').primaryKey().defaultRandom(),
-  studentId: uuid('student_id').references(() => students.id, { onDelete: 'cascade' }),
+  workerId: uuid('worker_id').references(() => workers.id, { onDelete: 'cascade' }),
   courseScheduleId: uuid('course_schedule_id').references(() => courseSchedules.id),
   packageId: uuid('package_id').references(() => coursePackages.id),
   originalPrice: decimal('original_price', { precision: 10, scale: 2 }),
@@ -296,7 +298,10 @@ export const contracts = pgTable('contracts', {
   status: varchar('status', { length: 20 }).default('draft'),
   signedAt: timestamp('signed_at'),
   orderId: uuid('order_id').references(() => orders.id),
+  /** @deprecated 2.0: 改为 worker_id，但 DB 字段保留兼容期 */
   studentId: uuid('student_id').references(() => students.id),
+  /** 2.0 新增：关联 workers 表 */
+  workerId: uuid('worker_id').references(() => workers.id, { onDelete: 'set null' }),
   leadId: uuid('lead_id').references(() => leads.id),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
@@ -453,6 +458,37 @@ export const fieldPermissions = pgTable('field_permissions', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// A28: 诚信记录表 (credit_records)
+export const creditRecords = pgTable('credit_records', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  userId: varchar('user_id', { length: 36 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  event: varchar('event', { length: 128 }).notNull(),
+  scoreChange: integer('score_change').notNull(),
+  relatedOrderId: varchar('related_order_id', { length: 36 }).references(() => orders.id),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// A30: 积分记录表 (point_records)
+export const pointRecords = pgTable('point_records', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  userId: varchar('user_id', { length: 36 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  action: varchar('action', { length: 64 }).notNull(),
+  points: integer('points').notNull(),
+  relatedOrderId: varchar('related_order_id', { length: 36 }).references(() => orders.id),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// A29: 保证金记录表 (deposits)
+export const depositRecords = pgTable('deposits', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  userId: varchar('user_id', { length: 36 }).notNull().references(() => users.id),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  type: varchar('type', { length: 20 }).notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('paid'),
+  note: text('note'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 中介合同表（经纪人发起，用于订单签约）
 export const agencyContracts = pgTable('agency_contracts', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -496,6 +532,4 @@ export const agencyContracts = pgTable('agency_contracts', {
   workerWorkStatus: varchar('worker_work_status', { length: 20 }),
   // 创建人
   createdBy: uuid('created_by').references(() => users.id),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-});
+  createdAt: ti

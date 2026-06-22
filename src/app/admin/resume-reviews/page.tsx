@@ -24,6 +24,7 @@ type ReviewRecord = {
     name: string;
     job_types?: string[];
     origin?: string;
+    lead_id?: string | null;
   };
   worker_phone?: string;
 };
@@ -55,10 +56,11 @@ export default function ResumeReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedReview, setSelectedReview] = useState<ReviewRecord | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('pending');
+  const [sourceFilter, setSourceFilter] = useState<string>('all'); // 'all' | 'lead' | 'direct'
 
   useEffect(() => {
     loadReviews();
-  }, [filterStatus]);
+  }, [filterStatus, sourceFilter]);
 
   const loadReviews = async () => {
     setLoading(true);
@@ -69,7 +71,10 @@ export default function ResumeReviewsPage() {
         return;
       }
 
-      const res = await fetch(`/api/resume-reviews?status=${filterStatus}`, {
+      let url = `/api/resume-reviews?status=${filterStatus}`;
+      if (sourceFilter !== 'all') url += `&source=${sourceFilter}`;
+
+      const res = await fetch(url, {
         headers: { 'x-session': token }
       });
       const data = await res.json();
@@ -272,6 +277,27 @@ export default function ResumeReviewsPage() {
         </div>
       </div>
 
+      {/* 来源Tab */}
+      <div className="flex gap-2">
+        {[
+          { key: 'all', label: '全部来源' },
+          { key: 'lead', label: '线索签约' },
+          { key: 'direct', label: '直接提交' },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setSourceFilter(tab.key)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              sourceFilter === tab.key
+                ? 'bg-slate-800 text-white'
+                : 'bg-white text-slate-600 border hover:bg-slate-100'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 审核列表 */}
         <div className="bg-white rounded-xl shadow-sm">
@@ -290,13 +316,18 @@ export default function ResumeReviewsPage() {
                     selectedReview?.id === review.id ? 'bg-amber-50' : ''
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-slate-800">
                           {review.workers?.name || '未知'}
                         </span>
                         {getStatusBadge(review.status)}
+                        {review.workers?.lead_id ? (
+                          <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-300">线索签约</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs bg-slate-50 text-slate-500 border-slate-200">直接提交</Badge>
+                        )}
                       </div>
                       <div className="text-sm text-slate-500">
                         {getTypeLabel(review.type)} · {review.worker_phone || ''}
@@ -345,6 +376,14 @@ export default function ResumeReviewsPage() {
                     <div>
                       <span className="text-slate-500">籍贯：</span>
                       <span className="font-medium">{selectedReview.workers?.origin || '-'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">来源：</span>
+                      {selectedReview.workers?.lead_id ? (
+                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-300">线索签约</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs bg-slate-50 text-slate-500 border-slate-200">直接提交</Badge>
+                      )}
                     </div>
                   </div>
                 </div>

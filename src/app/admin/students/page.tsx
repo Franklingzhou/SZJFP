@@ -38,7 +38,7 @@ export default function StudentsPage() {
 
   // 新建报名弹窗
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ course_id: '', student_id: '' });
+  const [createForm, setCreateForm] = useState({ course_id: '', worker_id: '' });
   const [submitting, setSubmitting] = useState(false);
 
   // 打分弹窗
@@ -47,7 +47,7 @@ export default function StudentsPage() {
   const [gradeForm, setGradeForm] = useState({ score: '', passed: 'true', grade: '' });
 
   // 课程进度
-  const [progressStudentId, setProgressStudentId] = useState<string | null>(null);
+  const [progressWorkerId, setProgressWorkerId] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [progressLoading, setProgressLoading] = useState(false);
 
@@ -76,7 +76,7 @@ export default function StudentsPage() {
 
   // 新建报名
   const handleCreate = async () => {
-    if (!createForm.course_id || !createForm.student_id) {
+    if (!createForm.course_id || !createForm.worker_id) {
       alert('请选择课程和学员');
       return;
     }
@@ -87,13 +87,13 @@ export default function StudentsPage() {
         headers: getAuthHeaders(),
         body: JSON.stringify({
           course_id: createForm.course_id,
-          student_id: createForm.student_id,
+          worker_id: createForm.worker_id,
         }),
       });
       const data = await res.json();
       if (data.success) {
         setShowCreate(false);
-        setCreateForm({ course_id: '', student_id: '' });
+        setCreateForm({ course_id: '', worker_id: '' });
         loadData();
       } else {
         alert('报名失败: ' + (data.error || '未知错误'));
@@ -136,17 +136,17 @@ export default function StudentsPage() {
     }
   };
 
-  // 课程进度
-  const loadProgress = async (studentId: string) => {
-    if (progressStudentId === studentId) {
-      setProgressStudentId(null);
+  // 课程进度 — 2.0: 通过worker_id查询
+  const loadProgress = async (workerId: string) => {
+    if (progressWorkerId === workerId) {
+      setProgressWorkerId(null);
       setProgressData([]);
       return;
     }
-    setProgressStudentId(studentId);
+    setProgressWorkerId(workerId);
     setProgressLoading(true);
     try {
-      const res = await fetch(`/api/enrollments?student_id=${studentId}`, { headers: getAuthHeaders(false) });
+      const res = await fetch(`/api/enrollments?worker_id=${workerId}`, { headers: getAuthHeaders(false) });
       const data = await res.json();
       setProgressData(data.data || []);
     } catch (e) {
@@ -157,31 +157,11 @@ export default function StudentsPage() {
     }
   };
 
-  // 转简历
-  const handleConvertToWorker = async (enrollment: any) => {
-    if (!confirm(`确定将学员「${enrollment.student_name}」转为简历吗？`)) return;
-    try {
-      const res = await fetch(`/api/students/${enrollment.id}/convert-to-worker`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert('转简历成功！');
-        loadData();
-      } else {
-        alert('转简历失败: ' + (data.error || '未知错误') + (data.detail ? '\n' + data.detail : ''));
-      }
-    } catch {
-      alert('转简历失败');
-    }
-  };
-
   // 筛选
   const filtered = enrollments.filter((e: any) => {
     const matchSearch = !search || 
       (e.student_name || '').includes(search) || 
-      (e.student_id || '').includes(search);
+      (e.worker_id || '').includes(search);
     const matchStatus = statusFilter === 'all' || e.status === statusFilter;
     const matchCourse = courseFilter === 'all' || e.course_id === courseFilter;
     return matchSearch && matchStatus && matchCourse;
@@ -247,7 +227,7 @@ export default function StudentsPage() {
               <Card key={e.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-slate-800">{e.student_name || e.student_id?.slice(0, 8)}</span>
+                    <span className="font-medium text-slate-800">{e.student_name || e.worker_id?.slice(0, 8)}</span>
                     <Badge className={cn('text-xs', st.color)}>{st.label}</Badge>
                   </div>
                   <div className="text-sm text-slate-500 space-y-1">
@@ -275,17 +255,14 @@ export default function StudentsPage() {
                         <Award className="h-3.5 w-3.5 mr-1" />结课打分
                       </Button>
                     )}
-                    <Button size="sm" variant="outline" className="text-green-600 border-green-300 hover:bg-green-50" onClick={() => handleConvertToWorker(e)}>
-                      <UserCheck className="h-3.5 w-3.5 mr-1" />转简历
-                    </Button>
                     <Button size="sm" variant="outline" className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                      onClick={() => loadProgress(e.student_id)}>
+                      onClick={() => loadProgress(e.worker_id)}>
                       <GraduationCap className="h-3.5 w-3.5 mr-1" />
-                      {progressStudentId === e.student_id ? '收起' : '课程进度'}
+                      {progressWorkerId === e.worker_id ? '收起' : '课程进度'}
                     </Button>
                   </div>
                   {/* 课程进度展开区 */}
-                  {progressStudentId === e.student_id && (
+                  {progressWorkerId === e.worker_id && (
                     <div className="mt-3 pt-3 border-t border-slate-200">
                       {progressLoading ? (
                         <div className="text-sm text-slate-400 text-center py-2">加载中...</div>
@@ -333,17 +310,17 @@ export default function StudentsPage() {
             </div>
             <div>
               <Label>选择学员 *</Label>
-              <Select value={createForm.student_id} onValueChange={v => setCreateForm(f => ({ ...f, student_id: v }))}>
+              <Select value={createForm.worker_id} onValueChange={v => setCreateForm(f => ({ ...f, worker_id: v }))}>
                 <SelectTrigger><SelectValue placeholder="请选择阿姨" /></SelectTrigger>
                 <SelectContent>
-                  {workers.map((w: any) => <SelectItem key={w.id} value={w.user_id || w.id}>{w.name || w.id?.slice(0, 8)}</SelectItem>)}
+                  {workers.map((w: any) => <SelectItem key={w.id} value={w.id}>{w.name || w.id?.slice(0, 8)}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreate(false)}>取消</Button>
-            <Button onClick={handleCreate} disabled={submitting || !createForm.course_id || !createForm.student_id} className="bg-amber-500 hover:bg-amber-600">
+            <Button onClick={handleCreate} disabled={submitting || !createForm.course_id || !createForm.worker_id} className="bg-amber-500 hover:bg-amber-600">
               {submitting ? '提交中...' : '确认报名'}
             </Button>
           </DialogFooter>

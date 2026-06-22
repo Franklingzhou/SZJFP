@@ -130,6 +130,13 @@ Page({
     });
   },
 
+  // 打开 AI 智能助手
+  onOpenChat() {
+    wx.navigateTo({
+      url: '/pages/chat/chat'
+    });
+  },
+
   onOpenAdmin() {
     const url = app.globalData.h5BaseUrl + '/admin/dashboard';
     wx.navigateTo({

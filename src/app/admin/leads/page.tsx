@@ -27,16 +27,13 @@ interface Lead {
   updated_at: string | null;
 }
 
-// P0-1 线索状态枚举
-type StatusTab = 'all' | 'new' | 'following' | 'signed' | 'training' | 'qualified' | 'converted' | 'lost';
+// P0-1 线索状态枚举（2.0: 签约后自动创建worker，不再走training→qualified→converted流程）
+type StatusTab = 'all' | 'new' | 'following' | 'signed' | 'lost';
 
 const STATUS_LABELS: Record<string, string> = {
   new: '新线索',
   following: '跟进中',
   signed: '已签约',
-  training: '培训中',
-  qualified: '已合格',
-  converted: '已转化',
   lost: '已流失',
 };
 
@@ -44,9 +41,6 @@ const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
   following: 'bg-yellow-100 text-yellow-800',
   signed: 'bg-green-100 text-green-800',
-  training: 'bg-indigo-100 text-indigo-800',
-  qualified: 'bg-emerald-100 text-emerald-800',
-  converted: 'bg-teal-100 text-teal-800',
   lost: 'bg-red-100 text-red-800',
 };
 
@@ -72,9 +66,6 @@ const STATUS_TABS: { key: StatusTab; label: string; color: string }[] = [
   { key: 'new', label: '新线索', color: 'bg-blue-500' },
   { key: 'following', label: '跟进中', color: 'bg-yellow-500' },
   { key: 'signed', label: '已签约', color: 'bg-green-500' },
-  { key: 'training', label: '培训中', color: 'bg-indigo-500' },
-  { key: 'qualified', label: '已合格', color: 'bg-emerald-500' },
-  { key: 'converted', label: '已转化', color: 'bg-teal-500' },
   { key: 'lost', label: '已流失', color: 'bg-red-500' },
 ];
 
@@ -357,13 +348,53 @@ export default function LeadsPage() {
     new: leads.filter(l => l.status === 'new').length,
     following: leads.filter(l => l.status === 'following').length,
     signed: leads.filter(l => l.status === 'signed').length,
-    training: leads.filter(l => l.status === 'training').length,
-    qualified: leads.filter(l => l.status === 'qualified').length,
-    converted: leads.filter(l => l.status === 'converted').length,
     lost: leads.filter(l => l.status === 'lost').length,
   };
 
-  // 根据当前状态返回可用的流转按钮
+  // 签约确认弹窗
+  const [showConvertDialog, setShowConvertDialog] = useState(false);
+  const [convertLead, setConvertLead] = useState<Lead | null>(null);
+  const [converting, setConverting] = useState(false);
+
+  // 调用 convert API（签约→自动创建worker+审核记录）
+  const handleConvert = async (lead: Lead, directMode: boolean) => {
+    setConvertLead(lead);
+    if (directMode) {
+      // 直接转简历：不创建招募合同，但仍需简历审核
+      if (!confirm(`确认将线索"${lead.name}"直接转为待审简历？\n将创建 worker 并提交审核（跳过招募合同），审核通过后方可上户。`)) return;
+      await doConvert(lead, true);
+    } else {
+      // 普通签约：弹窗填写信息
+      setShowConvertDialog(true);
+    }
+  };
+
+  const doConvert = async (lead: Lead, directMode: boolean) => {
+    setConverting(true);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}/convert`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ direct: directMode }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        alert(directMode ? '已提交简历审核，等待管理员审核通过' : '签约成功，已创建待审核简历');
+        setShowConvertDialog(false);
+        setConvertLead(null);
+        loadData();
+      } else {
+        alert('操作失败：' + (result.error || '请重试'));
+      }
+    } catch (e) {
+      console.error('签约失败:', e);
+      alert('操作失败，请重试');
+    } finally {
+      setConverting(false);
+    }
+  };
+
+  // 根据当前状态返回可用的流转按钮（2.0: 签约后自动创建worker）
   const getFlowButtons = (lead: Lead) => {
     switch (lead.status) {
       case 'new':
@@ -374,37 +405,19 @@ export default function LeadsPage() {
         );
       case 'following':
         return (
-          <div className="flex gap-1">
-            <Button size="sm" variant="outline" className="gap-1 text-xs text-green-700 border-green-300 hover:bg-green-50" onClick={() => handleStatusFlow(lead, 'signed')}>
+          <div className="flex gap-1 flex-wrap">
+            <Button size="sm" variant="outline" className="gap-1 text-xs text-green-700 border-green-300 hover:bg-green-50"
+              onClick={() => handleConvert(lead, false)}>
               已签约
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1 text-xs text-blue-700 border-blue-300 hover:bg-blue-50"
+              onClick={() => handleConvert(lead, true)}>
+              <UserCheck className="h-3 w-3" /> 直接转简历
             </Button>
             <Button size="sm" variant="outline" className="gap-1 text-xs text-red-700 border-red-300 hover:bg-red-50" onClick={() => handleStatusFlow(lead, 'lost')}>
               已流失
             </Button>
           </div>
-        );
-      case 'signed':
-        return (
-          <div className="flex gap-1">
-            <Button size="sm" variant="outline" className="gap-1 text-xs text-indigo-700 border-indigo-300 hover:bg-indigo-50" onClick={() => handleStatusFlow(lead, 'training')}>
-              开始培训
-            </Button>
-            <Button size="sm" variant="outline" className="gap-1 text-xs text-teal-700 border-teal-300 hover:bg-teal-50" onClick={() => handleStatusFlow(lead, 'converted')}>
-              直接转化
-            </Button>
-          </div>
-        );
-      case 'training':
-        return (
-          <Button size="sm" variant="outline" className="gap-1 text-xs text-emerald-700 border-emerald-300 hover:bg-emerald-50" onClick={() => handleStatusFlow(lead, 'qualified')}>
-            <ArrowRight className="h-3 w-3" /> 考核合格
-          </Button>
-        );
-      case 'qualified':
-        return (
-          <Button size="sm" variant="outline" className="gap-1 text-xs text-teal-700 border-teal-300 hover:bg-teal-50" onClick={() => handleStatusFlow(lead, 'converted')}>
-            <ArrowRight className="h-3 w-3" /> 转化为阿姨
-          </Button>
         );
       default:
         return null;
@@ -658,6 +671,7 @@ export default function LeadsPage() {
                 <option value="网络">网络</option>
                 <option value="电话">电话</option>
                 <option value="门店">门店</option>
+                <option value="retraining_request">再培训</option>
                 <option value="其他">其他</option>
               </select>
             </div>

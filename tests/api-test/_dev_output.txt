@@ -1,0 +1,53 @@
+
+> szjfp@0.1.0 dev F:\CB-szjfp
+> next dev -p 3000
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.106:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+✓ Starting...
+✓ Ready in 5.4s
+  Using external babel configuration from F:\CB-szjfp\.babelrc
+○ Compiling / ...
+ GET / 200 in 9.5s (compile: 9.1s, render: 386ms)
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\Administrator\AppData\Local\Temp\next-panic-6e91e15a4968574fbfa1fb90b1940439.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg&body=Turbopack%20version%3A%20%60d1bd5b58%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+ POST /api/auth/password-login 500 in 597ms (compile: 368ms, render: 229ms)
+ POST /api/auth/init-users 500 in 39ms (compile: 25ms, render: 14ms)
+ GET /api/settings 500 in 91ms (compile: 77ms, render: 14ms)
+ GET /api/ping 200 in 571ms (compile: 514ms, render: 57ms)
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\Administrator\AppData\Local\Temp\next-panic-6e91e15a4968574fbfa1fb90b1940439.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg&body=Turbopack%20version%3A%20%60d1bd5b58%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+ GET /api/auth/password-login 500 in 200ms (compile: 164ms, render: 36ms)
+ GET / 200 in 566ms (compile: 398ms, render: 168ms)
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\Administrator\AppData\Local\Temp\next-panic-6e91e15a4968574fbfa1fb90b1940439.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg&body=Turbopack%20version%3A%20%60d1bd5b58%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+ POST /api/auth/password-login 500 in 4.3s (compile: 4.3s, render: 17ms)
+ POST /api/auth/init-users 500 in 528ms (compile: 511ms, render: 17ms)
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to C:\Users\Administrator\AppData\Local\Temp\next-panic-6e91e15a4968574fbfa1fb90b1940439.log.
+
+To help make Turbopack better, report this error by clicking here: https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg&body=Turbopack%20version%3A%20%60d1bd5b58%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ATurbopack%20Error%3A%20failed%20to%20create%20junction%20point%20to%20..%2F..%2F..%2Fnode_modules%2F.pnpm%2Fpg%408.17.2%2Fnode_modules%2Fpg%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+ GET /api/settings 500 in 517ms (compile: 488ms, render: 28ms)

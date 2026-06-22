@@ -322,6 +322,20 @@ function PublicResumeContent() {
               <Share2 className="h-5 w-5" /> 分享简历
             </button>
           </div>
+          {!trainingSent ? (
+            <button
+              onClick={handleRequestTraining}
+              disabled={trainingLoading}
+              className="w-full mt-3 bg-white border-2 border-amber-400 text-amber-600 rounded-xl py-3 flex items-center justify-center gap-2 font-medium hover:bg-amber-50 disabled:opacity-50"
+            >
+              <GraduationCap className="h-5 w-5" />
+              {trainingLoading ? '提交中...' : '想培训'}
+            </button>
+          ) : (
+            <p className="w-full mt-3 text-center text-sm text-green-600 bg-green-50 rounded-xl py-3">
+              ✓ 再培训申请已提交，招生将跟进处理
+            </p>
+          )}
         </div>
       </div>
     </div>

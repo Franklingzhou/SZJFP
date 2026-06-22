@@ -28,25 +28,25 @@ interface FollowRecord {
   time: string;
 }
 
-type StatusTab = 'all' | 'new' | 'following' | 'ordered' | 'serving' | 'completed' | 'lost';
+type StatusTab = 'all' | 'new' | 'following' | 'matching' | 'converted' | 'completed' | 'closed';
 type CustomerTypeTab = 'all' | 'personal' | 'enterprise';
 
 const STATUS_LABELS: Record<string, string> = {
   new: '新客户',
   following: '跟进中',
-  ordered: '已下单',
-  serving: '服务中',
+  matching: '匹配中',
+  converted: '已转化',
   completed: '已完成',
-  lost: '已流失',
+  closed: '已关闭',
 };
 
 const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
   following: 'bg-yellow-100 text-yellow-800',
-  ordered: 'bg-indigo-100 text-indigo-800',
-  serving: 'bg-green-100 text-green-800',
+  matching: 'bg-indigo-100 text-indigo-800',
+  converted: 'bg-green-100 text-green-800',
   completed: 'bg-slate-100 text-slate-700',
-  lost: 'bg-red-100 text-red-800',
+  closed: 'bg-red-100 text-red-800',
 };
 
 const SOURCE_OPTIONS = [
@@ -293,10 +293,10 @@ export default function ClientsPage() {
     all: customers.length,
     new: customers.filter(c => c.status === 'new').length,
     following: customers.filter(c => c.status === 'following').length,
-    ordered: customers.filter(c => c.status === 'ordered').length,
-    serving: customers.filter(c => c.status === 'serving').length,
+    matching: customers.filter(c => c.status === 'matching').length,
+    converted: customers.filter(c => c.status === 'converted').length,
     completed: customers.filter(c => c.status === 'completed').length,
-    lost: customers.filter(c => c.status === 'lost').length,
+    closed: customers.filter(c => c.status === 'closed').length,
   };
 
   if (loading) {
@@ -368,10 +368,10 @@ export default function ClientsPage() {
           { key: 'all' as StatusTab, label: '全部', color: 'bg-slate-600' },
           { key: 'new' as StatusTab, label: '新客户', color: 'bg-blue-500' },
           { key: 'following' as StatusTab, label: '跟进中', color: 'bg-yellow-500' },
-          { key: 'ordered' as StatusTab, label: '已下单', color: 'bg-indigo-500' },
-          { key: 'serving' as StatusTab, label: '服务中', color: 'bg-green-500' },
+          { key: 'matching' as StatusTab, label: '匹配中', color: 'bg-indigo-500' },
+          { key: 'converted' as StatusTab, label: '已转化', color: 'bg-green-500' },
           { key: 'completed' as StatusTab, label: '已完成', color: 'bg-gray-500' },
-          { key: 'lost' as StatusTab, label: '已流失', color: 'bg-red-500' },
+          { key: 'closed' as StatusTab, label: '已关闭', color: 'bg-red-500' },
         ]).map(tab => (
           <button
             key={tab.key}

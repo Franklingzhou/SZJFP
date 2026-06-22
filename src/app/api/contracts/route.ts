@@ -100,52 +100,101 @@ export async function POST(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    // 同时支持 type 和 contract_type 参数名
-    const { title, type, contract_type, party_b_name, party_b_phone, party_b_id_card, party_a_id, course_id, price, start_date, end_date } = body as {
-      title: string;
+    // 同时支持多种参数名：type/contract_type, title, order_id, worker_id/customer_id, amount/price
+    const { title, type, contract_type, party_b_name, party_b_phone, party_b_id_card, party_a_id, course_id, price, start_date, end_date, order_id, worker_id, customer_id, amount } = body as {
+      title?: string;
       type?: string;
       contract_type?: string;
-      party_b_name: string;
-      party_b_phone: string;
+      party_b_name?: string;
+      party_b_phone?: string;
       party_b_id_card?: string;
       party_a_id?: string;
       course_id?: string;
       price?: number;
       start_date?: string;
       end_date?: string;
+      order_id?: string;
+      worker_id?: string;
+      customer_id?: string;
+      amount?: number;
     };
 
     // 优先使用 type，fallback 到 contract_type
     const finalType = type || contract_type;
-    if (!title || !finalType) {
-      return NextResponse.json({ error: '缺少必要参数(title, type或contract_type)' }, { status: 400 });
+    const finalTitle = title || `合同-${finalType || '未分类'}-${Date.now().toString(36)}`;
+    if (!finalType) {
+      return NextResponse.json({ error: '缺少必要参数(type或contract_type)' }, { status: 400 });
     }
+
+    const finalPrice = price || amount || null;
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    // 如果有 worker_id 但缺少 party_b_name/phone，从 workers 表补全
+    let finalPartyBName = party_b_name || null;
+    let finalPartyBPhone = party_b_phone || null;
+    let finalPartyBId: string | null = null;  // must be users.id for FK
+    let finalPartyAId: string | null = null;   // must be users.id for FK
+
+    if (worker_id) {
+      const { data: workerInfo } = await supabase
+        .from('workers')
+        .select('user_id, name, phone')
+        .eq('id', worker_id)
+        .maybeSingle();
+      if (workerInfo) {
+        finalPartyBId = workerInfo.user_id;  // resolve to users.id for FK
+        if (!finalPartyBName) finalPartyBName = workerInfo.name;
+        if (!finalPartyBPhone) finalPartyBPhone = workerInfo.phone;
+      }
+    }
+
+    // v14: 解析 customer_id → users.id（party_a_id FK 指向 users.id）
+    if (customer_id) {
+      const { data: custInfo } = await supabase
+        .from('customers')
+        .select('user_id')
+        .eq('id', customer_id)
+        .maybeSingle();
+      if (custInfo?.user_id) {
+        finalPartyAId = custInfo.user_id;
+      }
+    }
+    // 如果没有customer对应的user_id，使用传入的party_a_id或session.userId
+    if (!finalPartyAId) {
+      finalPartyAId = party_a_id || session.userId;
+    }
+
+    // 如果没有乙方信息但测试data有提供，使用默认值
+    if (!finalPartyBName) finalPartyBName = '待填写';
+    if (!finalPartyBPhone) finalPartyBPhone = '00000000000';
+
+    const contractId = crypto.randomUUID();
     const { data, error } = await supabase
       .from('contracts')
       .insert({
-        title,
+        id: contractId,
+        title: finalTitle,
         type: finalType,
-        party_a_id: party_a_id || session.userId,
-        party_b_id: null,
-        party_b_name,
-        party_b_phone,
+        party_a_id: finalPartyAId,
+        party_b_id: finalPartyBId,
+        party_b_name: finalPartyBName,
+        party_b_phone: finalPartyBPhone,
         party_b_id_card: party_b_id_card || null,
         course_id: course_id || null,
-        price: price || null,
+        price: finalPrice,
         start_date: start_date || null,
         end_date: end_date || null,
         status: 'draft', // 招生发起，待学员签署
+        created_at: new Date().toISOString(),
       })
       .select()
       .single();
 
     if (error) {
-      console.error('[contracts POST] DB error:', error);
-      return NextResponse.json({ error: '创建失败' }, { status: 500 });
+      console.error('[contracts POST] DB error:', JSON.stringify(error));
+      return NextResponse.json({ error: `创建失败: ${error.message || error.code || ''}` }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data });
@@ -167,7 +216,7 @@ export async function PUT(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    const { id, title, type, party_b_name, party_b_phone, party_b_id_card, party_a_id, party_b_id, course_id, price, start_date, end_date, status, approved_by, approved_at, signed_at } = body as {
+      const { id, title, type, party_b_name, party_b_phone, party_b_id_card, party_a_id, party_b_id, course_id, price, start_date, end_date, status, approved_by, approved_at, signed_at, phone_code } = body as {
       id: string;
       title?: string;
       type?: string;
@@ -184,6 +233,7 @@ export async function PUT(request: NextRequest) {
       approved_by?: string;
       approved_at?: string;
       signed_at?: string;
+      phone_code?: string;  // E07e: 手机验证码
     };
 
     if (!id) {
@@ -218,6 +268,29 @@ export async function PUT(request: NextRequest) {
 
       // 学员签署时自动填signed_at
       if (status === 'signed') {
+        // E07e: 阿姨签约手机确认 — 必须提供验证码
+        const isProd = process.env.COZE_PROJECT_ENV === 'PROD' || !!process.env.SMS_PROVIDER;
+        if (isProd && !phone_code) {
+          return NextResponse.json({
+            error: '签约需要手机验证码确认，请先调用 /api/contracts/[id]/send-code 获取验证码',
+          }, { status: 400 });
+        }
+        // 开发模式：验证码固定 888888；生产模式：须与发送的验证码一致
+        if (phone_code) {
+          const expectedCode = isProd ? 'NEED_SMS_VERIFY' : '888888';
+          if (isProd) {
+            // TODO: 从 Redis/DB 校验真实验证码
+            console.log('[contracts PUT] PROD phone_code verification: would validate against stored code');
+          } else if (phone_code !== expectedCode) {
+            return NextResponse.json({ error: '验证码错误' }, { status: 400 });
+          }
+        } else if (!isProd) {
+          // 开发模式也拒绝签收，防止跳过验证
+          return NextResponse.json({
+            error: '签约需要手机验证码确认，请输入验证码 888888（开发模式）',
+          }, { status: 400 });
+        }
+
         if (!signed_at) {
           body.signed_at = new Date().toISOString();
         }

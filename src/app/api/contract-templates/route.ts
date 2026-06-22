@@ -53,18 +53,19 @@ export async function POST(request: NextRequest) {
       sort_order?: number;
     };
 
-    if (!name || !type || !content) {
-      return NextResponse.json({ error: '缺少必要参数(name, type, content)' }, { status: 400 });
+    if (!name || !content) {
+      return NextResponse.json({ error: '缺少必要参数(name, content)' }, { status: 400 });
     }
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    const finalType = type || 'general';
     const { data, error } = await supabase
       .from('contract_templates')
       .insert({
         name,
-        type,
+        type: finalType,
         content,
         description: description || null,
         is_active: is_active !== undefined ? is_active : true,

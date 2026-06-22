@@ -9,7 +9,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   failed: [],
 };
 
-// PATCH /api/enrollments/[id] — 更新报名记录（状态流转、结课考核）
+// PATCH /api/enrollments/[id] — 更新报名记录（状态流转、结课考核）2.0适配worker_id
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -30,7 +30,7 @@ export async function PATCH(
     // 查询当前记录
     const { data: current, error: fetchErr } = await supabase
       .from('enrollments')
-      .select('id, status, course_id')
+      .select('id, status, course_id, worker_id')
       .eq('id', id)
       .maybeSingle();
     if (fetchErr || !current) {
@@ -68,7 +68,6 @@ export async function PATCH(
     // 结课考核：打分时需要权限校验
     const isGrading = updates.score !== undefined;
     if (isGrading) {
-      // 只有 admin 或该课程讲师可以打分
       if (session.role !== 'admin') {
         const { data: course } = await supabase
           .from('courses')
@@ -79,7 +78,6 @@ export async function PATCH(
           return NextResponse.json({ error: '只有管理员或课程讲师可以打分' }, { status: 403 });
         }
       }
-      // 自动填充打分时间
       updates.graded_at = new Date().toISOString();
     }
 
@@ -98,6 +96,25 @@ export async function PATCH(
     if (error) {
       console.error('[enrollments PATCH] update error:', error);
       return NextResponse.json({ error: '更新失败' }, { status: 500 });
+    }
+
+    // 2.0: 结课通过时，同步更新worker培训记录
+    if (updates.status === 'qualified' && data) {
+      const { data: courseData } = await supabase
+        .from('courses')
+        .select('name, title')
+        .eq('id', current.course_id)
+        .maybeSingle();
+      const courseName = courseData?.name || courseData?.title || '培训课程';
+      // 更新worker状态为available（培训合格后可以接单）
+      await supabase
+        .from('workers')
+        .update({
+          status: 'available',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', current.worker_id)
+        .eq('status', 'pending');
     }
 
     return NextResponse.json({ success: true, data });

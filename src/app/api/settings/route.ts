@@ -68,7 +68,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, success: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '保存失败';
     console.error('[settings PUT] Error:', message);

@@ -1,0 +1,164 @@
+
+=== 运行套件: auth ===
+
+════════════════════════════════════════════════════════════
+  1️⃣  密码登录 — 正向功能 (8角色全覆盖)
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A01-admin密码登录 [90m([33m1636ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] R01-招生密码登录 [90m([33m1602ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] T01-讲师密码登录 [90m([33m1611ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] S01-培训主管密码登录 [90m([33m1609ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] B01-经纪人密码登录 [90m([33m1602ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] W01-阿姨运营密码登录 [90m([33m1617ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] K01-阿姨密码登录 [90m([33m1603ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] C01-客户密码登录 [90m([33m1573ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 登录返回token含user字段 [90m([33m1621ms[0m)[0m
+  ── 合计: 9 | [32m通过 0[0m | [31m失败 9[0m
+
+  ❌ 失败用例:
+     - A01-admin密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - R01-招生密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - T01-讲师密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - S01-培训主管密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - B01-经纪人密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - W01-阿姨运营密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - K01-阿姨密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - C01-客户密码登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 登录返回token含user字段: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  2️⃣  密码登录 — 参数异常
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 缺少手机号 [90m([33m1599ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 缺少密码 [90m([33m1590ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 空请求体 [90m([33m1580ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 手机号格式错误(含字母) [90m([33m1618ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 密码错误 [90m([33m1595ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 手机号不存在 [90m([33m1592ms[0m)[0m
+  ── 合计: 6 | [32m通过 0[0m | [31m失败 6[0m
+
+  ❌ 失败用例:
+     - 缺少手机号: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 缺少密码: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 空请求体: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 手机号格式错误(含字母): [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 密码错误: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 手机号不存在: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  3️⃣  密码登录 — 边界值
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 超长手机号(20位) [90m([33m1608ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 超短手机号(5位) [90m([33m1607ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 密码最小长度1位 [90m([33m1608ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 空字符串手机号 [90m([33m1591ms[0m)[0m
+  ── 合计: 4 | [32m通过 0[0m | [31m失败 4[0m
+
+  ❌ 失败用例:
+     - 超长手机号(20位): [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 超短手机号(5位): [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 密码最小长度1位: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 空字符串手机号: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  4️⃣  密码登录 — 重复操作
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 同一账号连续登录2次 [90m([33m1601ms[0m)[0m
+  ── 合计: 1 | [32m通过 0[0m | [31m失败 1[0m
+
+  ❌ 失败用例:
+     - 同一账号连续登录2次: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  5️⃣  Session — 正向功能
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 有效token获取session [90m([90m16ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 获取用户profile [90m([90m16ms[0m)[0m
+  ── 合计: 2 | [32m通过 0[0m | [31m失败 2[0m
+
+  ❌ 失败用例:
+     - 有效token获取session: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 获取用户profile: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  6️⃣  Session — 权限校验
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 无token访问session [90m([33m1583ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 伪造token访问session [90m([33m1598ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 过期token访问session [90m([33m1591ms[0m)[0m
+  ── 合计: 3 | [32m通过 0[0m | [31m失败 3[0m
+
+  ❌ 失败用例:
+     - 无token访问session: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 伪造token访问session: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 过期token访问session: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  7️⃣  修改密码
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A25-修改密码-正向 [90m([90m35ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密后恢复原密码 [90m([90m26ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-当前密码错误 [90m([90m25ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-新密码太短 [90m([90m25ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-未登录 [90m([33m1640ms[0m)[0m
+  ── 合计: 5 | [32m通过 0[0m | [31m失败 5[0m
+
+  ❌ 失败用例:
+     - A25-修改密码-正向: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 改密后恢复原密码: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 改密-当前密码错误: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 改密-新密码太短: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 改密-未登录: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+════════════════════════════════════════════════════════════
+  8️⃣  注册
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A13-新用户注册 [90m([33m1644ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-手机号格式错误 [90m([33m1604ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-已存在手机号 [90m([33m1617ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-缺少验证码 [90m([33m1595ms[0m)[0m
+  ── 合计: 4 | [32m通过 0[0m | [31m失败 4[0m
+
+  ❌ 失败用例:
+     - A13-新用户注册: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 注册-手机号格式错误: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 注册-已存在手机号: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+     - 注册-缺少验证码: [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+=== auth 完成: 34条 | 通过 0 | 失败 34 | 耗时 45091ms ===
+  FAIL: A01-admin密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: R01-招生密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: T01-讲师密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: S01-培训主管密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: B01-经纪人密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: W01-阿姨运营密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: K01-阿姨密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: C01-客户密码登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 登录返回token含user字段 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 缺少手机号 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 缺少密码 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 空请求体 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 手机号格式错误(含字母) | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 密码错误 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 手机号不存在 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 超长手机号(20位) | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 超短手机号(5位) | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 密码最小长度1位 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 空字符串手机号 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 同一账号连续登录2次 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 有效token获取session | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 获取用户profile | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 无token访问session | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 伪造token访问session | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 过期token访问session | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: A25-修改密码-正向 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 改密后恢复原密码 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 改密-当前密码错误 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 改密-新密码太短 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 改密-未登录 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: A13-新用户注册 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 注册-手机号格式错误 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 注册-已存在手机号 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+  FAIL: 注册-缺少验证码 | [500] "<!DOCTYPE html><html><head><meta charSet=\"utf-8\" data-next-head=\"\"/><meta name=\"viewport\" content=\"width=device-width\" data-next-head=\"\"/><style data-next-hide-fouc=\"true\">body{display:no
+
+📋 报告已保存: f:\CB-szjfp\reports\auth_result.json

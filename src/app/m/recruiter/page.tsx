@@ -36,7 +36,7 @@ export default function RecruiterHomePage() {
 
   const myReferrals = mockReferrals.filter(r => r.referrerId === user?.id);
   const totalCommission = myReferrals.reduce((s, r) => s + r.commissionAmount, 0);
-  const employedWorkers = mockWorkers.filter(w => w.creatorId === user?.id && w.status === 'working');
+  const employedWorkers = mockWorkers.filter(w => w.creatorId === user?.id && w.status === 'busy');
   const monthlyLeads = mockRecruiterLeads.filter(l => l.createdAt >= '2025-01-01');
 
   const handleAddLead = async () => {
@@ -62,29 +62,35 @@ export default function RecruiterHomePage() {
     setLeadName(''); setLeadPhone(''); setLeadAge(''); setLeadOrigin(''); setLeadIntention(''); setLeadNote('');
   };
 
-  const handleConvertToResume = async (leadId: string) => {
+  const handleSignLead = async (leadId: string) => {
     const lead = mockRecruiterLeads.find(l => l.id === leadId);
-    if (lead) {
-      const result = await createRecord('workers', {
-        name: lead.name,
-        phone: lead.phone,
-        age: lead.age || null,
-        origin: lead.origin || null,
-        job_types: lead.intention || null,
-        gender: lead.gender || '女',
-        experience_years: 0,
-        status: 'idle',
-        resume_review_status: 'pending',
-        change_summary: `线索转简历（来源：${lead.name}）`,
+    if (!lead) return;
+    if (lead.status === 'signed') {
+      alert('该线索已签约');
+      return;
+    }
+    if (!confirm(`确认将 ${lead.name} 签约？签约后将自动创建待审核简历。`)) return;
+    try {
+      const res = await fetch(`/api/leads/${leadId}/convert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-session': localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token') || '' },
+        body: JSON.stringify({
+          job_types: lead.intention || '',
+          experience_years: 0,
+          expected_salary_min: 4000,
+          expected_salary_max: 6000,
+        }),
       });
+      const result = await res.json();
       if (result.success) {
-        await updateRecord('leads', leadId, { status: 'converted' });
-        await initDataFromApi(); // 刷新数据
-        alert(`已将 ${lead.name} 的线索转成正式简历！\n简历待审核通过后可在阿姨列表中查看`);
+        await initDataFromApi();
+        alert(`已签约！${lead.name} 的简历已自动创建，等待管理员审核。`);
       } else {
-        alert('转换失败: ' + (result.error || '请重试'));
+        alert('签约失败: ' + (result.error || '请重试'));
       }
       setSelectedLead(null);
+    } catch {
+      alert('签约失败，请重试');
     }
   };
 
@@ -165,7 +171,7 @@ export default function RecruiterHomePage() {
           </button>
         </div>
         <div className="space-y-2">
-          {mockRecruiterLeads.filter(l => l.status === 'contacted').map(lead => (
+          {mockRecruiterLeads.filter(l => l.status === 'following').map(lead => (
             <div
               key={lead.id}
               className="bg-white rounded-xl p-3 shadow-sm cursor-pointer active:bg-slate-50"
@@ -180,10 +186,8 @@ export default function RecruiterHomePage() {
                     <span className="text-sm font-medium text-slate-800">{lead.name}</span>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       lead.status === 'new' ? 'bg-slate-100 text-slate-600' :
-                      lead.status === 'contacted' ? 'bg-blue-50 text-blue-600' :
-                      lead.status === 'training' ? 'bg-purple-50 text-purple-600' :
-                      lead.status === 'qualified' ? 'bg-green-50 text-green-600' :
-                      lead.status === 'converted' ? 'bg-amber-50 text-amber-600' :
+                      lead.status === 'following' ? 'bg-blue-50 text-blue-600' :
+                      lead.status === 'signed' ? 'bg-green-50 text-green-600' :
                       'bg-red-50 text-red-600'
                     }`}>{LEAD_STATUS_LABELS[lead.status]}</span>
                   </div>
@@ -200,9 +204,9 @@ export default function RecruiterHomePage() {
                   <div className="flex text-xs"><span className="text-slate-400 w-16">日期：</span><span className="text-slate-700">{lead.createdAt}</span></div>
                   <div className="flex gap-2 mt-2">
                     <a href={`tel:${lead.phone}`} className="flex-1 py-2 bg-green-500 text-white text-xs rounded-lg text-center">呼叫</a>
-                    {lead.status === 'qualified' && (
-                      <button onClick={(e) => { e.stopPropagation(); handleConvertToResume(lead.id); }}
-                        className="flex-1 py-2 bg-amber-500 text-white text-xs rounded-lg">转简历</button>
+                    {lead.status !== 'signed' && lead.status !== 'lost' && (
+                      <button onClick={(e) => { e.stopPropagation(); handleSignLead(lead.id); }}
+                        className="flex-1 py-2 bg-amber-500 text-white text-xs rounded-lg">签约</button>
                     )}
                   </div>
                 </div>
