@@ -34,7 +34,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   
   // 线索相关
   'leads:read': ['admin', 'recruiter', 'agent', 'worker_operator', 'training_supervisor'],
-  'leads:write': ['admin', 'recruiter', 'worker_operator', 'training_supervisor'],
+  'leads:write': ['admin', 'recruiter', 'agent', 'worker_operator', 'training_supervisor'],
   
   // 订单相关
   'orders:read': ['admin', 'agent', 'customer', 'worker', 'worker_operator', 'recruiter', 'training_supervisor'],
@@ -43,11 +43,11 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   
   // 课程相关
   'courses:read': ['admin', 'instructor', 'recruiter', 'training_supervisor'],
-  'courses:write': ['admin', 'instructor', 'training_supervisor'],
+  'courses:write': ['admin', 'instructor', 'training_supervisor', 'recruiter'],
   'courses:approve': ['admin', 'training_supervisor'],
   
   // 合同相关
-  'contracts:read': ['admin', 'training_supervisor', 'recruiter', 'agent'],
+  'contracts:read': ['admin', 'training_supervisor', 'recruiter', 'agent', 'worker', 'customer'],
   'contracts:write': ['admin', 'agent', 'recruiter', 'training_supervisor'],
   'contracts:approve': ['admin', 'training_supervisor'],
 
@@ -68,15 +68,15 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'recommendations:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'worker', 'training_supervisor'],
 
   // 客户管理相关
-  'customers:read': ['admin', 'agent', 'recruiter'],
-  'customers:write': ['admin', 'agent'],
+  'customers:read': ['admin', 'agent', 'recruiter', 'worker_operator', 'training_supervisor'],
+  'customers:write': ['admin', 'agent', 'worker_operator'],
 
   // 订单签约相关
   'order-signings:read': ['admin', 'agent', 'customer', 'worker', 'recruiter', 'training_supervisor'],
   'order-signings:write': ['admin', 'agent'],
 
   // 报名/学员相关
-  'enrollments:read': ['admin', 'instructor', 'training_supervisor'],
+  'enrollments:read': ['admin', 'instructor', 'training_supervisor', 'recruiter'],
   'enrollments:write': ['admin', 'recruiter', 'instructor'],
   
   // 用户管理
@@ -140,6 +140,16 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   // 培训合同
   'training-contracts:read': ['admin', 'training_supervisor', 'recruiter'],
   'training-contracts:write': ['admin', 'training_supervisor'],
+
+  // 通知 (BUG-32修复: 扩权到所有角色)
+  'notifications:read': ['admin', 'agent', 'recruiter', 'instructor', 'customer', 'worker', 'training_supervisor', 'worker_operator'],
+  'notifications:write': ['admin'],
+
+  // DELETE 操作仅管理员
+  'orders:delete': ['admin'],
+  'leads:delete': ['admin'],
+  'courses:delete': ['admin'],
+  'contracts:delete': ['admin'],
 };
 
 /**
@@ -196,7 +206,7 @@ async function verifyToken(token: string): Promise<AuthSession | null> {
   if (!userId) return null;
   
   try {
-    // 使用 anon key 查询 users 表（RLS 已配置允许读取）
+    // 查 users VIEW
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
     
@@ -208,15 +218,15 @@ async function verifyToken(token: string): Promise<AuthSession | null> {
     
     if (error || !data) return null;
     
-    // 离职/禁用账号
-    if (data.review_status === 'resigned' || !data.is_active) return null;
+    // 禁用账号
+    if (!data.is_active) return null;
     
     return {
       userId: data.id,
       role: data.role,
       name: data.name,
       phone: data.phone || '',
-      reviewStatus: data.review_status,
+      reviewStatus: data.review_status || 'approved',
     };
   } catch {
     return null;
