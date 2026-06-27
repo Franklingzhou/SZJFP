@@ -55,6 +55,7 @@ const roleTabs: Record<string, TabItem[]> = {
   customer: [
     { href: '/m/customer', label: '首页', icon: Home },
     { href: '/m/customer/orders', label: '订单', icon: Briefcase },
+    { href: '/m/customer/contracts', label: '合同', icon: FileText },
     { href: '/m/customer/reviews', label: '评价', icon: Star },
     { href: '/m/customer/profile', label: '我的', icon: User },
   ],

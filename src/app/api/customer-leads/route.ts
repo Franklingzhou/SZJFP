@@ -73,6 +73,19 @@ export async function POST(request: NextRequest) {
     const isFromReferral = source === 'referral';
     const resolvedType = customer_type || (isFromReferral || isAdmin ? 'platform' : 'personal');
 
+    // Admin创建客户时，全局检查手机号是否已存在
+    if (session.role === 'admin' && phone) {
+      const { data: globalDuplicate } = await supabase
+        .from('customer_leads')
+        .select('id, phone')
+        .eq('phone', phone)
+        .maybeSingle();
+
+      if (globalDuplicate) {
+        return NextResponse.json({ error: '该手机号已存在，不能重复添加' }, { status: 409 });
+      }
+    }
+
     // 经纪人创建客户时，检查自己库内手机号是否已存在
     if (session.role === 'agent' && phone) {
       const { data: duplicate } = await supabase

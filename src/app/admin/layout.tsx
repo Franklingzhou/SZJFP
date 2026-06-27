@@ -31,7 +31,12 @@ export default function AdminLayout({
       return;
     }
 
-    // 所有角色均可登录PC端后台
+    // worker和customer角色不能访问PC端后台，重定向到小程序端
+    if (role === 'worker' || role === 'customer') {
+      router.replace(role === 'worker' ? '/m/worker' : '/m/customer');
+      return;
+    }
+
     setAuthChecked(true);
 
     if (!isDataLoaded()) {

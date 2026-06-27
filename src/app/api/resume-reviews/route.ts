@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       const selectOld = 'id, worker_id, status, notes, reviewer_id, reviewed_at, created_at';
       let query2 = supabase
         .from('resume_reviews')
-        .select(selectOld + ', workers(name, job_types, origin)')
+        .select(selectOld + ', workers(name, job_types, origin, lead_id)')
         .order('created_at', { ascending: false });
       if (rStatus) query2 = query2.eq('status', rStatus);
       if (workerId) query2 = query2.eq('worker_id', workerId);

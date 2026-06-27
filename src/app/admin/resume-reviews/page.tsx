@@ -93,22 +93,12 @@ export default function ResumeReviewsPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
 
-      const res = await fetch('/api/resume-reviews/[id]/approve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-session': token,
-        },
-        body: JSON.stringify({ id: reviewId }),
-      });
-
-      // 由于动态路由，需要手动拼接URL
-      const res2 = await fetch(`/api/resume-reviews/${reviewId}/approve`, {
+      const res = await fetch(`/api/resume-reviews/${reviewId}/approve`, {
         method: 'POST',
         headers: { 'x-session': token }
       });
 
-      const data = await res2.json();
+      const data = await res.json();
       if (data.ok || data.success) {
         alert('审核通过');
         loadReviews();
