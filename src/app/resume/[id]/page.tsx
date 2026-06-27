@@ -3,7 +3,8 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { WORKER_STATUS_LABELS } from '@/lib/types';
-import { Shield, Star, Phone, Clock, Award, Heart, Briefcase, ChevronLeft, Share2, Camera, Play, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Shield, Star, Phone, Clock, Heart, Briefcase, ChevronLeft, Share2, Camera, Play, Loader2, Award } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface ReviewItem {
   id: string;
@@ -21,6 +22,25 @@ interface SharedByUser {
   phone: string;
   role: string;
   roleLabel: string;
+}
+
+interface PhotoItem {
+  id: string;
+  type: string;
+  category: string;
+  url: string;
+  sort_order: number;
+}
+
+interface WorkExpItem {
+  id: string;
+  period: string;
+  employer: string;
+  jobType: string;
+  description: string;
+  sortOrder: number;
+  contractId?: string;
+  source?: string;        // manual | contract
 }
 
 interface WorkerData {
@@ -48,6 +68,9 @@ interface WorkerData {
   avgRating: string;
   reviewCount: number;
   sharedByUser: SharedByUser | null;
+  photos: PhotoItem[];
+  videos: PhotoItem[];
+  workExperience: WorkExpItem[];
 }
 
 function PublicResumeContent() {
@@ -59,6 +82,18 @@ function PublicResumeContent() {
   const [worker, setWorker] = useState<WorkerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  // 字段可见性配置（从 worker API 响应中读取，后台管理在 system_settings 配置）
+  const [expVisibility, setExpVisibility] = useState<Record<string, boolean>>({
+    period: true, employer: false, jobType: true, description: true, salary: false,
+  });
+
+  // 雇主名称脱敏：张三 → 张先生，李梅 → 李女士
+  function maskEmployer(name: string): string {
+    if (!name || name.length < 2) return name || '***';
+    const surname = name.charAt(0);
+    const isFemale = /(女士|梅|芳|娜|丽|婷|玲|燕|霞|娟|敏|萍|蓉)$/.test(name);
+    return isFemale ? `${surname}女士` : `${surname}先生`;
+  }
 
   useEffect(() => {
     async function load() {
@@ -81,6 +116,9 @@ function PublicResumeContent() {
           return;
         }
         setWorker(json.data);
+        if (json.data.expVisibility) {
+          setExpVisibility(json.data.expVisibility);
+        }
       } catch {
         setError('网络错误，请检查网络后重试');
       } finally {
@@ -169,38 +207,48 @@ function PublicResumeContent() {
 
       <div className="px-4 py-4 space-y-3">
         {/* 介绍视频 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
-            <Play className="h-4 w-4 text-amber-500" /> 介绍视频
-          </h2>
-          <div className="bg-slate-100 rounded-lg overflow-hidden" style={{aspectRatio: '16/9'}}>
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-              <Play className="h-12 w-12 mb-2" />
-              <span className="text-sm">观看自我介绍视频</span>
+        {worker.videos && worker.videos.length > 0 ? (
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+              <Play className="h-4 w-4 text-amber-500" /> 介绍视频
+            </h2>
+            {worker.videos.map((v) => (
+              <div key={v.id} className="bg-slate-100 rounded-lg overflow-hidden mb-2" style={{aspectRatio: '16/9'}}>
+                <video src={v.url} controls className="w-full h-full object-cover" preload="metadata">
+                  您的浏览器不支持视频播放
+                </video>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+              <Play className="h-4 w-4 text-amber-500" /> 介绍视频
+            </h2>
+            <div className="bg-slate-100 rounded-lg overflow-hidden" style={{aspectRatio: '16/9'}}>
+              <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                <Play className="h-12 w-12 mb-2" />
+                <span className="text-sm">暂无视频介绍</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 照片展示 */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
-            <Camera className="h-4 w-4 text-amber-500" /> 照片展示
-          </h2>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="aspect-square rounded-lg bg-amber-50 flex flex-col items-center justify-center">
-              <Camera className="h-6 w-6 text-amber-300 mb-1" />
-              <span className="text-xs text-amber-400">生活照</span>
-            </div>
-            <div className="aspect-square rounded-lg bg-blue-50 flex flex-col items-center justify-center">
-              <ImageIcon className="h-6 w-6 text-blue-300 mb-1" />
-              <span className="text-xs text-blue-400">工作照</span>
-            </div>
-            <div className="aspect-square rounded-lg bg-green-50 flex flex-col items-center justify-center">
-              <Award className="h-6 w-6 text-green-300 mb-1" />
-              <span className="text-xs text-green-400">资格证</span>
+        {worker.photos.length > 0 && (
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+              <Camera className="h-4 w-4 text-amber-500" /> 照片展示 ({worker.photos.length}张)
+            </h2>
+            <div className="grid grid-cols-3 gap-2">
+              {worker.photos.map((p) => (
+                <div key={p.id} className="aspect-square rounded-lg bg-slate-100 overflow-hidden">
+                  <img src={p.url} alt={p.category || '照片'} className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* 基本信息 */}
         <div className="bg-white rounded-xl p-4 shadow-sm">
@@ -259,6 +307,39 @@ function PublicResumeContent() {
           </p>
         </div>
 
+        {/* 上户记录 */}
+        {worker.workExperience && worker.workExperience.length > 0 && (
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+              <Briefcase className="h-4 w-4 text-amber-500" /> 上户记录
+            </h2>
+            <div className="space-y-2">
+              {worker.workExperience.map((exp) => (
+                <div key={exp.id} className="border-l-2 border-amber-300 pl-3 py-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    {expVisibility.period && (
+                      <Badge className="text-xs bg-amber-50 text-amber-700 border-0">{exp.period}</Badge>
+                    )}
+                    {expVisibility.jobType && exp.jobType && (
+                      <Badge variant="outline" className="text-xs">{exp.jobType}</Badge>
+                    )}
+                    {expVisibility.employer && exp.employer && (
+                      <span className="text-xs text-slate-500">雇主：{maskEmployer(exp.employer)}</span>
+                    )}
+                  </div>
+                  {expVisibility.description && exp.description && (
+                    <p className="text-xs text-slate-500">
+                      {expVisibility.employer
+                        ? exp.description
+                        : exp.description.replace(exp.employer ? `雇主${exp.employer}` : '', '').replace(/^，|，$/g, '').replace('，，', '，')}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 评价 */}
         {worker.reviews.length > 0 && (
           <div className="bg-white rounded-xl p-4 shadow-sm">
@@ -298,10 +379,10 @@ function PublicResumeContent() {
           )}
           <div className="flex gap-3">
             <a
-              href={`tel:${sharedByPerson ? sharedByPerson.phone : worker.phone}`}
-              className="flex-1 bg-amber-500 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-medium"
+              href={`tel:${sharedByPerson?.phone || ''}`}
+              className={`flex-1 bg-amber-500 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-medium ${!sharedByPerson ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              <Phone className="h-5 w-5" /> {sharedByPerson ? `联系${sharedByPerson.roleLabel}` : '电话联系'}
+              <Phone className="h-5 w-5" /> {sharedByPerson ? `联系${sharedByPerson.roleLabel}` : '请通过经纪人联系'}
             </a>
             <button
               onClick={() => {
@@ -311,10 +392,11 @@ function PublicResumeContent() {
                     title: `${worker.name}的家政简历`,
                     text: `${worker.name} - ${worker.jobTypes.join('/')} - ${worker.experienceYears}年经验`,
                     url: shareUrl,
-                  });
+                  }).catch(() => {});
                 } else {
-                  navigator.clipboard.writeText(shareUrl);
-                  alert('链接已复制，可粘贴到微信分享');
+                  navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('链接已复制，可粘贴到微信分享');
+                  });
                 }
               }}
               className="flex-1 bg-slate-800 text-white rounded-xl py-3 flex items-center justify-center gap-2 font-medium"
@@ -322,20 +404,6 @@ function PublicResumeContent() {
               <Share2 className="h-5 w-5" /> 分享简历
             </button>
           </div>
-          {!trainingSent ? (
-            <button
-              onClick={handleRequestTraining}
-              disabled={trainingLoading}
-              className="w-full mt-3 bg-white border-2 border-amber-400 text-amber-600 rounded-xl py-3 flex items-center justify-center gap-2 font-medium hover:bg-amber-50 disabled:opacity-50"
-            >
-              <GraduationCap className="h-5 w-5" />
-              {trainingLoading ? '提交中...' : '想培训'}
-            </button>
-          ) : (
-            <p className="w-full mt-3 text-center text-sm text-green-600 bg-green-50 rounded-xl py-3">
-              ✓ 再培训申请已提交，招生将跟进处理
-            </p>
-          )}
         </div>
       </div>
     </div>

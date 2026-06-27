@@ -82,14 +82,17 @@ export async function PUT(request: NextRequest) {
     if (address !== undefined) updates.address = address;
     if (capacity !== undefined) updates.capacity = capacity;
     if (description !== undefined) updates.description = description;
-    const { data, error } = await supabase.from('venues').update(updates).eq('id', id).select().single();
+    const { data, error } = await supabase.from('venues').update(updates).eq('id', id).select();
     if (error) {
       if (error.message?.includes('does not exist')) {
         return NextResponse.json({ success: true, data: { id, ...updates } });
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json({ success: true, data });
+    if (!data || data.length === 0) {
+      return NextResponse.json({ error: '未找到该场地' }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, data: data[0] });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '更新失败';
     return NextResponse.json({ error: message }, { status: 500 });

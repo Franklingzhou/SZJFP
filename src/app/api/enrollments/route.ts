@@ -63,6 +63,22 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ 
           data: (allData || []).filter(e => (e as Record<string,unknown>).enrolled_by === session.userId) 
         });
+      } else if (session.role === 'worker') {
+        // 阿姨只能看自己的报名：先找自己的worker记录
+        const { data: myWorker } = await supabase
+          .from('workers')
+          .select('id')
+          .eq('user_id', session.userId)
+          .maybeSingle();
+        if (!myWorker) {
+          return NextResponse.json({ data: [] });
+        }
+        const { data: allData } = await supabase
+          .from('enrollments')
+          .select('*')
+          .eq('worker_id', myWorker.id)
+          .order('id', { ascending: false });
+        return NextResponse.json({ data: allData || [] });
       }
     }
 
@@ -189,12 +205,15 @@ export async function POST(request: NextRequest) {
     // 校验worker存在
     const { data: worker, error: workerErr } = await supabase
       .from('workers')
-      .select('id, name')
+      .select('id, name, user_id')
       .eq('id', finalWorkerId)
       .maybeSingle();
     if (workerErr || !worker) {
       return NextResponse.json({ error: '阿姨记录不存在' }, { status: 400 });
     }
+
+    // student_id 有 REFERENCES users(id) 外键约束，必须填 user_id 而非 worker_id
+    const workerUserId = ((worker as Record<string, unknown>).user_id as string) || session.userId;
 
     // 防重复报名
     const { data: existing, error: existErr } = await supabase
@@ -214,8 +233,8 @@ export async function POST(request: NextRequest) {
     const insertData: Record<string, unknown> = {
       id,
       course_id,
+      student_id: workerUserId,  // REFERENCES users(id)，需填 workers.user_id
       worker_id: finalWorkerId,
-      student_name: worker.name || null,
       enrolled_by: session.userId,
       status: 'enrolled',
     };

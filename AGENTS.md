@@ -86,6 +86,19 @@
 - **生产运行**: `pnpm start`
 - **类型检查**: `pnpm ts-check`
 - **Lint**: `pnpm lint`
+- **部署前预检**: `pnpm validate` (ts检查 + lint，必须通过后再部署)
+
+### ⚠️ 部署前必做预检
+
+CloudBase 部署会运行完整的 `next build`（含严格类型检查），遇到第一个错误就会失败。为避免反复部署浪费积分，**每次部署前必须先跑预检**：
+
+```bash
+pnpm validate    # = tsc --noEmit + eslint，一次性暴露所有错误
+```
+
+- 如有类型错误 → 全部修复后再部署
+- 预检通过 → 可以安全部署
+- 不要依赖 `pnpm dev`（dev 模式不严格检查类型）
 
 ## 8种角色体系
 

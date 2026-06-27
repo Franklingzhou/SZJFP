@@ -1,15 +1,20 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { PlatformInfo, CommissionRule, PointRule, CreditRule, ModuleConfig, TextConfig } from '@/lib/types';
-import { Loader2 } from 'lucide-react';
+import type { PlatformInfo, CommissionRule, PointRule, CreditRule, ModuleConfig, TextConfig, ReferralConfig, ReferralType, ReviewWorkflowConfig, ReviewWorkflowItem, WorkerTier, CreditConfig, Role } from '@/lib/types';
+import { ROLE_LABELS as ALL_ROLE_LABELS } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 
-type TabKey = 'platform' | 'commission' | 'points' | 'modules' | 'texts' | 'page_access' | 'certificate' | 'reminder';
+type TabKey = 'platform' | 'commission' | 'points' | 'modules' | 'texts' | 'page_access' | 'certificate' | 'reminder' | 'referral' | 'review_workflow' | 'worker_tiers';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'platform', label: '基本设置' },
   { key: 'commission', label: '佣金配置' },
   { key: 'points', label: '积分规则' },
+  { key: 'referral', label: '推荐配置' },
+  { key: 'worker_tiers', label: '等级体系' },
+  { key: 'review_workflow', label: '审核流程' },
   { key: 'modules', label: '模块管理' },
   { key: 'texts', label: '文字管理' },
   { key: 'certificate', label: '证书设置' },
@@ -80,6 +85,41 @@ const defaultModules: ModuleConfig[] = [
   { id: 'worker_ops_hall', name: '合单大厅', role: 'worker_operator', enabled: true },
 ];
 
+const allRolesList: Role[] = ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker', 'customer'];
+
+const defaultReferralConfig: ReferralConfig = {
+  types: [
+    {
+      id: 'refer_worker', name: '推荐当阿姨', description: '推荐人选成为阿姨，进入线索池待签约',
+      target_pool: 'leads', enabled: true,
+      allowed_roles: ['agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator'],
+      reward: { type: 'commission', commission_percent: 5, points: 0, trigger: 'on_sign' },
+    },
+    {
+      id: 'refer_customer', name: '推荐找阿姨', description: '推荐有需求的客户，进入客户公海库',
+      target_pool: 'customer_leads', enabled: true,
+      allowed_roles: ['agent', 'worker', 'customer', 'recruiter'],
+      reward: { type: 'points', commission_percent: 0, points: 50, trigger: 'on_complete' },
+    },
+  ],
+  global_settings: { max_pending_per_user: 10, auto_approve: true },
+};
+
+const defaultReviewWorkflow: ReviewWorkflowConfig = {
+  workflows: [
+    { id: 'worker_resume', name: '阿姨简历审核', description: '阿姨提交/修改简历后需要审核', enabled: true, reviewer_roles: ['admin', 'training_supervisor', 'worker_operator'] },
+    { id: 'course_publish', name: '课程发布审核', description: '讲师发布课程后需要审核', enabled: true, reviewer_roles: ['admin', 'training_supervisor'] },
+    { id: 'contract_sign', name: '合同签约审核', description: '合同签约需要审核确认', enabled: true, reviewer_roles: ['admin', 'training_supervisor'] },
+    { id: 'course_schedule', name: '排课审核', description: '排课计划需要审核', enabled: true, reviewer_roles: ['admin', 'training_supervisor'] },
+    { id: 'certificate_issue', name: '证书颁发审核', description: '证书颁发是否需要管理员确认', enabled: false, reviewer_roles: ['admin'] },
+    { id: 'lead_claim', name: '公海线索认领审核', description: '公海线索被经纪人认领是否需要审核', enabled: false, reviewer_roles: ['admin'] },
+  ],
+};
+
+const defaultCreditConfig: CreditConfig = {
+  initial_score: 1000, min_score: 0, blacklist_threshold: 300, restore_days: 30,
+};
+
 const defaultTexts: TextConfig[] = [
   { id: 't1', key: 'worker_welcome', label: '阿姨欢迎语', group: 'worker', value: '欢迎回来，今天也要加油哦！' },
   { id: 't2', key: 'agent_welcome', label: '经纪人欢迎语', group: 'agent', value: '新的一天，新的匹配机会！' },
@@ -128,6 +168,21 @@ async function loadSettingsFromAPI(): Promise<Record<string, unknown> | null> {
   }
 }
 
+// 加载 worker_tiers
+async function loadWorkerTiersFromAPI(): Promise<WorkerTier[] | null> {
+  try {
+    const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+    const headers: Record<string, string> = {};
+    if (token) headers['x-session'] = token;
+    const res = await fetch('/api/worker-tiers', { headers });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('platform');
   const [loading, setLoading] = useState(true);
@@ -146,6 +201,10 @@ export default function SettingsPage() {
     contract_unsigned_hours: 72,
     enrollment_unscheduled_days: 7,
   });
+  const [referralConfig, setReferralConfig] = useState<ReferralConfig>(JSON.parse(JSON.stringify(defaultReferralConfig)));
+  const [reviewWorkflow, setReviewWorkflow] = useState<ReviewWorkflowConfig>(JSON.parse(JSON.stringify(defaultReviewWorkflow)));
+  const [workerTiers, setWorkerTiers] = useState<WorkerTier[]>([]);
+  const [creditConfig, setCreditConfig] = useState<CreditConfig>({ ...defaultCreditConfig });
 
   // 从API加载设置
   const loadSettings = useCallback(async () => {
@@ -209,6 +268,17 @@ export default function SettingsPage() {
           enrollment_unscheduled_days: typeof rem.enrollment_unscheduled_days === 'number' ? rem.enrollment_unscheduled_days : prev.enrollment_unscheduled_days,
         }));
       }
+      if (settingsMap.referral_config && typeof settingsMap.referral_config === 'object') {
+        setReferralConfig(settingsMap.referral_config as ReferralConfig);
+      }
+      if (settingsMap.review_workflow && typeof settingsMap.review_workflow === 'object') {
+        setReviewWorkflow(settingsMap.review_workflow as ReviewWorkflowConfig);
+      }
+      if (settingsMap.credit_config && typeof settingsMap.credit_config === 'object') {
+        setCreditConfig({ ...defaultCreditConfig, ...(settingsMap.credit_config as CreditConfig) });
+      }
+      // worker_tiers 从独立 API 加载
+      loadWorkerTiersFromAPI().then(tiers => { if (tiers) setWorkerTiers(tiers); }).catch(() => {});
     } catch {
       // API不可用，使用默认值
     } finally {
@@ -255,12 +325,15 @@ export default function SettingsPage() {
 
       {activeTab === 'platform' && <PlatformSettings info={platformInfo} setInfo={setPlatformInfo} />}
       {activeTab === 'commission' && <CommissionSettings rules={commissionRules} setRules={setCommissionRules} />}
-      {activeTab === 'points' && <PointsSettings pointRules={pointRules} setPointRules={setPointRules} creditRules={creditRules} setCreditRules={setCreditRules} />}
+      {activeTab === 'points' && <PointsSettings pointRules={pointRules} setPointRules={setPointRules} creditRules={creditRules} setCreditRules={setCreditRules} creditConfig={creditConfig} setCreditConfig={setCreditConfig} />}
       {activeTab === 'modules' && <ModulesSettings modules={modules} setModules={setModules} />}
       {activeTab === 'texts' && <TextsSettings texts={texts} setTexts={setTexts} />}
       {activeTab === 'certificate' && <CertificateSettings certMode={certMode} setCertMode={setCertMode} />}
       {activeTab === 'reminder' && <ReminderSettings settings={reminderSettings} setSettings={setReminderSettings} />}
       {activeTab === 'page_access' && <PageAccessSettings pageAccess={pageAccess} setPageAccess={setPageAccess} />}
+      {activeTab === 'referral' && <ReferralSettings config={referralConfig} setConfig={setReferralConfig} />}
+      {activeTab === 'review_workflow' && <ReviewWorkflowSettings config={reviewWorkflow} setConfig={setReviewWorkflow} />}
+      {activeTab === 'worker_tiers' && <WorkerTiersSettings tiers={workerTiers} setTiers={setWorkerTiers} />}
     </div>
   );
 }
@@ -581,9 +654,10 @@ function PageAccessSettings({ pageAccess, setPageAccess }: {
 }
 
 /* ==================== 积分规则 ==================== */
-function PointsSettings({ pointRules, setPointRules, creditRules, setCreditRules }: {
+function PointsSettings({ pointRules, setPointRules, creditRules, setCreditRules, creditConfig, setCreditConfig }: {
   pointRules: PointRule[]; setPointRules: (v: PointRule[]) => void;
   creditRules: CreditRule[]; setCreditRules: (v: CreditRule[]) => void;
+  creditConfig: CreditConfig; setCreditConfig: (v: CreditConfig) => void;
 }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -591,12 +665,13 @@ function PointsSettings({ pointRules, setPointRules, creditRules, setCreditRules
 
   const handleSave = async () => {
     setSaving(true);
-    const [ok1, ok2] = await Promise.all([
+    const [ok1, ok2, ok3] = await Promise.all([
       saveSetting('point_rules', pointRules),
       saveSetting('credit_rules', creditRules),
+      saveSetting('credit_config', creditConfig),
     ]);
     setSaving(false);
-    setSaved(ok1 && ok2);
+    setSaved(ok1 && ok2 && ok3);
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -649,7 +724,31 @@ function PointsSettings({ pointRules, setPointRules, creditRules, setCreditRules
       )}
 
       {subTab === 'credit' && (
-        <div className="bg-white rounded-lg border overflow-hidden">
+        <div className="space-y-4">
+          {/* 诚信分全局配置 */}
+          <div className="bg-white rounded-lg border p-4">
+            <h3 className="font-medium text-slate-800 mb-3">全局设置</h3>
+            <div className="grid grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">初始分数</label>
+                <input type="number" value={creditConfig.initial_score} onChange={e => setCreditConfig({ ...creditConfig, initial_score: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">最低分数</label>
+                <input type="number" value={creditConfig.min_score} onChange={e => setCreditConfig({ ...creditConfig, min_score: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">黑名单阈值</label>
+                <input type="number" value={creditConfig.blacklist_threshold} onChange={e => setCreditConfig({ ...creditConfig, blacklist_threshold: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">解冻天数</label>
+                <input type="number" value={creditConfig.restore_days} onChange={e => setCreditConfig({ ...creditConfig, restore_days: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              </div>
+            </div>
+          </div>
+          {/* 事件规则 */}
+          <div className="bg-white rounded-lg border overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-slate-50">
               <tr>
@@ -680,6 +779,7 @@ function PointsSettings({ pointRules, setPointRules, creditRules, setCreditRules
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
@@ -1042,6 +1142,295 @@ function TextsSettings({ texts, setTexts }: { texts: TextConfig[]; setTexts: (v:
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ==================== 推荐配置 ==================== */
+function ReferralSettings({ config, setConfig }: { config: ReferralConfig; setConfig: (v: ReferralConfig) => void }) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await saveSetting('referral_config', config);
+    setSaving(false);
+    setSaved(ok);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const toggleRole = (typeIdx: number, role: Role) => {
+    const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+    const roles = newConfig.types[typeIdx].allowed_roles;
+    if (roles.includes(role)) {
+      newConfig.types[typeIdx].allowed_roles = roles.filter((r: Role) => r !== role);
+    } else {
+      newConfig.types[typeIdx].allowed_roles = [...roles, role];
+    }
+    setConfig(newConfig);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
+          {saving ? '保存中...' : saved ? '已保存' : '保存配置'}
+        </button>
+      </div>
+      <div className="bg-white rounded-lg border p-6">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">全局推荐设置</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1">每人最多待处理推荐数</label>
+            <input type="number" value={config.global_settings.max_pending_per_user} onChange={e => setConfig({ ...config, global_settings: { ...config.global_settings, max_pending_per_user: Number(e.target.value) } })} className="w-full px-3 py-2 border rounded-md text-sm" />
+          </div>
+          <div className="flex items-end pb-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={config.global_settings.auto_approve} onChange={e => setConfig({ ...config, global_settings: { ...config.global_settings, auto_approve: e.target.checked } })} className="w-4 h-4 accent-[#1e3a5f]" />
+              <span className="text-sm text-slate-600">推荐自动通过（无需审核）</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      {config.types.map((type, idx) => (
+        <div key={type.id} className="bg-white rounded-lg border p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">{type.name}</h3>
+              <p className="text-sm text-slate-500">{type.description}</p>
+            </div>
+            <button onClick={() => {
+              const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+              newConfig.types[idx].enabled = !type.enabled;
+              setConfig(newConfig);
+            }} className={`px-3 py-1 text-xs rounded-full ${type.enabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              {type.enabled ? '已启用' : '已停用'}
+            </button>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">允许发起推荐的角色</label>
+            <div className="flex flex-wrap gap-2">
+              {allRolesList.filter(r => r !== 'admin').map(role => {
+                const checked = type.allowed_roles.includes(role);
+                return (
+                  <label key={role} className={`px-3 py-1.5 rounded-full text-xs cursor-pointer border transition-colors ${checked ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'bg-white text-slate-600 border-slate-300 hover:border-[#1e3a5f]'}`}>
+                    <input type="checkbox" checked={checked} onChange={() => toggleRole(idx, role)} className="sr-only" />
+                    {ALL_ROLE_LABELS[role] || role}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">奖励设置</label>
+            <div className="grid grid-cols-3 gap-4 bg-slate-50 rounded-lg p-4">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">奖励类型</label>
+                <select value={type.reward.type} onChange={e => {
+                  const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+                  newConfig.types[idx].reward.type = e.target.value as 'commission' | 'points' | 'both';
+                  setConfig(newConfig);
+                }} className="w-full px-3 py-1.5 border rounded-md text-sm">
+                  <option value="commission">佣金</option>
+                  <option value="points">积分</option>
+                  <option value="both">佣金+积分</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">佣金比例(%)</label>
+                <input type="number" value={type.reward.commission_percent} onChange={e => {
+                  const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+                  newConfig.types[idx].reward.commission_percent = Number(e.target.value);
+                  setConfig(newConfig);
+                }} className="w-full px-3 py-1.5 border rounded-md text-sm" min={0} max={100} />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">积分奖励</label>
+                <input type="number" value={type.reward.points} onChange={e => {
+                  const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+                  newConfig.types[idx].reward.points = Number(e.target.value);
+                  setConfig(newConfig);
+                }} className="w-full px-3 py-1.5 border rounded-md text-sm" min={0} />
+              </div>
+            </div>
+            <div className="mt-2">
+              <label className="block text-xs text-slate-500 mb-1">触发条件</label>
+              <select value={type.reward.trigger} onChange={e => {
+                const newConfig = JSON.parse(JSON.stringify(config)) as ReferralConfig;
+                newConfig.types[idx].reward.trigger = e.target.value as 'on_sign' | 'on_complete';
+                setConfig(newConfig);
+              }} className="w-full px-3 py-1.5 border rounded-md text-sm max-w-xs">
+                <option value="on_sign">被推荐人签约即奖励</option>
+                <option value="on_complete">被推荐人完单才奖励</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ==================== 审核流程配置 ==================== */
+function ReviewWorkflowSettings({ config, setConfig }: { config: ReviewWorkflowConfig; setConfig: (v: ReviewWorkflowConfig) => void }) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const ok = await saveSetting('review_workflow', config);
+    setSaving(false);
+    setSaved(ok);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const toggleReviewer = (wfIdx: number, role: Role) => {
+    const newConfig = JSON.parse(JSON.stringify(config)) as ReviewWorkflowConfig;
+    const roles = newConfig.workflows[wfIdx].reviewer_roles;
+    if (roles.includes(role)) {
+      newConfig.workflows[wfIdx].reviewer_roles = roles.filter((r: Role) => r !== role);
+    } else {
+      newConfig.workflows[wfIdx].reviewer_roles = [...roles, role];
+    }
+    setConfig(newConfig);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
+          {saving ? '保存中...' : saved ? '已保存' : '保存配置'}
+        </button>
+      </div>
+      {config.workflows.map((wf, idx) => (
+        <div key={wf.id} className="bg-white rounded-lg border p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-slate-800">{wf.name}</h3>
+              <p className="text-sm text-slate-500">{wf.description}</p>
+            </div>
+            <button onClick={() => {
+              const newConfig = JSON.parse(JSON.stringify(config)) as ReviewWorkflowConfig;
+              newConfig.workflows[idx].enabled = !wf.enabled;
+              setConfig(newConfig);
+            }} className={`relative w-10 h-5 rounded-full transition-colors ${wf.enabled ? 'bg-green-500' : 'bg-slate-300'}`}>
+              <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${wf.enabled ? 'left-5' : 'left-0.5'}`} />
+            </button>
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-2">审核人角色</label>
+            <div className="flex flex-wrap gap-2">
+              {(['admin', 'training_supervisor', 'worker_operator'] as Role[]).map(role => {
+                const checked = wf.reviewer_roles.includes(role);
+                return (
+                  <label key={role} className={`px-3 py-1.5 rounded-full text-xs cursor-pointer border transition-colors ${checked ? 'bg-[#1e3a5f] text-white border-[#1e3a5f]' : 'bg-white text-slate-600 border-slate-300 hover:border-[#1e3a5f]'}`}>
+                    <input type="checkbox" checked={checked} onChange={() => toggleReviewer(idx, role)} className="sr-only" />
+                    {ALL_ROLE_LABELS[role] || role}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ==================== 等级体系 ==================== */
+function WorkerTiersSettings({ tiers, setTiers }: { tiers: WorkerTier[]; setTiers: (v: WorkerTier[]) => void }) {
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['x-session'] = token;
+      const results = await Promise.all(tiers.map(tier =>
+        fetch('/api/worker-tiers', { method: 'PUT', headers, body: JSON.stringify(tier) }).then(r => r.json())
+      ));
+      const allOk = results.every((r: { ok?: boolean }) => r.ok);
+      setSaving(false);
+      setSaved(allOk);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {
+      setSaving(false);
+    }
+  };
+
+  const updateField = (idx: number, field: keyof WorkerTier, value: number | string | boolean) => {
+    setTiers(tiers.map((t, i) => i === idx ? { ...t, [field]: value } : t));
+  };
+
+  if (tiers.length === 0) {
+    return (
+      <div className="text-center text-slate-400 py-12">
+        等级数据加载中...<br />
+        <span className="text-xs">请确认已执行 migration_referral_v2_fix.sql</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
+          {saving ? '保存中...' : saved ? '已保存' : '保存等级配置'}
+        </button>
+      </div>
+      <div className="bg-white rounded-lg border overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50">
+            <tr>
+              <th className="text-left px-3 py-3 font-medium text-slate-600">名称</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">等级</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">最低完单</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">最低评分</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">最低续单率</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">时薪加成(元)</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">优先派单</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">保证金减免(元)</th>
+              <th className="text-center px-2 py-3 font-medium text-slate-600">徽章颜色</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {tiers.map((tier, idx) => (
+              <tr key={tier.id} className="hover:bg-slate-50">
+                <td className="px-3 py-2">
+                  <input type="text" value={tier.name} onChange={e => updateField(idx, 'name', e.target.value)} className="w-full px-2 py-1 border rounded text-sm" />
+                </td>
+                <td className="text-center px-2 py-2 font-medium">{tier.level}</td>
+                <td className="text-center px-2 py-2">
+                  <input type="number" value={tier.min_orders} onChange={e => updateField(idx, 'min_orders', Number(e.target.value))} className="w-16 px-2 py-1 border rounded text-sm text-center" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <input type="number" step="0.1" value={tier.min_rating} onChange={e => updateField(idx, 'min_rating', Number(e.target.value))} className="w-16 px-2 py-1 border rounded text-sm text-center" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <input type="number" step="0.001" value={tier.min_reorder_rate} onChange={e => updateField(idx, 'min_reorder_rate', Number(e.target.value))} className="w-20 px-2 py-1 border rounded text-sm text-center" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <input type="number" value={tier.hourly_premium} onChange={e => updateField(idx, 'hourly_premium', Number(e.target.value))} className="w-16 px-2 py-1 border rounded text-sm text-center" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <input type="checkbox" checked={tier.priority} onChange={e => updateField(idx, 'priority', e.target.checked)} className="w-4 h-4 accent-[#1e3a5f]" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <input type="number" value={tier.deposit_reduction} onChange={e => updateField(idx, 'deposit_reduction', Number(e.target.value))} className="w-16 px-2 py-1 border rounded text-sm text-center" />
+                </td>
+                <td className="text-center px-2 py-2">
+                  <div className="flex items-center gap-1 justify-center">
+                    <input type="text" value={tier.badge_color} onChange={e => updateField(idx, 'badge_color', e.target.value)} className="w-20 px-2 py-1 border rounded text-sm" />
+                    <span className="w-4 h-4 rounded-full inline-block border" style={{ backgroundColor: tier.badge_color }} />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

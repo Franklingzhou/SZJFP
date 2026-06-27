@@ -20,10 +20,11 @@ export async function GET(request: NextRequest) {
     const targetRole = request.nextUrl.searchParams.get('target_role');
     const orderId = request.nextUrl.searchParams.get('order_id');
     const hiddenParam = request.nextUrl.searchParams.get('hidden');
+    const statusParam = request.nextUrl.searchParams.get('status');
     // 1. 查评价记录
     let query = supabase
       .from('reviews')
-      .select('id, target_user_id, target_role, reviewer_id, reviewer_role, order_id, rating, content, hidden, created_at, updated_at')
+      .select('id, target_user_id, target_role, reviewer_id, reviewer_role, order_id, rating, content, hidden, status, hide_reason, created_at, updated_at')
       .order('created_at', { ascending: false });
 
     if (targetUserId) query = query.eq('target_user_id', targetUserId);
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
     if (orderId) query = query.eq('order_id', orderId);
     if (hiddenParam === 'true') query = query.eq('hidden', true);
     else if (hiddenParam === 'false') query = query.eq('hidden', false);
-    // hidden参数不传时返回全部（包含hidden和未hidden）
+    if (statusParam) query = query.eq('status', statusParam);
+    // hidden/status参数不传时返回全部
 
     const { data, error } = await query;
 
@@ -133,8 +135,23 @@ export async function PUT(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 白名单：只允许改3个字段
-    const allowedFields = ['rating', 'content', 'hidden'];
+    // 2.0: 校验所有权 — 只能编辑自己的评价（admin除外）
+    if (session.role !== 'admin') {
+      const { data: existingReview } = await supabase
+        .from('reviews')
+        .select('reviewer_id')
+        .eq('id', id)
+        .maybeSingle();
+      if (!existingReview) {
+        return NextResponse.json({ error: '未找到该评价' }, { status: 404 });
+      }
+      if ((existingReview as Record<string, unknown>).reviewer_id !== session.userId) {
+        return NextResponse.json({ error: '只能编辑自己的评价' }, { status: 403 });
+      }
+    }
+
+    // 白名单：允许修改的字段
+    const allowedFields = ['rating', 'content', 'hidden', 'status', 'hide_reason'];
     const safeUpdates: Record<string, unknown> = {};
     for (const key of allowedFields) {
       if (key in updates) safeUpdates[key] = updates[key];
@@ -162,6 +179,27 @@ export async function PUT(request: NextRequest) {
     console.error('[reviews PUT] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+// 2.0 互评矩阵：谁可以评价谁
+// admin / training_supervisor 不参与互评
+// customer 不可评 recruiter, worker_operator
+// recruiter / instructor / worker_operator 不可评 customer
+const REVIEW_MATRIX: Record<string, string[]> = {
+  customer:          ['worker', 'agent', 'instructor'],
+  worker:            ['customer', 'agent', 'recruiter', 'instructor', 'worker_operator'],
+  agent:             ['worker', 'agent', 'customer', 'recruiter', 'instructor', 'worker_operator'],
+  recruiter:         ['worker', 'agent', 'instructor', 'worker_operator'],
+  instructor:        ['worker', 'agent', 'recruiter', 'worker_operator'],
+  worker_operator:   ['worker', 'agent', 'recruiter', 'instructor'],
+};
+
+function checkReviewPermission(reviewerRole: string, targetRole: string): boolean {
+  // 管理员和培训主管不参与互评
+  if (reviewerRole === 'admin' || reviewerRole === 'training_supervisor') return false;
+  const allowedTargets = REVIEW_MATRIX[reviewerRole];
+  if (!allowedTargets) return false;
+  return allowedTargets.includes(targetRole);
 }
 
 // POST /api/reviews — 新增评价
@@ -239,13 +277,34 @@ export async function POST(request: NextRequest) {
     }
   }
     // 如果提供了target_type，用作target_role
-    const resolvedTargetRole = target_role || target_type || null;
+    let resolvedTargetRole = target_role || target_type || null;
     // 优先使用content，fallback到comment
     const resolvedContent = content || comment || '';
     // 从session取评价人信息
     const resolvedReviewer = reviewer_id || session.userId;
     const resolvedRole = reviewer_role || session.role;
 
+    // 2.0: 如果未传 target_role，从 users 表查目标用户角色
+    if (!resolvedTargetRole && resolvedTarget) {
+      const { data: targetUserInfo } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', resolvedTarget)
+        .maybeSingle();
+      if (targetUserInfo) {
+        resolvedTargetRole = (targetUserInfo as Record<string, unknown>).role as string;
+      }
+    }
+
+    // 2.0 互评矩阵校验
+    if (!resolvedTargetRole) {
+      return NextResponse.json({ error: '无法确定被评价人角色，请提供 target_role' }, { status: 400 });
+    }
+    if (!checkReviewPermission(resolvedRole, resolvedTargetRole)) {
+      return NextResponse.json({ error: `角色 ${resolvedRole} 不能评价 ${resolvedTargetRole}` }, { status: 403 });
+    }
+
+    // 审核上线：新评价默认待审核（hidden=true, status='pending'）
     const reviewId = crypto.randomUUID();
     const { data, error } = await supabase
       .from('reviews')
@@ -255,7 +314,8 @@ export async function POST(request: NextRequest) {
         target_role: resolvedTargetRole,
         reviewer_id: resolvedReviewer,
         reviewer_role: resolvedRole,
-        rating, content: resolvedContent, hidden: false,
+        rating, content: resolvedContent, hidden: true,
+        status: 'pending',
         order_id: order_id || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

@@ -134,6 +134,7 @@ export async function POST(
 
     const resultData = data as Record<string, unknown>;
     return NextResponse.json({
+      success: true,
       ok: true,
       data: {
         ...resultData,

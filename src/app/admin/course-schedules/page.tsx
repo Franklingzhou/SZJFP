@@ -114,7 +114,7 @@ export default function CourseSchedulesPage() {
       const res = await fetch(`/api/course-schedules/${approveItem.id}/approve`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ action: approveAction, review_note: approveNote }),
+        body: JSON.stringify({ approved: approveAction === 'approved', reason: approveNote }),
       });
       const data = await res.json();
       if (data.ok) {

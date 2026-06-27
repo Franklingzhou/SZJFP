@@ -92,6 +92,12 @@ async function createOrBindUser(
       return existing;
     }
 
+    // 外部角色（阿姨/客户）注册自动通过，内部角色需管理员审核
+    const externalRoles = ['worker', 'customer'];
+    const isExternal = externalRoles.includes(role);
+    const autoApproved = isExternal;
+    const initReviewStatus = autoApproved ? 'approved' : 'pending';
+
     // 创建新用户
     const newUserId = `u_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const newUserName = name || roleLabels[role] || '新用户';
@@ -105,8 +111,8 @@ async function createOrBindUser(
         phone: newUserPhone,
         role,
         wechat_openid: openid,
-        review_status: 'pending', // 新用户默认待审核
-        is_active: true,
+        review_status: initReviewStatus,
+        is_active: autoApproved,
       })
       .select('id, name, phone, role, review_status')
       .single();

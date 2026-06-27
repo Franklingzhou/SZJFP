@@ -72,6 +72,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 外部角色（阿姨/客户）注册自动通过，内部角色需管理员审核
+    const externalRoles = ['worker', 'customer'];
+    const isExternal = externalRoles.includes(validRole);
+    const autoApproved = isExternal;
+
     // 创建用户
     const userId = `u_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const { data: newUser, error: insertError } = await supabase
@@ -81,8 +86,8 @@ export async function POST(request: NextRequest) {
         phone,
         name,
         role: validRole,
-        is_active: false,
-        review_status: 'pending',
+        is_active: autoApproved,
+        review_status: autoApproved ? 'approved' : 'pending',
         register_source: 'self',
         password_hash: '123456',
       })
@@ -94,6 +99,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: '注册失败，请稍后重试' },
         { status: 500 }
+      );
+    }
+
+    // 外部角色自动通过直接返回token，内部角色需等待审核
+    if (autoApproved) {
+      const token = generateToken(newUser.id);
+      return NextResponse.json(
+        {
+          success: true,
+          message: '注册成功',
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            phone: newUser.phone,
+            role: newUser.role,
+            review_status: newUser.review_status,
+          },
+          token,
+        },
+        { status: 201 }
       );
     }
 
@@ -148,4 +173,11 @@ async function verifyCode(phone: string, code: string): Promise<boolean> {
   } catch {
     return code === '888888';
   }
+}
+
+function generateToken(userId: string): string {
+  const secret = process.env.JWT_SECRET || 'dev-secret-key';
+  const timestamp = Date.now();
+  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
+  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
 }

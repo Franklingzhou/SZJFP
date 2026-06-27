@@ -27,6 +27,7 @@ const roleTabs: Record<string, TabItem[]> = {
   worker: [
     { href: '/m/worker', label: '首页', icon: Home },
     { href: '/m/worker/jobs', label: '接单', icon: Briefcase },
+    { href: '/m/worker/customers', label: '客户', icon: Users },
     { href: '/m/worker/reviews', label: '评价', icon: Star },
     { href: '/m/worker/profile', label: '我的', icon: User },
   ],

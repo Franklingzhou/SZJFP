@@ -46,7 +46,7 @@ export async function POST(
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ success: true, ok: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '确认失败';
     console.error('[platform-fees confirm] Error:', message);

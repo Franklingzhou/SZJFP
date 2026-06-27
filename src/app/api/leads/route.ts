@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     // v10: 先尝试完整列查询，失败则用基础列（兼容迁移状态）
     const fullColumns = 'id, name, phone, age, origin, intention, source, gender, level, is_public, status, note, recruiter_id, signed_at, signed_by, sign_worker_id, want_training, created_at, updated_at';
-    const basicColumns = 'id, name, phone, source, gender, is_public, status, created_at, updated_at';
+    const basicColumns = 'id, name, phone, source, gender, is_public, status, recruiter_id, created_at, updated_at';
     
     // 先试完整列
     let { data, error } = await supabase
@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
         .from('leads')
         .select(basicColumns)
         .order('created_at', { ascending: false });
-      data = retry.data;
+      // 基础列回退（兼容旧DB schema），类型断言因字段不完整
+      data = retry.data as any as typeof data;
       error = retry.error;
     }
 
@@ -44,21 +45,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '查询失败' }, { status: 500 });
     }
 
+    // 过滤逻辑：一律走宽松 Record 类型，再用 any 断解释回 data 类型
     if (status) {
       const baseData = (data || []) as Record<string, unknown>[];
-      data = baseData.filter(d => d.status === status);
+      data = baseData.filter(d => d.status === status) as unknown as typeof data;
     }
     if (recruiterId) {
       const baseData = (data || []) as Record<string, unknown>[];
-      data = baseData.filter(d => 
-        (d as Record<string, unknown>).recruiter_id === recruiterId
-      );
+      data = baseData.filter(d => d.recruiter_id === recruiterId) as unknown as typeof data;
     }
     if (level) {
       const baseData = (data || []) as Record<string, unknown>[];
-      data = baseData.filter(d => 
-        (d as Record<string, unknown>).level === level
-      );
+      data = baseData.filter(d => d.level === level) as unknown as typeof data;
     }
 
     // 应用数据权限过滤
@@ -175,6 +173,17 @@ export async function PUT(request: NextRequest) {
       if (key in body) safeUpdates[key] = body[key];
     }
     safeUpdates.updated_at = new Date().toISOString();
+
+    // 2.0: 校验状态值合法性
+    const VALID_LEAD_STATUSES = ['new', 'following', 'signed', 'converted', 'lost'];
+    if (safeUpdates.status && !VALID_LEAD_STATUSES.includes(safeUpdates.status as string)) {
+      return NextResponse.json({ error: `无效的状态值，合法值：${VALID_LEAD_STATUSES.join(', ')}` }, { status: 400 });
+    }
+
+    // 签约状态必须关联阿姨（防御 BUG-3 反复）
+    if (safeUpdates.status === 'signed' && !safeUpdates.sign_worker_id) {
+      return NextResponse.json({ error: '签约状态必须关联阿姨(sign_worker_id)' }, { status: 400 });
+    }
 
     const { data, error } = await supabase
       .from('leads')

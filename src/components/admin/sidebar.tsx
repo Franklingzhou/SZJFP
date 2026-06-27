@@ -38,6 +38,12 @@ import {
   CheckCircle,
   Database,
   Columns,
+  Share2,
+  UserPlus,
+  BarChart3,
+  Layers,
+  ScrollText,
+  Sliders,
 } from 'lucide-react';
 
 // 页面ID到侧边栏href的映射
@@ -58,66 +64,80 @@ const PAGE_ID_TO_HREF: Record<string, string> = {
   'resume-reviews': '/admin/resume-reviews',
   orders: '/admin/orders',
   recommendations: '/admin/recommendations',
+  referrals: '/admin/referrals',
+  'customer-leads': '/admin/customer-leads',
   reviews: '/admin/reviews',
   commission: '/admin/commission',
   settlement: '/admin/settlement',
   credit: '/admin/credit',
   deposits: '/admin/deposit',
+  points: '/admin/points',
 
   refunds: '/admin/refunds',
   'platform-fees': '/admin/platform-fees',
   certificates: '/admin/certificates',
   users: '/admin/users',
-  'role-reviews': '/admin/role-reviews',
+  'role-reviews': '/admin/roles',
   settings: '/admin/settings',
   'role-permissions': '/admin/role-permissions',
   'data-permissions': '/admin/data-permissions',
   'field-permissions': '/admin/field-permissions',
   notifications: '/admin/notifications',
   venues: '/admin/venues',
+  tiers: '/admin/tiers',
+  assessments: '/admin/assessments',
+  levels: '/admin/levels',
+  logs: '/admin/logs',
   'profile-settings': '/admin/profile-settings',
   'my-resume': '/admin/my-resume',
   'my-contracts': '/admin/my-contracts',
 };
 
 // 硬编码默认角色（API不可用时的回退）
+// v3.1: 按8种角色细化权限，确保非admin角色只看到自己需要的菜单
 const DEFAULT_ROLES: Record<string, string[]> = {
-  dashboard: ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker', 'customer'],
-  hall: ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
-  clients: ['admin', 'agent'],
-  leads: ['admin', 'recruiter', 'training_supervisor'],
-  students: ['admin', 'recruiter', 'instructor', 'training_supervisor'],
-  workers: ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
-  courses: ['admin', 'recruiter', 'instructor', 'training_supervisor', 'worker'],
-  contracts: ['admin', 'training_supervisor'],
+  dashboard:          ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker', 'customer'],
+  hall:               ['admin', 'agent', 'recruiter', 'worker_operator'],  // 订单大厅
+  clients:            ['admin', 'agent', 'worker_operator'],               // 客户管理
+  leads:              ['admin', 'recruiter', 'training_supervisor'],
+  students:           ['admin', 'recruiter', 'instructor', 'training_supervisor'],
+  workers:            ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
+  courses:            ['admin', 'recruiter', 'instructor', 'training_supervisor'],
+  contracts:          ['admin', 'training_supervisor', 'worker_operator'],
   'contract-templates': ['admin'],
-  'lead-contracts': ['admin', 'recruiter', 'training_supervisor'],
+  'lead-contracts':   ['admin', 'recruiter', 'training_supervisor'],
   'agency-contracts': ['admin', 'agent'],
   'course-schedules': ['admin', 'instructor', 'training_supervisor'],
-  'course-grading': ['admin', 'instructor', 'training_supervisor'],
-  'resume-reviews': ['admin'],
-  orders: ['admin', 'agent'],
-  recommendations: ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
-  reviews: ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker', 'customer'],
-  commission: ['admin'],
-  settlement: ['admin'],
-  credit: ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
-  deposits: ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
-
-  'platform-fees': ['admin'],
-  refunds: ['admin'],
-  certificates: ['admin', 'instructor', 'training_supervisor'],
-  users: ['admin'],
-  'role-reviews': ['admin'],
-  settings: ['admin'],
+  'course-grading':   ['admin', 'instructor', 'training_supervisor'],
+  'resume-reviews':   ['admin', 'worker_operator'],                        // 简历审核
+  orders:             ['admin', 'agent', 'worker_operator'],
+  recommendations:    ['admin', 'agent', 'recruiter', 'worker_operator'],
+  referrals:          ['admin'],
+  'customer-leads':   ['admin', 'agent'],
+  reviews:            ['admin', 'worker_operator', 'training_supervisor'], // 评价管理（收紧：移除agent/recruiter/instructor）
+  commission:         ['admin'],
+  settlement:         ['admin'],
+  credit:             ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator'],
+  deposits:           ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator'],
+  points:             ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator'],
+  'platform-fees':    ['admin'],
+  refunds:            ['admin'],
+  certificates:       ['admin', 'instructor', 'training_supervisor'],
+  users:              ['admin'],
+  'role-reviews':     ['admin'],                                           // 角色审核
+  settings:           ['admin'],
   'role-permissions': ['admin'],
   'data-permissions': ['admin'],
   'field-permissions': ['admin'],
-  notifications: ['admin'],
-  venues: ['admin'],
+  notifications:      ['admin', 'training_supervisor', 'worker_operator'], // 消息通知
+  venues:             ['admin'],
+  tiers:              ['admin', 'agent', 'worker_operator', 'training_supervisor'],
+  assessments:        ['admin', 'instructor', 'training_supervisor'],        // 考核评估
+  levels:             ['admin', 'instructor', 'training_supervisor'],        // 等级管理
+  logs:               ['admin'],                                             // 操作日志
   'profile-settings': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker', 'customer'],
-  'my-resume': ['worker'],
-  'my-contracts': ['admin', 'agent', 'recruiter', 'training_supervisor', 'worker', 'customer'],
+  'my-resume':        ['worker'],
+  'my-contracts':     ['admin', 'agent', 'recruiter', 'training_supervisor', 'worker', 'customer'],
 };
 
 // 页面标签和图标
@@ -138,12 +158,14 @@ const PAGE_META: Record<string, { label: string; icon: React.ComponentType<{ cla
   'resume-reviews': { label: '简历审核', icon: FileCheck },
   orders: { label: '订单管理', icon: ClipboardList },
   recommendations: { label: '推荐记录', icon: Handshake },
+  referrals: { label: '推荐管理', icon: Gift },
+  'customer-leads': { label: '客户管理', icon: UserPlus },
   reviews: { label: '评价', icon: MessageSquare },
   commission: { label: '佣金配置', icon: DollarSign },
   settlement: { label: '分账管理', icon: Wallet },
   credit: { label: '诚信分管理', icon: Shield },
   deposits: { label: '保证金管理', icon: CreditCard },
-
+  points: { label: '积分管理', icon: Gift },
   'platform-fees': { label: '平台收费', icon: Banknote },
   refunds: { label: '退款管理', icon: Banknote },
   certificates: { label: '证书管理', icon: Award },
@@ -155,6 +177,10 @@ const PAGE_META: Record<string, { label: string; icon: React.ComponentType<{ cla
   'field-permissions': { label: '字段权限', icon: Columns },
   notifications: { label: '通知管理', icon: Bell },
   venues: { label: '场地管理', icon: MapPin },
+  tiers: { label: '等级体系', icon: Award },
+  assessments: { label: '考核评估', icon: BarChart3 },
+  levels: { label: '等级管理', icon: Layers },
+  logs: { label: '操作日志', icon: ScrollText },
   'profile-settings': { label: '个人中心', icon: UserCog },
   'my-resume': { label: '我的简历', icon: FileText },
   'my-contracts': { label: '我的合同', icon: FileSignature },
@@ -201,8 +227,10 @@ export default function AdminSidebar() {
       if (!currentRole) return true;
       // 管理员永远看全部
       if (currentRole === 'admin') return true;
-      // 优先用API配置，回退到硬编码默认值；两者都无则隐藏
-      const allowedRoles = pageAccess?.[pageId] ?? DEFAULT_ROLES[pageId];
+      // 使用API配置作为补充，硬编码默认值作为最低保证
+      const apiRoles = pageAccess?.[pageId];
+      const defaultRoles = DEFAULT_ROLES[pageId];
+      const allowedRoles = defaultRoles && defaultRoles.length > 0 ? defaultRoles : (apiRoles ?? []);
       if (!allowedRoles || allowedRoles.length === 0) return false;
       return allowedRoles.includes(currentRole);
     })

@@ -42,12 +42,11 @@ export async function POST(
         type: 'resume',
         review_type: 'resume',
         status: 'pending',
-        reason: reason || '申请恢复接单',
-        submitted_by: session.userId,
-        submitted_at: new Date().toISOString(),
+        changes: reason || '申请恢复接单',
+        reviewer_id: session.userId,
         created_at: new Date().toISOString(),
-        proposed_data: { status: 'available' },
-        original_data: { status: workerRecord.status },
+        new_data: JSON.stringify({ status: 'available' }),
+        old_data: JSON.stringify({ status: workerRecord.status }),
       });
 
     if (reviewError) {
@@ -56,6 +55,7 @@ export async function POST(
     }
 
     return NextResponse.json({
+      success: true,
       ok: true,
       data: { review_id: reviewId, worker_id: id, message: '恢复接单申请已提交，等待管理员审核' },
     });

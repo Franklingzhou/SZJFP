@@ -19,6 +19,7 @@ import type {
   ModuleConfig,
   TextConfig,
   SystemSettings,
+  LeadStatus,
 } from './types';
 
 // ==================== 仪表盘 ====================
@@ -93,7 +94,7 @@ export const mockWorkers: WorkerProfile[] = [
     certifications: ['家政服务员证'],
     expectedSalaryMin: 7000,
     expectedSalaryMax: 9000,
-    status: 'working',
+    status: 'busy',
     availableDate: '2026-08-01',
     creatorId: 'a002',
     creatorName: '王建国',
@@ -196,7 +197,7 @@ export const mockWorkers: WorkerProfile[] = [
     certifications: ['高级月嫂证'],
     expectedSalaryMin: 14000,
     expectedSalaryMax: 18000,
-    status: 'working',
+    status: 'busy',
     availableDate: '2026-09-01',
     creatorId: 'a002',
     creatorName: '王建国',
@@ -423,7 +424,7 @@ export interface RecruiterLead {
   intention?: string;
   level: 'A' | 'B' | 'C' | 'D'; // 线索等级
   source: string; // 来源
-  status: 'new' | 'following' | 'signed' | 'lost'; // 状态（2.0: 签约后自动创建worker）
+  status: LeadStatus; // 状态
   recruiterId: string;
   recruiterName: string;
   advisor?: string; // 招生顾问

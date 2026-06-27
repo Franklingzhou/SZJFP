@@ -31,6 +31,7 @@ export const users = pgTable(
     reviewed_by: varchar("reviewed_by", { length: 36 }),
     reviewed_at: timestamp("reviewed_at", { withTimezone: true }),
     register_source: varchar("register_source", { length: 20 }).default("self"),  // admin/self
+    referral_code: varchar("referral_code", { length: 10 }),   // 推荐码
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }),
   },
@@ -39,6 +40,7 @@ export const users = pgTable(
     index("users_role_idx").on(table.role),
     index("users_review_status_idx").on(table.review_status),
     index("users_wechat_openid_idx").on(table.wechat_openid),
+    index("users_referral_code_idx").on(table.referral_code),
   ]
 );
 
@@ -80,6 +82,10 @@ export const workers = pgTable(
     points: integer("points").notNull().default(0),                        // 积分
     resume_review_status: varchar("resume_review_status", { length: 20 }).notNull().default("draft"),  // draft / pending / approved / rejected
     remark: text("remark"),
+    tier_id: varchar("tier_id", { length: 36 }),               // 阿姨等级ID → worker_tiers
+    completed_orders: integer("completed_orders").default(0),    // 完单数
+    avg_rating: numeric("avg_rating", { precision: 2, scale: 1 }).default("0"), // 平均评分
+    reorder_rate: numeric("reorder_rate", { precision: 4, scale: 3 }).default("0"), // 续单率
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }),
   },
@@ -184,6 +190,7 @@ export const leads = pgTable(
     signed_by: varchar("signed_by", { length: 36 }).references(() => users.id), // 签约操作人
     sign_worker_id: varchar("sign_worker_id", { length: 36 }),         // 签约后生成的worker_id
     want_training: boolean("want_training").default(false),            // 是否想培训
+    referrer_id: varchar("referrer_id", { length: 36 }),               // 推荐人ID
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }),
   },
@@ -632,5 +639,87 @@ export const contract_templates = pgTable(
   (table) => [
     index("contract_templates_type_idx").on(table.type),
     index("contract_templates_is_active_idx").on(table.is_active),
+  ]
+);
+
+// ============================================================
+// 推荐系统v2
+// ============================================================
+
+/** 客户公海库 — 被推荐的找阿姨客户，经纪人可认领 */
+export const customer_leads = pgTable(
+  "customer_leads",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    name: varchar("name", { length: 100 }).notNull(),
+    phone: varchar("phone", { length: 20 }),
+    gender: varchar("gender", { length: 10 }),
+    intention: varchar("intention", { length: 200 }),            // 找阿姨的具体需求描述
+    service_type: varchar("service_type", { length: 50 }),       // 需要的服务类型
+    location: varchar("location", { length: 100 }),              // 服务区域
+    budget: numeric("budget", { precision: 10, scale: 2 }),      // 预算
+    source: varchar("source", { length: 50 }).default("referral"), // referral | manual
+    customer_type: varchar("customer_type", { length: 20 }).default("platform"), // personal | platform
+    referrer_id: varchar("referrer_id", { length: 36 }),         // 推荐人ID
+    assigned_to: varchar("assigned_to", { length: 36 }),         // 分配给经纪人的ID
+    is_public: boolean("is_public").default(true),               // 是否在公海
+    status: varchar("status", { length: 20 }).default("new"),    // new/following/matching/converted/completed/closed
+    notes: text("notes"),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }),
+    _openid: varchar("_openid", { length: 64 }).notNull().default(""),
+  },
+  (table) => [
+    index("customer_leads_phone_idx").on(table.phone),
+    index("customer_leads_assigned_to_idx").on(table.assigned_to),
+    index("customer_leads_is_public_idx").on(table.is_public),
+    index("customer_leads_status_idx").on(table.status),
+  ]
+);
+
+/** 推荐奖励记录 */
+export const referral_rewards = pgTable(
+  "referral_rewards",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    referrer_id: varchar("referrer_id", { length: 36 }).notNull(),        // 推荐人ID
+    referrer_name: varchar("referrer_name", { length: 100 }),
+    referred_name: varchar("referred_name", { length: 100 }),             // 被推荐人姓名
+    source_type: varchar("source_type", { length: 20 }).notNull(),        // lead | customer_lead
+    source_id: varchar("source_id", { length: 36 }),                      // leads.id 或 customer_leads.id
+    reward_type: varchar("reward_type", { length: 20 }).default("commission"), // commission | points | both
+    reward_amount: numeric("reward_amount", { precision: 10, scale: 2 }).default("0"),
+    reward_points: integer("reward_points").default(0),
+    status: varchar("status", { length: 20 }).default("pending"),         // pending | paid | cancelled
+    triggered_by: varchar("triggered_by", { length: 100 }),               // 触发事件描述
+    reviewed_by: varchar("reviewed_by", { length: 36 }),                  // 审核/发放人
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    paid_at: timestamp("paid_at", { withTimezone: true }),
+    _openid: varchar("_openid", { length: 64 }).notNull().default(""),
+  },
+  (table) => [
+    index("referral_rewards_referrer_idx").on(table.referrer_id),
+  ]
+);
+
+/** 阿姨等级体系 */
+export const worker_tiers = pgTable(
+  "worker_tiers",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    name: varchar("name", { length: 50 }).notNull(),                     // 铜牌/银牌/金牌/钻石
+    level: integer("level").notNull().unique(),                           // 1-4
+    min_orders: integer("min_orders").default(0),                         // 最低完单数
+    min_rating: numeric("min_rating", { precision: 2, scale: 1 }).default("0"), // 最低评分
+    min_reorder_rate: numeric("min_reorder_rate", { precision: 4, scale: 3 }).default("0"), // 最低续单率
+    hourly_premium: numeric("hourly_premium", { precision: 10, scale: 2 }).default("0"),     // 时薪加成
+    priority: boolean("priority").default(false),                         // 优先派单
+    deposit_reduction: numeric("deposit_reduction", { precision: 10, scale: 2 }).default("0"), // 保证金减免
+    badge_color: varchar("badge_color", { length: 20 }),                  // 徽章颜色
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    _openid: varchar("_openid", { length: 64 }).notNull().default(""),
+  },
+  (table) => [
+    index("worker_tiers_level_idx").on(table.level),
   ]
 );

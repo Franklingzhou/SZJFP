@@ -305,3 +305,136 @@
 ### Git Tags
 - v1.0.0-1e-stable (commit 276bb8b) — 模块1完成
 - v1.0.0-2d-stable — 模块2完成
+
+---
+
+## 2026-06-20 第五轮修复 — BUG-1~7 批量修复 (commit: 36ca519)
+
+### 修复清单
+1. **BUG-1** 订单创建 worker_id 外键不匹配
+2. **BUG-2** 合同 API 字段映射
+3. **BUG-3** 课程 API 满员检查
+4. **BUG-4** 报名 API status 枚举
+5. **BUG-5** 线索转简历 worker_id 缺失
+6. **BUG-6** 推荐 API 去重逻辑
+7. **P4** 推荐不去重 → 添加 source_order_id 唯一约束
+
+### 代码改动
+
+| 文件 | 改动 |
+|------|------|
+| `src/app/api/courses/route.ts` | 修改 |
+| `src/app/api/contracts/route.ts` | 修改 |
+| `src/app/api/enrollments/route.ts` | 修改 |
+| `src/app/api/leads/[id]/convert/route.ts` | 修改 |
+| `src/app/api/orders/route.ts` | 修改 |
+| `src/app/api/recommendations/route.ts` | 修改 |
+| `src/app/api/workers/route.ts` | 修改 |
+| `src/lib/auth-middleware.ts` | 修改 |
+
+---
+
+## 2026-06-20 第六轮修复 — P5课程满员 + P6客户手机号唯一 (commits: c2f03de, f24c2fd)
+
+### 修复内容
+- **P5** 课程满员自动关闭（enrollments 达到 capacity 时 courses.status → closed）
+- **P6** 客户手机号唯一性校验（customers POST/PUT 检查 phone 重复）
+- f24c2fd: maybeSingle() → limit(1) 避免重复数据时 Supabase error 被静默忽略
+
+### 代码改动
+
+| 文件 | 改动 |
+|------|------|
+| `src/app/api/customers/route.ts` | 修改：手机号唯一性校验 |
+| `src/app/api/enrollments/route.ts` | 修改：满员自动关闭 |
+
+---
+
+## 2026-06-20 第七轮修复 — P1签约创建worker (commit: 43a4e95)
+
+### 修复内容
+- **P1** 签约时自动创建 workers 记录 + contract 关联 + resume_review 记录
+- enrollments 错误信息添加详情（哪个字段、期望值）
+- leads convert 完善 worker 创建逻辑
+
+### 代码改动
+
+| 文件 | 改动 |
+|------|------|
+| `src/app/api/customers/route.ts` | 修改 |
+| `src/app/api/enrollments/route.ts` | 修改：错误详情 |
+| `src/app/api/leads/[id]/convert/route.ts` | 修改：完善转换逻辑 |
+
+---
+
+## 2026-06-22 API 测试 (commit: 1d68f23)
+
+- 测试通过率 75.4% → 81.2% (233 → 251/309)
+- 新增大量 API 测试用例和报告
+
+---
+
+## 2026-06-26 第八轮修复 — 操作日志解除 gitignore (commit: bab8bf3)
+
+### 修复内容
+- admin/logs/page.tsx 之前被 .gitignore 误排除，导致部署版本缺少该页面
+
+### 代码改动
+
+| 文件 | 改动 |
+|------|------|
+| `src/app/admin/logs/page.tsx` | 取消 gitignore |
+
+---
+
+## 2026-06-26 第九轮修复 — SEC-02 + BUG-NEW7 + 接单大厅合并 (commit: f89b0ad)
+
+### 修复内容
+- **SEC-02** DELETE 操作限制 admin-only（contracts、orders）
+- **BUG-NEW7** 合单大厅 scope=hall 过滤
+- **接单大厅** worker/jobs 合并"我的订单"Tab
+
+### 代码改动
+
+| 文件 | 改动 |
+|------|------|
+| `src/app/api/contracts/[id]/route.ts` | DELETE admin-only |
+| `src/app/api/orders/route.ts` | DELETE admin-only |
+| `src/app/m/worker/jobs/page.tsx` | 合并我的订单Tab |
+| `src/lib/auth-middleware.ts` | 权限调整 |
+
+---
+
+## 2026-06-27 第十轮修复 — 部署012回归（测试反馈） (未commit，已部署 szjfp-012)
+
+### 后端修复
+
+| 问题 | 根因 | 修复 |
+|------|------|------|
+| **contracts/my 500** | `[id]` 把 "my" 当 UUID 查 DB | 新建 `/api/contracts/my/route.ts`，按当前用户过滤 |
+| **搜索超长 400** | q.length > 200 直接拒绝 | 改为自动截断到 200 字符 |
+| **students/confirm 404** | 路径不存在 | 新建 `/api/students/[id]/confirm/route.ts` |
+| **orders/change-worker 404** | 路径不存在 | 新建别名路由委托给 `/replace` |
+| **leads/follow-ups 404** | 带连字符路径 404 | 新建别名路由委托给 `/followups` |
+
+### 前端修复
+
+| 问题 | 根因 | 修复 |
+|------|------|------|
+| **课表审核"通过"变"驳回"** | 前端 `{action:'approved'}` 但 API 读 `approved` 布尔 | 修正为 `{approved: true/false, reason}` |
+| **培训主管课程审批"卡死"** | 页面纯 mock，不调 API | 重写：从 `/api/courses` 加载 + PUT 提交 |
+| **阿姨端缺"客户"入口** | tab-bar 无此 tab + 页面不存在 | 新建 `/m/worker/customers/page.tsx` + tab-bar 加 tab |
+
+### 文件清单
+
+| 文件 | 操作 |
+|------|------|
+| `src/app/api/contracts/my/route.ts` | 新建 |
+| `src/app/api/students/[id]/confirm/route.ts` | 新建 |
+| `src/app/api/orders/[id]/change-worker/route.ts` | 新建 |
+| `src/app/api/leads/[id]/follow-ups/route.ts` | 新建 |
+| `src/app/api/search/route.ts` | 修改：自动截断 |
+| `src/app/admin/course-schedules/page.tsx` | 修改：修正 approve 参数 |
+| `src/app/m/worker/customers/page.tsx` | 新建 |
+| `src/app/m/training_supervisor/approval/courses/page.tsx` | 重写：对接真实API |
+| `src/components/miniapp/tab-bar.tsx` | 修改：加客户tab |

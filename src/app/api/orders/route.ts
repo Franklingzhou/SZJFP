@@ -26,10 +26,11 @@ export async function GET(request: NextRequest) {
     const agentId = request.nextUrl.searchParams.get('agent_id');
     const workerId = request.nextUrl.searchParams.get('worker_id');
     const customerId = request.nextUrl.searchParams.get('customer_id');
+    const scope = request.nextUrl.searchParams.get('scope'); // 'hall' = 接单大厅模式
 
     let query = supabase
       .from('orders')
-      .select('id, title, job_type, salary_min, salary_max, salary_type, work_duration, location, description, agent_id, worker_id, customer_id, contact_name, contact_phone, status, service_type, amount, service_fee, commission_rate, start_date, signed_worker_id, signed_at, reviewed, created_at')
+      .select('id, title, job_type, salary_min, salary_max, salary_type, work_duration, location, description, agent_id, worker_id, customer_id, contact_name, contact_phone, status, service_type, amount, service_fee, commission_rate, start_date, signed_worker_id, signed_at, reviewed, created_at', { count: 'exact' })
       .order('created_at', { ascending: false });
 
     if (status) query = query.eq('status', status);
@@ -37,8 +38,11 @@ export async function GET(request: NextRequest) {
     if (workerId) query = query.eq('worker_id', workerId);
     if (customerId) query = query.eq('customer_id', customerId);
 
-    // 数据权限过滤：非admin只看自己相关的订单
-    if (session.role !== 'admin') {
+    // scope=hall: 接单大厅模式，跳过个人数据过滤，返回所有未终止订单
+    if (scope === 'hall') {
+      query = query.not('status', 'in', '(completed,cancelled)');
+    } else if (session.role !== 'admin') {
+      // 数据权限过滤：非admin只看自己相关的订单
       if (session.role === 'agent') {
         query = query.eq('agent_id', session.userId);
       } else if (session.role === 'worker') {
@@ -49,28 +53,28 @@ export async function GET(request: NextRequest) {
       // recruiter/instructor/training_supervisor/worker_operator 能看订单大厅全量，不加过滤
     }
 
-    const { data, error } = await query;
+    const { data, error, count } = await query;
 
     if (error) {
       console.error('[orders GET] DB error:', error);
       return NextResponse.json({ error: '查询失败' }, { status: 500 });
     }
 
-    // 应用数据权限过滤
-    const visibility = getDataVisibilitySync(session.role, 'orders');
     let filteredData = data || [];
-    
-    if (visibility === 'own') {
-      // 经纪人只能看自己的订单，阿姨只能看与自己相关的订单
-      filteredData = filteredData.filter(order => 
-        order.agent_id === session.userId || 
-        order.signed_worker_id === session.userId ||
-        order.worker_id === session.userId
-      );
-    }
-    // 'all' 权限直接返回全部数据，'hidden' 返回空数组已在filterDataByPermission处理
 
-    return NextResponse.json({ data: filteredData });
+    if (scope !== 'hall') {
+      // 应用数据权限过滤（接单大厅模式跳过）
+      const visibility = getDataVisibilitySync(session.role, 'orders');
+      if (visibility === 'own') {
+        filteredData = filteredData.filter(order => 
+          order.agent_id === session.userId || 
+          order.signed_worker_id === session.userId ||
+          order.worker_id === session.userId
+        );
+      }
+    }
+
+    return NextResponse.json({ data: filteredData, total: count });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '查询失败';
     console.error('[orders GET] Error:', message);
@@ -207,9 +211,45 @@ export async function PUT(request: NextRequest) {
     }
     safeUpdates.updated_at = new Date().toISOString();
 
+    // v15: 解析 worker_id 为 users.id（DB FK 指向 users 表）
+    if (safeUpdates.worker_id) {
+      const { data: wk } = await supabase
+        .from('workers')
+        .select('user_id')
+        .eq('id', safeUpdates.worker_id as string)
+        .maybeSingle();
+      if (wk) safeUpdates.worker_id = wk.user_id;
+    }
+
     // 边界校验：金额不能为负
     if (safeUpdates.amount !== undefined && (typeof safeUpdates.amount !== 'number' || safeUpdates.amount < 0)) {
       return NextResponse.json({ error: '金额不能为负数' }, { status: 400 });
+    }
+
+    // 状态流转校验：禁止非法逆向流转
+    if (safeUpdates.status) {
+      const { data: currentOrder } = await supabase
+        .from('orders')
+        .select('status')
+        .eq('id', id)
+        .maybeSingle();
+      if (currentOrder) {
+        const current = currentOrder.status as string;
+        const next = safeUpdates.status as string;
+        // 已完成/已取消不可逆转
+        const terminalStates = ['completed', 'cancelled'];
+        if (terminalStates.includes(current) && next !== current) {
+          return NextResponse.json({ error: `订单已${current}，不可改为${next}` }, { status: 400 });
+        }
+        // 已取消不可改为其他状态
+        if (current === 'cancelled' && next !== 'cancelled') {
+          return NextResponse.json({ error: '已取消的订单不可更改状态' }, { status: 400 });
+        }
+        // 已完成不可改为其他状态
+        if (current === 'completed' && next !== 'completed') {
+          return NextResponse.json({ error: '已完成的订单不可更改状态' }, { status: 400 });
+        }
+      }
     }
 
     const { data, error } = await supabase

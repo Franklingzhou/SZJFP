@@ -9,29 +9,61 @@ export async function GET(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    const status = request.nextUrl.searchParams.get('status');
+    const rStatus = request.nextUrl.searchParams.get('status');
     const workerId = request.nextUrl.searchParams.get('worker_id');
     const type = request.nextUrl.searchParams.get('type');
     const source = request.nextUrl.searchParams.get('source'); // 'lead' | 'direct'
 
-    let query = supabase
+    // 先尝试新字段查询，如果列不存在则回退到旧字段
+    let data: Record<string, unknown>[] | null = null;
+    let error: unknown = null;
+
+    // 尝试方案1：使用新字段（schema.ts定义）
+    const selectNew = 'id, worker_id, type, review_type, old_data, new_data, changes, status, reviewer_id, review_note, reviewed_at, created_at';
+    let query1 = supabase
       .from('resume_reviews')
-      .select('id, worker_id, type, review_type, old_data, new_data, changes, status, reviewer_id, review_note, reviewed_at, created_at, workers(name, job_types, origin, lead_id)')
+      .select(selectNew + ', workers(name, job_types, origin, lead_id)')
       .order('created_at', { ascending: false });
+    if (rStatus) query1 = query1.eq('status', rStatus);
+    if (workerId) query1 = query1.eq('worker_id', workerId);
+    if (type) query1 = query1.eq('type', type);
+    if (source === 'lead') query1 = query1.not('workers.lead_id', 'is', null);
+    if (source === 'direct') query1 = query1.is('workers.lead_id', null);
+    const r1 = await query1;
 
-    if (status) query = query.eq('status', status);
-    if (workerId) query = query.eq('worker_id', workerId);
-    if (type) query = query.eq('type', type);
-
-    // 来源筛选：lead=线索签约，direct=直接提交
-    if (source === 'lead') query = query.not('workers.lead_id', 'is', null);
-    if (source === 'direct') query = query.is('workers.lead_id', null);
-
-    const { data, error } = await query;
+    if (!r1.error) {
+      data = r1.data as unknown as typeof data;
+    } else {
+      // 回退方案2：使用旧字段（supabase-init.sql定义）
+      console.log('[resume-reviews GET] New columns not found, falling back to old schema:', r1.error.message);
+      const selectOld = 'id, worker_id, status, notes, reviewer_id, reviewed_at, created_at';
+      let query2 = supabase
+        .from('resume_reviews')
+        .select(selectOld + ', workers(name, job_types, origin)')
+        .order('created_at', { ascending: false });
+      if (rStatus) query2 = query2.eq('status', rStatus);
+      if (workerId) query2 = query2.eq('worker_id', workerId);
+      const r2 = await query2;
+      
+      if (r2.error) {
+        error = r2.error;
+        console.error('[resume-reviews GET] Old schema also failed:', r2.error);
+      } else {
+        data = r2.data as unknown as Record<string, unknown>[] | null;
+        // 将旧字段映射为新字段名，保持前端兼容
+        if (data) {
+          data = data.map((r: Record<string, unknown>) => ({
+            ...r,
+            reviewer_id: r.reviewed_by || r.reviewer_id,
+            review_note: r.notes || r.review_note,
+          }));
+        }
+      }
+    }
 
     if (error) {
       console.error('[resume-reviews GET] DB error:', error);
-      return NextResponse.json({ error: '查询失败' }, { status: 500 });
+      return NextResponse.json({ error: '查询失败，请确认已在Supabase SQL Editor中执行 migration_p0_fixes.sql' }, { status: 500 });
     }
 
     // 补充phone信息（从users表）

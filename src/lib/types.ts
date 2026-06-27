@@ -12,8 +12,8 @@ export const ROLE_LABELS: Record<Role, string> = {
   worker_operator: '阿姨运营',
 };
 
-// 阿姨状态: idle(空闲) → working(在户) → paused(暂停)
-export type WorkerStatus = 'pending' | 'available' | 'busy' | 'inactive' | 'paused' | 'blacklisted';
+// 阿姨状态: pending(待审核) → available(空闲) → busy(上户) → paused(暂停) → suspended(封存) / inactive(停用)
+export type WorkerStatus = 'pending' | 'available' | 'busy' | 'inactive' | 'paused' | 'blacklisted' | 'suspended' | 'idle' | 'working';
 export const WORKER_STATUS_LABELS: Record<WorkerStatus, string> = {
   pending: '待审核',
   available: '空闲可用',
@@ -21,6 +21,9 @@ export const WORKER_STATUS_LABELS: Record<WorkerStatus, string> = {
   inactive: '停用',
   paused: '暂停',
   blacklisted: '黑名单',
+  suspended: '账号封存',
+  idle: '空闲',
+  working: '工作中',
 };
 
 // 工种
@@ -59,9 +62,10 @@ export interface ResumeReviewRecord {
   status: ResumeReviewStatus;
 }
 
-// 订单状态 2.0: open(已发布) → interviewing(面试中) → signed(已签约) → completed(已完成) / cancelled(已取消)
-export type OrderStatus = 'open' | 'interviewing' | 'signed' | 'completed' | 'cancelled';
+// 订单状态 2.9: created(待匹配) → open(已发布) → interviewing(面试中) → signed(已签约) → completed(已完成) / cancelled(已取消)
+export type OrderStatus = 'created' | 'open' | 'interviewing' | 'signed' | 'completed' | 'cancelled';
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  created: '待匹配',
   open: '已发布',
   interviewing: '面试中',
   signed: '已签约',
@@ -270,18 +274,31 @@ export interface ReferralRecord {
   createdAt: string;
 }
 
-// 招生线索 2.0: new(新线索) → following(跟进中) → signed(已签约) → lost(已流失)
-// 签约后自动创建worker(pending)，不再走 training→qualified→converted 手动转化流程
-export type LeadStatus = 'new' | 'following' | 'signed' | 'lost';
+// 招生线索状态: new(新线索) → following/contacted(跟进中) → signed(已签约) → lost(已流失)
+// 培训相关: training(培训中) → qualified(已合格) → converted(已转化阿姨)
+export type LeadStatus = 'new' | 'following' | 'contacted' | 'signed' | 'training' | 'qualified' | 'converted' | 'lost';
 export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   new: '新线索',
   following: '跟进中',
+  contacted: '已联系',
   signed: '已签约',
+  training: '培训中',
+  qualified: '已合格',
+  converted: '已转化',
   lost: '已流失',
 };
 
 // 线索等级
 export type LeadLevel = 'A' | 'B' | 'C' | 'D';
+
+// 阿姨工作状态: available(空闲可接单) → busy(忙碌中) → working(上户中) / off(休息)
+export type WorkStatus = 'available' | 'busy' | 'off' | 'working';
+export const WORK_STATUS_LABELS: Record<WorkStatus, string> = {
+  available: '空闲',
+  busy: '忙碌',
+  off: '休息',
+  working: '上户中',
+};
 
 // 客户状态 2.0: new(新客户) → following(跟进中) → matching(匹配中) → converted(已转化) → completed(已完成) / closed(已关闭)
 export type CustomerStatus = 'new' | 'following' | 'matching' | 'converted' | 'completed' | 'closed';
@@ -553,4 +570,73 @@ export interface SystemSettings {
   creditRules: CreditRule[];
   modules: ModuleConfig[];
   texts: TextConfig[];
+}
+
+// ==================== 推荐系统配置 ====================
+
+/** 推荐类型 */
+export interface ReferralType {
+  id: string;                    // refer_worker | refer_customer
+  name: string;                  // 推荐当阿姨 | 推荐找阿姨
+  description: string;
+  target_pool: 'leads' | 'customer_leads';
+  enabled: boolean;
+  allowed_roles: Role[];         // 哪些角色可以发起推荐
+  reward: {
+    type: 'commission' | 'points' | 'both';   // 奖励类型
+    commission_percent: number;   // 佣金比例（被推荐人签约后，推荐人分成%）
+    points: number;               // 积分奖励
+    trigger: 'on_sign' | 'on_complete';        // 触发条件：签约即奖 / 完单才奖
+  };
+}
+
+/** 推荐系统完整配置 */
+export interface ReferralConfig {
+  types: ReferralType[];
+  global_settings: {
+    max_pending_per_user: number;  // 每人最多待审核推荐数
+    auto_approve: boolean;         // 是否自动通过推荐
+  };
+}
+
+// ==================== 审核流程配置 ====================
+
+/** 审核流程项 */
+export interface ReviewWorkflowItem {
+  id: string;                    // 流程标识
+  name: string;                  // 流程名称
+  description: string;
+  enabled: boolean;              // 是否需要审核
+  reviewer_roles: Role[];        // 审核人角色
+}
+
+/** 审核流程完整配置 */
+export interface ReviewWorkflowConfig {
+  workflows: ReviewWorkflowItem[];
+}
+
+// ==================== 阿姨等级体系（worker_tiers API用） ====================
+
+/** 阿姨等级 */
+export interface WorkerTier {
+  id: string;
+  name: string;                  // 铜牌/银牌/金牌/钻石
+  level: number;                 // 1-4
+  min_orders: number;            // 最低完单数
+  min_rating: number;            // 最低评分
+  min_reorder_rate: number;      // 最低续单率
+  hourly_premium: number;        // 时薪加成(元)
+  priority: boolean;             // 优先派单
+  deposit_reduction: number;     // 保证金减免(元)
+  badge_color: string;           // 徽章颜色
+}
+
+// ==================== 诚信分系统配置 ====================
+
+/** 诚信分全局设置 */
+export interface CreditConfig {
+  initial_score: number;         // 初始分数
+  min_score: number;             // 最低分
+  blacklist_threshold: number;   // 黑名单阈值
+  restore_days: number;          // 出黑名单冷冻天数
 }

@@ -51,23 +51,39 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabaseClient();
   try {
     const body = await request.json();
-    const { user_id, course_id, title, certificate_url } = body as {
-      user_id: string;
+    const { user_id, worker_id, course_id, title, cert_name, certificate_url } = body as {
+      user_id?: string;
+      worker_id?: string;  // 别名：阿姨ID
       course_id: string;
-      title: string;
+      title?: string;
+      cert_name?: string;  // 别名：证书名称
       certificate_url?: string;
     };
 
-    if (!user_id || !course_id || !title) {
-      return NextResponse.json({ ok: false, error: '缺少必填字段：user_id, course_id, title' }, { status: 400 });
+    // cert_name 作为 title 的别名
+    const finalTitle = title || cert_name;
+
+    // 2.0: 支持 worker_id，自动解析为 user_id
+    let finalUserId = user_id;
+    if (!finalUserId && worker_id) {
+      const { data: workerInfo } = await supabase
+        .from('workers')
+        .select('user_id')
+        .eq('id', worker_id)
+        .maybeSingle();
+      if (workerInfo) finalUserId = workerInfo.user_id;
+    }
+
+    if (!finalUserId || !course_id || !finalTitle) {
+      return NextResponse.json({ ok: false, error: '缺少必填字段：user_id/worker_id, course_id, title/cert_name' }, { status: 400 });
     }
 
     const { data, error } = await supabase
       .from('certificates')
       .insert({
-        user_id,
+        user_id: finalUserId,
         course_id,
-        title,
+        title: finalTitle,
         certificate_url: certificate_url || null,
         issued_by: session.userId,
         created_at: new Date().toISOString(),
@@ -80,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, success: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '颁发失败';
     console.error('[certificates POST] Error:', message);

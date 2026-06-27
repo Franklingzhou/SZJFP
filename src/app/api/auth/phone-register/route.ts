@@ -52,6 +52,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // 外部角色（阿姨/客户）注册自动通过，内部角色需管理员审核
+    const externalRoles = ['worker', 'customer'];
+    const isExternal = externalRoles.includes(role);
+    const autoApproved = isExternal;
+    const initReviewStatus = autoApproved ? 'approved' : 'pending';
+    const initIsActive = autoApproved;
+
     // 创建新用户
     const newUserId = `u_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     const newUserName = name || roleLabels[role] || '新用户';
@@ -63,8 +70,8 @@ export async function POST(request: NextRequest) {
         name: newUserName,
         phone,
         role,
-        review_status: 'pending',
-        is_active: false,
+        review_status: initReviewStatus,
+        is_active: initIsActive,
         register_source: 'self',
         password_hash: '123456',
       })
@@ -83,8 +90,8 @@ export async function POST(request: NextRequest) {
           id: newUserId,
           name: newUserName,
           phone,
-          status: 'idle',
-          resume_review_status: 'none',
+          status: isExternal ? 'available' : 'pending',
+          resume_review_status: isExternal ? 'none' : 'pending',
           created_at: new Date().toISOString(),
         });
         console.log('[phone-register] Created worker record:', newUserId);
@@ -94,7 +101,23 @@ export async function POST(request: NextRequest) {
       // 角色记录创建失败不阻断注册流程
     }
 
-    // 新注册需要等待审核，不直接返回token
+    // 外部角色自动通过，直接返回token；内部角色需等待审核
+    if (autoApproved) {
+      const token = generateToken(newUserId);
+      return NextResponse.json({
+        success: true,
+        needs_review: false,
+        user: {
+          id: newUserId,
+          name: newUserName,
+          phone,
+          role,
+          reviewStatus: initReviewStatus,
+        },
+        token,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       needs_review: true,

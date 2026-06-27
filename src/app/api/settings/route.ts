@@ -57,6 +57,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ ok: false, error: '缺少配置键名' }, { status: 400 });
     }
 
+    // 2.0: 校验value大小（限制10KB）
+    if (value !== undefined && value !== null) {
+      const valueStr = JSON.stringify(value);
+      if (valueStr.length > 10000) {
+        return NextResponse.json({ ok: false, error: '配置值过大，限制10KB' }, { status: 400 });
+      }
+    }
+
     const { data, error } = await supabase
       .from('system_settings')
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })

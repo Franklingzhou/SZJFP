@@ -23,7 +23,7 @@
  *   - order_id, contract_id, contract_type(agency/training), amount, status(pending/confirmed)
  */
 
-import type { SupabaseClient } from '@/storage/database/supabase-client';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // ============================================================
 // 类型定义
@@ -47,6 +47,7 @@ export interface CommissionRecord {
   id: string;
   order_id: string;
   recommendation_id: string | null;
+  commissionType?: string; // 运行时附加，不在DB列中
   creator_id: string;
   maintainer_id: string | null;
   recommender_id: string | null;

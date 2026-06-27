@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMiniApp } from '@/components/miniapp/context';
 import { mockWorkers, mockOrders, mockReferrals, mockHallOrders } from '@/lib/data-service';
-import { WORKER_STATUS_LABELS, JOB_TYPES } from '@/lib/types';
+import { WORKER_STATUS_LABELS, ORDER_STATUS_LABELS, JOB_TYPES } from '@/lib/types';
 import AddCustomerForm from '@/components/miniapp/add-customer-form';
 import {
   Users, ChevronRight, Plus, Copy, Send, Pencil, X,
@@ -181,7 +181,7 @@ export default function AgentHomePage() {
                   o.status === 'completed' ? 'bg-green-50 text-green-700' :
                   'bg-amber-50 text-amber-700'
                 }`}>
-                  {{ created:'待匹配', open:'已发布', interviewing:'面试中', signed:'已签约', completed:'已完成', closed:'已关闭' }[o.status]}
+                  {ORDER_STATUS_LABELS[o.status] || o.status}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">{o.jobType} · {o.salaryMin}-{o.salaryMax}元/月</p>

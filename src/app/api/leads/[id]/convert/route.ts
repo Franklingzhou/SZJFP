@@ -87,6 +87,7 @@ export async function POST(
     }
 
     // 4. 创建 contract（招募签约合同），direct模式跳过
+    // 2.0: 状态为 pending_student，等待学员自助确认（或主管代确认）
     let contract = null;
     if (!isDirect) {
       const contractNo = `RC${Date.now()}`;
@@ -96,7 +97,7 @@ export async function POST(
         party_a_name: '平台（系统）',
         party_b_name: leadInfo.name || '',
         party_b_phone: leadInfo.phone || '',
-        status: 'draft',
+        status: 'pending_student',
         lead_id: leadId,
         created_by: session.userId,
       };

@@ -43,13 +43,14 @@ export async function PATCH(
       return NextResponse.json({ error: '推荐记录不存在' }, { status: 404 });
     }
 
-    // 更新记录
+    // 更新记录（同时写 rejection_reason 和 notes，兼容新旧 schema）
     const updates: Record<string, unknown> = {
       status,
       updated_at: new Date().toISOString(),
     };
     if (status === 'rejected' && rejection_reason) {
       updates.rejection_reason = rejection_reason.trim();
+      updates.notes = rejection_reason.trim(); // schema 中实际列名为 notes
     }
 
     const { data, error } = await supabase

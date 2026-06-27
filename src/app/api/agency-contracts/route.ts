@@ -231,9 +231,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: '合同不存在' }, { status: 404 });
     }
 
-    // 只有创建人或admin可以删除草稿状态的合同
-    if (contract.status !== 'draft' && session.role !== 'admin') {
-      return NextResponse.json({ error: '非草稿状态合同不可删除' }, { status: 403 });
+    // 仅管理员可删除
+    if (session.role !== 'admin') {
+      return NextResponse.json({ error: '仅管理员可删除合同' }, { status: 403 });
     }
 
     const { error } = await supabase

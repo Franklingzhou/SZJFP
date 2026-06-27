@@ -17,13 +17,14 @@ import {
   Loader2,
 } from 'lucide-react';
 
-// 注册可选角色（隐藏 customer 和 worker_operator）
+// 注册可选角色
 const registerRoles: { value: Role; label: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
   { value: 'worker', label: '家政阿姨', icon: Users, color: 'text-amber-600' },
   { value: 'agent', label: '经纪人', icon: Briefcase, color: 'text-blue-600' },
   { value: 'recruiter', label: '招生代理', icon: GraduationCap, color: 'text-green-600' },
   { value: 'instructor', label: '培训讲师', icon: BookOpen, color: 'text-purple-600' },
   { value: 'training_supervisor', label: '培训主管', icon: Shield, color: 'text-teal-600' },
+  { value: 'customer', label: '客户', icon: Users, color: 'text-rose-600' },
 ];
 
 const rolePaths: Record<string, string> = {
@@ -221,17 +222,11 @@ function LoginContent() {
           setError('账号已被停用，请联系管理员');
           return;
         }
-        // 自动创建的用户：简短欢迎过渡
-        if (data.autoCreated) {
-          setSmsMsg('验证通过！已自动创建账号，正在跳转...');
-          setTimeout(() => handleLoginSuccess(data.user, data.token), 800);
-        } else {
-          handleLoginSuccess(data.user, data.token);
-        }
+        handleLoginSuccess(data.user, data.token);
       } else if (data.isNewUser) {
-        // 新用户（自动创建失败兜底），切换到注册模式
+        // 没找到用户 → 切到注册页，自己选角色
         setMode('register');
-        setError('自动创建账号失败，请手动选择角色注册');
+        setError('');
       }
     } catch {
       setError('网络错误，请重试');
@@ -325,7 +320,7 @@ function LoginContent() {
           </h1>
           <p className="text-white/70 text-sm">
             {mode === 'login'
-              ? '手机号+验证码即可快速登录'
+              ? '手机号+验证码登录，系统自动识别您的角色'
               : '选择角色并注册，审核通过后即可使用'}
           </p>
         </div>

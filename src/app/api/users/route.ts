@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('users')
-      .select('id, name, phone, role, review_status, wechat_openid, is_active, created_at, updated_at')
+      .select('id, name, phone, role, review_status, wechat_openid, is_active, created_at, updated_at, pending_role, pending_role_status')
       .order('created_at', { ascending: false });
 
     if (role) query = query.eq('role', role);
@@ -68,6 +68,12 @@ export async function PUT(request: NextRequest) {
       if (key in body) safeUpdates[key] = body[key];
     }
     safeUpdates.updated_at = new Date().toISOString();
+
+    // 2.0: 校验角色值合法性
+    const VALID_ROLES = ['admin', 'agent', 'recruiter', 'instructor', 'worker', 'customer', 'training_supervisor', 'worker_operator'];
+    if (safeUpdates.role && !VALID_ROLES.includes(safeUpdates.role as string)) {
+      return NextResponse.json({ error: `无效的角色值，合法值：${VALID_ROLES.join(', ')}` }, { status: 400 });
+    }
 
     const { data, error } = await supabase
       .from('users')

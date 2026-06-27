@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
     ] = await Promise.all([
       // 在职阿姨数
       supabase.from('workers').select('id', { count: 'exact', head: true }),
-      // 待匹配订单
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'created'),
+      // 待匹配订单（open=已发布待匹配，matching/interviewing 都算待处理）
+      supabase.from('orders').select('id', { count: 'exact', head: true }).in('status', ['open', 'interviewing']),
       // 今日新增线索
       supabase.from('leads').select('id, created_at').gte('created_at', new Date().toISOString().split('T')[0]),
       // 待审核简历
@@ -45,6 +45,40 @@ export async function GET(request: NextRequest) {
       roleCounts[u.role] = (roleCounts[u.role] || 0) + 1;
     });
 
+    // 新增：转化漏斗 — 各状态线索数
+    const { data: leadStatuses } = await supabase.from('leads').select('status');
+    const leadFunnel: Record<string, number> = { new: 0, following: 0, signed: 0, converted: 0, lost: 0 };
+    (leadStatuses || []).forEach((l: { status: string }) => {
+      if (leadFunnel.hasOwnProperty(l.status)) leadFunnel[l.status] = (leadFunnel[l.status] || 0) + 1;
+    });
+
+    // 新增：阿姨生命周期 — 各状态分布
+    const { data: workerStatuses } = await supabase.from('workers').select('status');
+    const workerLifecycle: Record<string, number> = {};
+    (workerStatuses || []).forEach((w: { status: string }) => {
+      workerLifecycle[w.status] = (workerLifecycle[w.status] || 0) + 1;
+    });
+
+    // 新增：Top经纪人（按订单数）
+    const { data: topAgents } = await supabase
+      .from('orders')
+      .select('agent_id, users!orders_agent_id_fkey(name)')
+      .not('agent_id', 'is', null);
+    const agentOrderCounts: Record<string, { name: string; count: number }> = {};
+    (topAgents || []).forEach((o: { agent_id: string; users?: { name?: string } | Array<{ name?: string }> }) => {
+      const key = o.agent_id;
+      if (!agentOrderCounts[key]) agentOrderCounts[key] = { name: '', count: 0 };
+      agentOrderCounts[key].count++;
+      if (o.users) {
+        const u = Array.isArray(o.users) ? o.users[0] : o.users;
+        if (u?.name) agentOrderCounts[key].name = u.name;
+      }
+    });
+    const topAgentsRanking = Object.entries(agentOrderCounts)
+      .map(([id, v]) => ({ id, ...v }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
     return NextResponse.json({
       success: true,
       data: {
@@ -57,6 +91,10 @@ export async function GET(request: NextRequest) {
         totalUsers: usersResult.count || 0,
         pendingRecommendations: recommendationsResult.count || 0,
         roleCounts,
+        // 新增字段
+        leadFunnel,
+        workerLifecycle,
+        topAgentsRanking,
       },
     });
   } catch (error) {

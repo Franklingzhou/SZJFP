@@ -357,26 +357,33 @@ export async function PUT(request: NextRequest) {
       originalData[field] = (currentWorker as Record<string, unknown>)[field] ?? null;
     }
 
-    // 提交审核记录
+    // 提交审核记录（仅使用DB中实际存在的列）
     const { data: reviewData, error: reviewErr } = await supabase
       .from('resume_reviews')
       .insert({
+        id: crypto.randomUUID(),
         worker_id: id,
         type: 'update',
         review_type: 'update_resume',
-        proposed_data: proposedUpdates,
-        original_data: originalData,
-        changed_fields: changedFields,
-        new_data: JSON.stringify(proposedUpdates),
+        changes: changedFields.join(', '),
         old_data: JSON.stringify(originalData),
+        new_data: JSON.stringify(proposedUpdates),
         status: 'pending',
+        created_at: new Date().toISOString(),
       })
       .select()
       .single();
 
     if (reviewErr) {
-      console.error('[workers PUT] Create review error:', reviewErr);
-      return NextResponse.json({ error: '提交审核失败' }, { status: 500 });
+      console.error('[workers PUT] Create review error:', JSON.stringify(reviewErr));
+      const e = reviewErr as unknown as Record<string, unknown>;
+      return NextResponse.json({ 
+        error: '提交审核失败', 
+        detail: reviewErr.message || String(reviewErr),
+        code: e?.code,
+        hint: e?.hint,
+        details: e?.details,
+      }, { status: 500 });
     }
 
     // 更新workers的审核状态为pending

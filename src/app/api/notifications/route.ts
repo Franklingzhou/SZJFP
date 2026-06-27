@@ -22,6 +22,11 @@ export async function GET(request: NextRequest) {
       .select('*')
       .order('created_at', { ascending: false });
 
+    // 2.0: 非admin用户只看自己的通知
+    if (session.role !== 'admin') {
+      query = query.eq('user_id', session.userId);
+    }
+
     if (type) {
       query = query.eq('type', type);
     }

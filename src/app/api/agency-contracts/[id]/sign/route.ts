@@ -124,8 +124,17 @@ export async function POST(
             .eq('id', contract.party_b_id);
         }
 
-        // 更新订单状态为matched
+        // 查订单获取工种信息
+        let jobType = '';
         if (contract.order_id) {
+          const { data: order } = await supabase
+            .from('orders')
+            .select('job_type, title')
+            .eq('id', contract.order_id)
+            .single();
+          if (order) jobType = order.job_type || '';
+
+          // 更新订单状态为matched
           await supabase
             .from('orders')
             .update({
@@ -146,6 +155,34 @@ export async function POST(
             .eq('order_id', contract.order_id)
             .neq('worker_id', contract.party_b_id)
             .eq('status', 'pending');
+        }
+
+        // 自动同步上户记录
+        if (contract.party_b_id) {
+          const period = [contract.start_date, contract.end_date].filter(Boolean).join(' ~ ') || '待定';
+          const salary = contract.amount ? `${contract.amount}元` : '';
+          const descParts = [period, contract.party_c_name ? `雇主${contract.party_c_name}` : '', salary].filter(Boolean);
+          const description = descParts.join('，');
+
+          const { error: expError } = await supabase
+            .from('worker_work_experience')
+            .insert({
+              id: crypto.randomUUID(),
+              worker_id: contract.party_b_id,
+              period,
+              employer: contract.party_c_name || '',
+              job_type: jobType,
+              description,
+              source: 'contract',
+              contract_id: contract.id,
+              sort_order: 0,
+              created_at: now,
+            });
+
+          if (expError) {
+            console.error('[agency-contracts sign] auto-sync work_experience error:', expError);
+            // 上户记录同步失败不影响合同生效
+          }
         }
 
         return NextResponse.json({ success: true, message: '合同已生效' });

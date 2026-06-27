@@ -168,11 +168,26 @@ function WorkerResumePage() {
 
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [requestTrainingLoading, setRequestTrainingLoading] = useState(false);
+  const [requestTrainingSent, setRequestTrainingSent] = useState(false);
 
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/resume/${worker.id}` : '';
 
   const handleShare = () => {
     setShowShareModal(true);
+  };
+
+  const handleRequestTraining = async () => {
+    setRequestTrainingLoading(true);
+    try {
+      const res = await fetch('/api/workers/' + worker.id + '/request-training', { method: 'POST' });
+      if (!res.ok) throw new Error('请求失败');
+      // 刷新页面或更新状态
+    } catch (_e) {
+      // 静默处理
+    } finally {
+      setRequestTrainingLoading(false);
+    }
   };
 
   const copyLink = () => {

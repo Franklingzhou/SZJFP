@@ -158,6 +158,13 @@ export async function PUT(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    // 先查当前客户状态，判断是否流失
+    const { data: currentData } = await supabase
+      .from('customers')
+      .select('status, user_id')
+      .eq('id', id)
+      .maybeSingle();
+
     const { data, error } = await supabase
       .from('customers')
       .update(safeUpdates)
@@ -171,6 +178,43 @@ export async function PUT(request: NextRequest) {
 
     if (!data || data.length === 0) {
       return NextResponse.json({ error: '未找到该客户' }, { status: 404 });
+    }
+
+    // 客户流失(closed)时，级联取消该客户所有进行中的订单
+    if (safeUpdates.status === 'closed' && currentData?.user_id) {
+      const customerUserId = currentData.user_id;
+      const { data: activeOrders } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('customer_id', customerUserId)
+        .in('status', ['created', 'open', 'assigned', 'signed']);
+
+      if (activeOrders && activeOrders.length > 0) {
+        const cancelledAt = new Date().toISOString();
+        for (const order of activeOrders) {
+          await supabase
+            .from('orders')
+            .update({
+              status: 'cancelled',
+              cancel_reason: '客户已流失，自动取消订单',
+              cancelled_at: cancelledAt,
+            })
+            .eq('id', order.id);
+
+          // 级联拒绝该订单所有 pending/accepted 的推荐
+          await supabase
+            .from('recommendations')
+            .update({
+              status: 'rejected',
+              rejection_reason: '客户已流失，自动拒绝推荐',
+              updated_at: cancelledAt,
+            })
+            .eq('order_id', order.id)
+            .in('status', ['pending', 'accepted']);
+        }
+
+        console.log(`[customers PUT] 客户 ${id} 流失，级联取消了 ${activeOrders.length} 个订单`);
+      }
     }
 
     return NextResponse.json({ success: true, data: data[0] });

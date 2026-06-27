@@ -110,16 +110,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: '缺少必填字段：worker_id' }, { status: 400 });
     }
 
-    // 推荐前，把同一订单同一阿姨的旧推荐标记为rejected
-    if (finalOrderId) {
-      await supabase
-        .from('recommendations')
-        .update({ status: 'rejected', updated_at: new Date().toISOString() })
-        .eq('order_id', finalOrderId)
-        .eq('worker_id', finalWorkerId)
-        .neq('status', 'rejected');
-    }
-
     // 检查订单是否存在
     if (finalOrderId) {
       const { data: orderData, error: orderError } = await supabase
@@ -142,6 +132,34 @@ export async function POST(request: NextRequest) {
 
     if (workerError || !workerData) {
       return NextResponse.json({ ok: false, error: '阿姨不存在' }, { status: 404 });
+    }
+
+    // ⚠️ 去重校验必须在「标记旧推荐为rejected」之前执行
+    // 防重复推荐：同一订单+同一阿姨已有pending/accepted时，禁止推荐
+    if (finalOrderId) {
+      const { data: existingRec, error: dupErr } = await supabase
+        .from('recommendations')
+        .select('id, status')
+        .eq('order_id', finalOrderId)
+        .eq('worker_id', finalWorkerId)
+        .in('status', ['pending', 'accepted'])
+        .limit(1);
+      if (!dupErr && existingRec && existingRec.length > 0) {
+        return NextResponse.json({
+          ok: false,
+          error: `已存在该订单+阿姨的推荐（${existingRec[0].status}），请勿重复推荐`,
+        }, { status: 409 });
+      }
+    }
+
+    // 推荐前，把同一订单同一阿姨的旧推荐标记为rejected（仅清理已非pending/accepted的记录）
+    if (finalOrderId) {
+      await supabase
+        .from('recommendations')
+        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .eq('order_id', finalOrderId)
+        .eq('worker_id', finalWorkerId)
+        .neq('status', 'rejected');
     }
 
     // A15 自动确认：经纪人推荐自己创建的阿姨，状态直接为 accepted

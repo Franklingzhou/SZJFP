@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 手机号+验证码登录API
-// 开发模式：任意手机号+验证码888888即可登录
-// 生产模式：需对接短信服务商
-//
-// 预注册认领逻辑（业务规则第十六条）：
-// 1. 用户验证码登录 → 查users表
-// 2. 找不到users → 查workers/leads表中该手机号的未认领记录(user_id IS NULL)
-// 3. 有待认领的 → 自动创建users + 绑定user_id → 登录成功
-// 4. 都没有 → 返回isNewUser，前端引导选角色注册
+// 手机号+验证码登录API（v3 统一版）
+// 不管什么角色，同一个登录入口：
+//   验证码通过 → 查users表 → 找到了+已审核 → 登录，返回role
+//                      → 找到了+待审核 → 提示等待
+//                      → 没找到 → 尝试预注册认领 → 有则登录
+//                               → 都没有 → 返回isNewUser，引导注册
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phone, code, role } = body as { phone: string; code: string; role?: string };
+    const { phone, code } = body as { phone: string; code: string };
 
     if (!phone || !code) {
       return NextResponse.json({ error: '请输入手机号和验证码' }, { status: 400 });
+    }
+
+    // 手机号格式校验
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      return NextResponse.json({ error: '手机号格式不正确，请输入有效的11位手机号', code: 'INVALID_PHONE' }, { status: 400 });
     }
 
     // 验证码校验
@@ -24,24 +26,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '验证码错误或已过期' }, { status: 401 });
     }
 
-    // 1. 查找已有用户
-    const user = await findUserByPhone(phone, role);
+    // 1. 按手机号查用户（不区分角色）
+    const user = await findUserByPhone(phone);
 
     if (user) {
-      // 已有用户，检查账号状态
+      // 找到用户，检查账号状态
       if (user.review_status === 'pending' && user.register_source === 'pre_registered') {
-        // 预注册用户：自动认领（激活账号）
+        // 预注册用户自动激活
         await activatePreRegisteredUser(user.id);
       } else if (user.review_status === 'pending') {
-        return NextResponse.json(
-          { error: '您的注册申请正在审核中，请耐心等待。', code: 'ACCOUNT_PENDING' },
-          { status: 403 }
-        );
+        // 外部角色（阿姨/客户）自动激活，内部角色提示等待审核
+        if (user.role === 'worker' || user.role === 'customer') {
+          await activateUser(user.id);
+        } else {
+          return NextResponse.json(
+            { error: '您的注册申请正在审核中，请耐心等待', code: 'ACCOUNT_PENDING' },
+            { status: 403 }
+          );
+        }
       }
 
       if (user.review_status === 'resigned') {
         return NextResponse.json(
-          { error: '该账号已离职，无法登录。如需重新入职，请联系管理员。', code: 'ACCOUNT_RESIGNED' },
+          { error: '该账号已离职，无法登录', code: 'ACCOUNT_RESIGNED' },
           { status: 403 }
         );
       }
@@ -55,11 +62,12 @@ export async function POST(request: NextRequest) {
 
       if (!user.is_active) {
         return NextResponse.json(
-          { error: '该账号已被禁用，请联系管理员。', code: 'ACCOUNT_DISABLED' },
+          { error: '该账号已被禁用，请联系管理员', code: 'ACCOUNT_DISABLED' },
           { status: 403 }
         );
       }
 
+      // 转岗申请中的用户也能正常登录（用当前角色）
       const token = generateToken(user.id);
       return NextResponse.json({
         success: true,
@@ -71,16 +79,17 @@ export async function POST(request: NextRequest) {
           role: user.role,
           reviewStatus: user.review_status,
           is_active: user.is_active,
+          pendingRole: user.pending_role || null,
+          pendingRoleStatus: user.pending_role_status || null,
         },
         token,
       });
     }
 
-    // 2. 没有users记录 → 尝试预注册认领（查workers/leads表中未认领记录）
+    // 2. 没找到用户 → 尝试认领预注册的阿姨记录
     const claimedResult = await tryClaimPreRegistered(phone);
 
     if (claimedResult) {
-      // 认领成功，自动登录
       const token = generateToken(claimedResult.userId);
       return NextResponse.json({
         success: true,
@@ -99,27 +108,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 3. 完全没有记录 → 自动创建customer用户（预注册验证码自动认领）
-    const autoCreated = await createNewCustomerUser(phone);
-    if (autoCreated) {
-      const token = generateToken(autoCreated.userId);
-      return NextResponse.json({
-        success: true,
-        isNewUser: true,
-        autoCreated: true,
-        user: {
-          id: autoCreated.userId,
-          name: autoCreated.name,
-          phone,
-          role: 'customer',
-          reviewStatus: 'approved',
-          is_active: true,
-        },
-        token,
-      });
-    }
-
-    // 兜底：自动创建失败，返回isNewUser引导前端处理
+    // 3. 完全没记录 → 新用户，引导注册
     return NextResponse.json({
       success: false,
       isNewUser: true,
@@ -164,23 +153,23 @@ async function verifyCode(phone: string, code: string): Promise<boolean> {
   }
 }
 
-// 根据手机号查找用户
-async function findUserByPhone(phone: string, role?: string): Promise<{
+// 根据手机号查找用户（不区分角色，返回全字段）
+async function findUserByPhone(phone: string): Promise<{
   id: string; name: string; phone: string; role: string;
   review_status: string; is_active: boolean; register_source?: string;
+  pending_role?: string; pending_role_status?: string;
 } | null> {
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('users')
-      .select('id, name, phone, role, review_status, is_active, register_source')
-      .eq('phone', phone);
+      .select('id, name, phone, role, review_status, is_active, register_source, pending_role, pending_role_status')
+      .eq('phone', phone)
+      .limit(1)
+      .maybeSingle();
 
-    if (role) query = query.eq('role', role);
-
-    const { data, error } = await query.limit(1).maybeSingle();
     if (error || !data) return null;
     return data;
   } catch {
@@ -212,6 +201,34 @@ async function activatePreRegisteredUser(userId: string): Promise<boolean> {
     return true;
   } catch (err) {
     console.error('[activatePreRegisteredUser] Error:', err);
+    return false;
+  }
+}
+
+// 激活用户（外部角色自动通过）
+async function activateUser(userId: string): Promise<boolean> {
+  try {
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+
+    const { error } = await supabase
+      .from('users')
+      .update({
+        review_status: 'approved',
+        is_active: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId)
+      .eq('review_status', 'pending');
+
+    if (error) {
+      console.error('[activateUser] Error:', error);
+      return false;
+    }
+    console.log('[phone-login] External user auto-activated:', userId);
+    return true;
+  } catch (err) {
+    console.error('[activateUser] Error:', err);
     return false;
   }
 }
@@ -301,45 +318,6 @@ async function tryClaimPreRegistered(phone: string): Promise<{
     };
   } catch (err) {
     console.error('[tryClaimPreRegistered] Error:', err);
-    return null;
-  }
-}
-
-// 自动创建新客户用户（预注册验证码自动认领）
-async function createNewCustomerUser(phone: string): Promise<{
-  userId: string; name: string;
-} | null> {
-  try {
-    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
-    const supabase = getSupabaseClient();
-
-    const userId = `u_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    const defaultName = `用户${phone.slice(-4)}`;
-
-    const { data: newUser, error } = await supabase
-      .from('users')
-      .insert({
-        id: userId,
-        name: defaultName,
-        phone,
-        role: 'customer',
-        review_status: 'approved',
-        is_active: true,
-        register_source: 'auto_created',
-        password_hash: '123456',
-      })
-      .select('id, name')
-      .single();
-
-    if (error || !newUser) {
-      console.error('[createNewCustomerUser] Error:', error);
-      return null;
-    }
-
-    console.log('[phone-login] Auto-created customer user:', userId, 'phone:', phone);
-    return { userId: newUser.id, name: newUser.name };
-  } catch (err) {
-    console.error('[createNewCustomerUser] Error:', err);
     return null;
   }
 }

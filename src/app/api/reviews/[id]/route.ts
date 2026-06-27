@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
 
-// PATCH /api/reviews/[id] — 管理员隐藏/恢复评价
+// PATCH /api/reviews/[id] — 管理员审核评价（审核通过/隐藏）
+// action=approve → hidden=false, status='approved'（审核通过上线）
+// action=hide    → hidden=true, status='hidden_by_admin'（管理员隐藏）
+// 兼容旧接口：传 hidden boolean 直接 toggle
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -21,18 +24,33 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { hidden } = body as { hidden?: boolean };
-
-    if (typeof hidden !== 'boolean') {
-      return NextResponse.json({ error: '缺少hidden参数（布尔值）' }, { status: 400 });
-    }
+    const { action, hidden, hide_reason } = body as { action?: string; hidden?: boolean; hide_reason?: string };
 
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
+    let updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+
+    if (action === 'approve') {
+      // 审核通过：上线
+      updates.hidden = false;
+      updates.status = 'approved';
+    } else if (action === 'hide') {
+      // 管理员手动隐藏
+      updates.hidden = true;
+      updates.status = 'hidden_by_admin';
+      if (hide_reason) updates.hide_reason = hide_reason;
+    } else if (typeof hidden === 'boolean') {
+      // 兼容旧接口：toggle hidden（恢复时回 approved，隐藏时设 hidden_by_admin）
+      updates.hidden = hidden;
+      updates.status = hidden ? 'hidden_by_admin' : 'approved';
+    } else {
+      return NextResponse.json({ error: '缺少 action 参数（approve/hide）或 hidden 布尔值' }, { status: 400 });
+    }
+
     const { data, error } = await supabase
       .from('reviews')
-      .update({ hidden, updated_at: new Date().toISOString() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single();

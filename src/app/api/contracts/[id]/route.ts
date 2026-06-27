@@ -33,8 +33,10 @@ export async function PUT(
     }
 
     // 状态流转校验
+    // 2.0: pending_student（待学员确认）→ signed（学员确认/主管代确认）
     const validTransitions: Record<string, string[]> = {
       draft: ['signed', 'rejected'],
+      pending_student: ['signed', 'rejected'],
       signed: ['active', 'rejected'],
       active: [],
       rejected: ['draft'],

@@ -68,7 +68,40 @@ export async function GET(
       }
     }
 
-    // 5. 格式化返回数据
+    // 5. 查照片/视频（worker_media 表）
+    const { data: media } = await supabase
+      .from('worker_media')
+      .select('id, type, category, url, sort_order, created_at')
+      .eq('worker_id', id)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+
+    // 6. 查上户记录（worker_work_experience 表）
+    const { data: workExperience } = await supabase
+      .from('worker_work_experience')
+      .select('id, period, employer, job_type, description, sort_order, contract_id, source, created_at')
+      .eq('worker_id', id)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
+
+    // 7. 查公开页可见性配置（system_settings.work_experience_public_visibility）
+    const { data: visibilitySetting } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'work_experience_public_visibility')
+      .maybeSingle();
+
+    let expVisibility: Record<string, boolean> = { period: true, employer: false, jobType: true, description: true, salary: false };
+    if (visibilitySetting?.value) {
+      try {
+        const parsed = typeof visibilitySetting.value === 'string'
+          ? JSON.parse(visibilitySetting.value)
+          : visibilitySetting.value;
+        if (parsed && typeof parsed === 'object') expVisibility = parsed;
+      } catch { /* keep defaults */ }
+    }
+
+    // 8. 格式化返回数据
     const avgRating = (reviews || []).length > 0
       ? ((reviews || []).reduce((s: number, r: { rating: number }) => s + (r.rating || 0), 0) / (reviews || []).length).toFixed(1)
       : '暂无';
@@ -97,11 +130,112 @@ export async function GET(
         avgRating,
         reviewCount: (reviews || []).length,
         sharedByUser,
+        expVisibility,
+        photos: (media || []).filter((m: { type: string }) => m.type === 'photo'),
+        videos: (media || []).filter((m: { type: string }) => m.type === 'video'),
+        workExperience: (workExperience || []).map((exp: { id: string; period: string; employer: string; job_type: string; description: string; sort_order: number; contract_id: string; source: string }) => ({
+          id: exp.id,
+          period: exp.period,
+          employer: exp.employer,
+          jobType: exp.job_type,
+          description: exp.description,
+          sortOrder: exp.sort_order,
+          contractId: exp.contract_id,
+          source: exp.source || 'manual',
+        })),
       },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '查询失败';
     console.error('[workers/[id] GET] Error:', message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// PUT /api/workers/[id] — 更新阿姨信息（提交审核或直接修改status等字段）
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const result = await checkPermissionDetailed(request, 'workers:write');
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') return unauthorizedResponse();
+    return forbiddenResponse('无操作权限');
+  }
+  const session = result.session;
+
+  try {
+    const { id } = await params;
+    const body = await request.json().catch(() => ({}));
+    const { status, available_date, resume_review_status, credit_score, deposit, points, remark, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, id_card, photo } = body as Record<string, unknown>;
+
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+
+    // 查询当前记录
+    const { data: worker, error: findErr } = await supabase
+      .from('workers')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (findErr || !worker) {
+      return NextResponse.json({ error: '阿姨记录不存在' }, { status: 404 });
+    }
+
+    // 白名单字段
+    const allowedFields = ['status', 'available_date', 'resume_review_status', 'credit_score', 'deposit', 'points', 'remark', 'name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'expected_salary_min', 'expected_salary_max', 'id_card', 'photo'];
+    const updates: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+
+    for (const key of allowedFields) {
+      if (key in body && body[key] !== undefined) {
+        updates[key] = body[key];
+      }
+    }
+
+    if (Object.keys(updates).length <= 1) {
+      return NextResponse.json({ error: '没有需要更新的字段' }, { status: 400 });
+    }
+
+    // 年龄边界校验
+    if (updates.age !== undefined) {
+      const ageVal = updates.age as number;
+      if (typeof ageVal !== 'number' || ageVal < 18 || ageVal > 100) {
+        return NextResponse.json({ error: '年龄需在18-100之间' }, { status: 400 });
+      }
+    }
+
+    // 手机号唯一性校验
+    if (updates.phone) {
+      const { data: existingWorker } = await supabase
+        .from('workers')
+        .select('id, name')
+        .eq('phone', updates.phone as string)
+        .neq('id', id)
+        .limit(1);
+      if (existingWorker && existingWorker.length > 0) {
+        return NextResponse.json({ error: `该手机号已存在简历（${existingWorker[0].name}）` }, { status: 409 });
+      }
+    }
+
+    const { data, error } = await supabase
+      .from('workers')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[workers/[id] PUT] Error:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, data });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '更新失败';
+    console.error('[workers/[id] PUT] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

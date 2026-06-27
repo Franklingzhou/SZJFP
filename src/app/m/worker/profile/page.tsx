@@ -2,12 +2,29 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useMiniApp } from '@/components/miniapp/context';
 import { mockWorkers, mockReviews } from '@/lib/data-service';
 import { REVIEW_SOURCE_LABELS } from '@/lib/types';
 import type { ReviewSourceRole } from '@/lib/types';
-import { LogOut, Star, EyeOff } from 'lucide-react';
+import {
+  LogOut, Star, EyeOff, FileText, ClipboardList,
+  FileSignature, GraduationCap, Briefcase, BookOpen,
+  MessageSquare, ChevronRight, CheckCircle,
+} from 'lucide-react';
 import { updateRecord } from '@/lib/data-service';
+
+const WORKER_NAV_ITEMS = [
+  { label: '编辑简历', href: '/m/worker/resume', icon: FileText },
+  { label: '我的订单', href: '/m/worker/orders', icon: ClipboardList },
+  { label: '我的合同', href: '/m/worker/contracts', icon: FileSignature },
+  { label: '我的课程', href: '/m/worker/courses', icon: GraduationCap },
+  { label: '接单大厅', href: '/m/worker/jobs', icon: Briefcase },
+  { label: '想培训', href: '/m/worker/training', icon: BookOpen },
+  { label: '上户确认', href: '/m/worker/onboard', icon: CheckCircle },
+  { label: '自荐记录', href: '/m/worker/recommendations', icon: MessageSquare },
+  { label: '我的评价', href: '/m/worker/reviews', icon: Star },
+];
 
 export default function WorkerProfilePage() {
   const router = useRouter();
@@ -71,14 +88,39 @@ export default function WorkerProfilePage() {
         </div>
       </div>
 
+      {/* 功能入口导航网格 */}
+      <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+        <h3 className="text-sm font-semibold text-slate-700 mb-3">功能入口</h3>
+        <div className="space-y-1">
+          {WORKER_NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-5 w-5 text-slate-500" />
+                <span className="text-sm text-slate-700">{item.label}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-slate-300" />
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* 评价区 */}
       <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">我的评价</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-slate-700">最新评价</h3>
+          <Link href="/m/worker/reviews" className="text-xs text-amber-600 hover:text-amber-700">
+            查看全部
+          </Link>
+        </div>
         {myReviews.length === 0 ? (
           <p className="text-xs text-slate-400">暂无评价</p>
         ) : (
           <div className="space-y-2">
-            {myReviews.filter(r => !hiddenReviews.has(r.id)).map(review => (
+            {myReviews.filter(r => !hiddenReviews.has(r.id)).slice(0, 3).map(review => (
               <div key={review.id} className="bg-slate-50 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
@@ -99,6 +141,11 @@ export default function WorkerProfilePage() {
                 <p className="text-xs text-slate-400 mt-1">{review.createdAt}</p>
               </div>
             ))}
+            {myReviews.filter(r => !hiddenReviews.has(r.id)).length > 3 && (
+              <Link href="/m/worker/reviews" className="block text-center text-xs text-amber-600 py-1">
+                查看全部 {myReviews.filter(r => !hiddenReviews.has(r.id)).length} 条评价
+              </Link>
+            )}
           </div>
         )}
       </div>

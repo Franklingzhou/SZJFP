@@ -31,6 +31,7 @@ export default function AdminLayout({
       return;
     }
 
+    // 所有角色均可登录PC端后台
     setAuthChecked(true);
 
     if (!isDataLoaded()) {

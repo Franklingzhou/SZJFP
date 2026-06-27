@@ -532,4 +532,6 @@ export const agencyContracts = pgTable('agency_contracts', {
   workerWorkStatus: varchar('worker_work_status', { length: 20 }),
   // 创建人
   createdBy: uuid('created_by').references(() => users.id),
-  createdAt: ti
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});

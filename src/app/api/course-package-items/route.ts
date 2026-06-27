@@ -68,17 +68,23 @@ export async function POST(request: NextRequest) {
   if (!session) return unauthorizedResponse();
   try {
     const body = await request.json();
-    const { package_course_id, item_course_id, sort_order } = body as {
-      package_course_id: string;
-      item_course_id: string;
+    const { package_course_id, item_course_id, sort_order, package_id, item_id, item_name } = body as {
+      package_course_id?: string;
+      item_course_id?: string;
       sort_order?: number;
+      package_id?: string;    // 别名
+      item_id?: string;       // 别名
+      item_name?: string;     // 别名（忽略）
     };
 
-    if (!package_course_id || !item_course_id) {
+    const finalPackageId = package_course_id || package_id;
+    const finalItemId = item_course_id || item_id;
+
+    if (!finalPackageId || !finalItemId) {
       return NextResponse.json({ error: '缺少套餐课程ID或子课程ID' }, { status: 400 });
     }
 
-    if (package_course_id === item_course_id) {
+    if (finalPackageId === finalItemId) {
       return NextResponse.json({ error: '套餐不能包含自身' }, { status: 400 });
     }
 
@@ -89,7 +95,7 @@ export async function POST(request: NextRequest) {
     const { data: pkgCourse } = await supabase
       .from('courses')
       .select('id, course_type')
-      .eq('id', package_course_id)
+      .eq('id', finalPackageId)
       .single();
 
     if (!pkgCourse) {
@@ -103,7 +109,7 @@ export async function POST(request: NextRequest) {
     const { data: itemCourse } = await supabase
       .from('courses')
       .select('id, course_type')
-      .eq('id', item_course_id)
+      .eq('id', finalItemId)
       .single();
 
     if (!itemCourse) {
@@ -114,8 +120,8 @@ export async function POST(request: NextRequest) {
     const { data: existing } = await supabase
       .from('course_package_items')
       .select('id')
-      .eq('package_course_id', package_course_id)
-      .eq('item_course_id', item_course_id)
+      .eq('package_course_id', finalPackageId)
+      .eq('item_course_id', finalItemId)
       .maybeSingle();
 
     if (existing) {
@@ -123,8 +129,8 @@ export async function POST(request: NextRequest) {
     }
 
     const insertData: Record<string, unknown> = {
-      package_course_id,
-      item_course_id,
+      package_course_id: finalPackageId,
+      item_course_id: finalItemId,
       sort_order: sort_order ?? 0,
     };
 
@@ -199,7 +205,14 @@ export async function DELETE(request: NextRequest) {
   const session = await checkPermission(request, 'courses:write');
   if (!session) return unauthorizedResponse();
   try {
-    const id = request.nextUrl.searchParams.get('id');
+    let id = request.nextUrl.searchParams.get('id');
+    // 兼容 body 方式传 id
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = (body as Record<string, unknown>).id as string;
+      } catch { /* body 为空或非JSON */ }
+    }
 
     if (!id) {
       return NextResponse.json({ error: '缺少项目ID' }, { status: 400 });

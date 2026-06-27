@@ -42,12 +42,11 @@ export async function POST(
         type: 'pause',
         review_type: 'pause',
         status: 'pending',
-        reason: reason || '申请暂停接单',
-        submitted_by: session.userId,
-        submitted_at: new Date().toISOString(),
+        changes: reason || '申请暂停接单',
+        reviewer_id: session.userId,
         created_at: new Date().toISOString(),
-        proposed_data: { status: 'paused' },
-        original_data: { status: workerRecord.status },
+        new_data: JSON.stringify({ status: 'paused' }),
+        old_data: JSON.stringify({ status: workerRecord.status }),
       });
 
     if (reviewError) {
@@ -56,6 +55,7 @@ export async function POST(
     }
 
     return NextResponse.json({
+      success: true,
       ok: true,
       data: { review_id: reviewId, worker_id: id, message: '暂停接单申请已提交，等待管理员审核' },
     });

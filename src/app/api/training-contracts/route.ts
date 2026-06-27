@@ -49,14 +49,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { student_id, worker_id, course_id, start_date, end_date, fee, notes } = body as {
+    const { student_id, worker_id, course_id, start_date, end_date, fee } = body as {
       student_id?: string;  // 兼容旧参数
       worker_id?: string;   // 2.0新参数
       course_id: string;
       start_date?: string;
       end_date?: string;
       fee?: number;
-      notes?: string;
     };
 
     // 2.0: worker_id优先，兼容student_id
@@ -70,13 +69,14 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('training_contracts')
       .insert({
-        student_id: finalStudentId,  // DB列名仍为student_id（待迁移）
+        student_id: finalStudentId,
         course_id,
+        party_a_id: session.userId,
+        party_b_name: finalStudentId,
         start_date: start_date || null,
         end_date: end_date || null,
-        fee: fee || null,
-        notes: notes || null,
-        status: 'pending',
+        amount: fee || null,
+        status: 'draft',
         created_by: session.userId,
         created_at: new Date().toISOString(),
       })
@@ -104,12 +104,11 @@ export async function PUT(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    const { id, status, amount, fee, notes, student_id } = body as {
+    const { id, status, amount, fee, student_id } = body as {
       id: string;
       status?: string;
       amount?: number;
       fee?: number;
-      notes?: string;
       student_id?: string;
     };
 
@@ -134,9 +133,8 @@ export async function PUT(request: NextRequest) {
       updated_at: new Date().toISOString(),
     };
     if (status !== undefined) updates.status = status;
-    if (amount !== undefined) updates.fee = amount;  // 兼容 amount -> fee
-    if (fee !== undefined) updates.fee = fee;
-    if (notes !== undefined) updates.notes = notes;
+    if (amount !== undefined) updates.amount = amount;  // DB列名是 amount
+    if (fee !== undefined) updates.amount = fee;        // 兼容 API参数 fee -> DB amount
     if (student_id !== undefined) updates.student_id = student_id;
 
     const { data, error } = await supabase

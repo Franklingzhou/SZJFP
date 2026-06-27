@@ -68,9 +68,7 @@ export async function POST(
       .from('orders')
       .update({
         signed_worker_id: new_worker_id,
-        status: 'open', // A10: 更换阿姨后订单回到open状态
-        replace_reason: reason || null,
-        replaced_at: new Date().toISOString(),
+        status: 'open',
       })
       .eq('id', id)
       .select()
@@ -87,7 +85,7 @@ export async function POST(
     // A11: 新阿姨状态 available → busy（如果立即签约）
     // 这里暂时不自动签约，需要经纪人再次确认签约
 
-    return NextResponse.json({ ok: true, data: { ...data, new_worker_name: worker.name } });
+    return NextResponse.json({ success: true, ok: true, data: { ...data, new_worker_name: worker.name } });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '更换阿姨失败';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });

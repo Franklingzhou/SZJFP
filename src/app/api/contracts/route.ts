@@ -216,7 +216,7 @@ export async function PUT(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-      const { id, title, type, party_b_name, party_b_phone, party_b_id_card, party_a_id, party_b_id, course_id, price, start_date, end_date, status, approved_by, approved_at, signed_at, phone_code } = body as {
+      const { id, title, type, party_b_name, party_b_phone, party_b_id_card, party_a_id, party_b_id, course_id, price, amount, start_date, end_date, status, approved_by, approved_at, signed_at, phone_code } = body as {
       id: string;
       title?: string;
       type?: string;
@@ -227,6 +227,7 @@ export async function PUT(request: NextRequest) {
       party_b_id?: string;
       course_id?: string;
       price?: number;
+      amount?: number;  // 别名
       start_date?: string;
       end_date?: string;
       status?: string;
@@ -254,6 +255,7 @@ export async function PUT(request: NextRequest) {
       if (current) {
         const validTransitions: Record<string, string[]> = {
           draft: ['signed', 'rejected'],           // 招生发起 → 学员签署 或 驳回
+          pending_student: ['signed', 'rejected'], // 2.0: 待学员确认 → 学员确认/主管代确认 或 驳回
           signed: ['active', 'rejected'],          // 学员已签 → 主管确认到账 或 驳回
           active: [],                               // 已签约，不可再改
           rejected: ['draft'],                      // 驳回可重新发起
@@ -317,6 +319,7 @@ export async function PUT(request: NextRequest) {
     if (party_b_id !== undefined || body.party_b_id !== undefined) updates.party_b_id = party_b_id || body.party_b_id;
     if (course_id !== undefined) updates.course_id = course_id;
     if (price !== undefined) updates.price = price;
+    else if (amount !== undefined) updates.price = amount;
     if (start_date !== undefined) updates.start_date = start_date;
     if (end_date !== undefined) updates.end_date = end_date;
     if (status !== undefined) updates.status = status;
@@ -328,19 +331,18 @@ export async function PUT(request: NextRequest) {
       .from('contracts')
       .update(updates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('[contracts PUT] DB error:', error);
       return NextResponse.json({ error: '更新失败' }, { status: 500 });
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return NextResponse.json({ error: '未找到该合同' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, data: data[0] });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '更新失败';
     console.error('[contracts PUT] Error:', message);

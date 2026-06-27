@@ -17,7 +17,7 @@ export async function POST(
     // 获取合同信息
     const { data: contract, error: contractError } = await supabase
       .from('contracts')
-      .select('id, lead_id, status')
+      .select('id, status, lead_id')
       .eq('id', id)
       .single();
 
@@ -30,8 +30,8 @@ export async function POST(
       .from('contracts')
       .update({
         status: 'confirmed',
-        confirmed_by: session.userId,
-        confirmed_at: new Date().toISOString(),
+        approved_by: session.userId,
+        approved_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
@@ -51,6 +51,23 @@ export async function POST(
         .single();
 
       if (leadData) {
+        // 2.0: 检查手机号是否已有简历，防止重复创建
+        if (leadData.phone) {
+          const { data: existingWorker } = await supabase
+            .from('workers')
+            .select('id, name')
+            .eq('phone', leadData.phone)
+            .maybeSingle();
+          if (existingWorker) {
+            return NextResponse.json({
+              ok: false,
+              error: '该手机号已有简历',
+              code: 'DUPLICATE_WORKER_PHONE',
+              existing: existingWorker,
+            }, { status: 409 });
+          }
+        }
+
         const workerId = crypto.randomUUID();
 
         // 创建worker记录
@@ -97,7 +114,7 @@ export async function POST(
       }
     }
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ success: true, ok: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '确认失败';
     return NextResponse.json({ ok: false, error: message }, { status: 500 });

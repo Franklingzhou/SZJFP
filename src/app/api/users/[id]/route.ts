@@ -16,7 +16,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { review_status } = body as { review_status: string };
+    const { review_status, reject_reason } = body as { review_status: string; reject_reason?: string };
 
     // review_status 必填且只能是 approved 或 rejected
     if (!review_status || !['approved', 'rejected'].includes(review_status)) {
@@ -64,6 +64,11 @@ export async function PATCH(
       reviewed_by: session.userId,
       reviewed_at: now,
     };
+
+    // 拒绝原因（仅rejected时存储）
+    if (reject_reason) {
+      updates.reject_reason = reject_reason;
+    }
 
     // approved 时激活账号，rejected 时停用
     if (review_status === 'approved') {

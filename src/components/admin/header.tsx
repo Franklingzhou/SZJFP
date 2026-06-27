@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import NotificationBell from './notification-bell';
 
 const roleLabels: Record<string, string> = {
   admin: '平台管理',
   agent: '经纪人',
   recruiter: '招生代理',
-  instructor: '培训讲师',
+  instructor: '讲师',
   training_supervisor: '培训主管',
   worker_operator: '阿姨运营',
   worker: '阿姨',
@@ -30,10 +31,7 @@ export default function AdminHeader() {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <button className="relative p-2 rounded-lg hover:bg-slate-100 transition-colors">
-          <Bell className="h-5 w-5 text-slate-600" />
-          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+        <NotificationBell />
         <div className="flex items-center gap-2 pl-4 border-l">
           <div className="h-8 w-8 rounded-full bg-slate-900 flex items-center justify-center">
             <User className="h-4 w-4 text-white" />

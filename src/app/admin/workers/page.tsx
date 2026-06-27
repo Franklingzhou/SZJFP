@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Eye, Edit, Share2, Phone, X, GraduationCap, BookOpen, Pause, Play, Ban, PauseCircle, PlayCircle, ShieldBan, Plus, XCircle, DollarSign, RotateCcw } from 'lucide-react';
+import { Search, Filter, Eye, Edit, Share2, Phone, X, GraduationCap, BookOpen, Pause, Play, Ban, PauseCircle, PlayCircle, ShieldBan, Plus, XCircle, DollarSign, RotateCcw, Camera, Briefcase } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { REVIEW_SOURCE_LABELS, RESUME_REVIEW_STATUS_LABELS } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -720,17 +720,22 @@ export default function WorkersPage() {
 }
 
 function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile | null; onEdit: (w: WorkerProfile) => void; onShare: (w: WorkerProfile) => void }) {
-  const [activeTab, setActiveTab] = useState<'info' | 'courses'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'courses' | 'media' | 'experience'>('info');
   const [courseEnrollments, setCourseEnrollments] = useState<any[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
   const [trainingReqLoading, setTrainingReqLoading] = useState(false);
   const [trainingReqSent, setTrainingReqSent] = useState(false);
+  const [mediaList, setMediaList] = useState<any[]>([]);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [expList, setExpList] = useState<any[]>([]);
+  const [expLoading, setExpLoading] = useState(false);
   // 保证金退款
   const [showDepositRefund, setShowDepositRefund] = useState(false);
   const [depositRefundForm, setDepositRefundForm] = useState({ amount: 0, reason: '' });
   const [depositRefunding, setDepositRefunding] = useState(false);
 
   useEffect(() => {
+    if (!worker?.id) return;
     if (activeTab === 'courses' && worker?.user_id) {
       setCoursesLoading(true);
       const headers: Record<string, string> = {};
@@ -742,7 +747,23 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
         .catch(() => setCourseEnrollments([]))
         .finally(() => setCoursesLoading(false));
     }
-  }, [activeTab, worker?.user_id]);
+    if (activeTab === 'media') {
+      setMediaLoading(true);
+      fetch(`/api/workers/${worker.id}/media`)
+        .then(r => r.json())
+        .then(data => setMediaList(data.data || []))
+        .catch(() => setMediaList([]))
+        .finally(() => setMediaLoading(false));
+    }
+    if (activeTab === 'experience') {
+      setExpLoading(true);
+      fetch(`/api/workers/${worker.id}/work-experience`)
+        .then(r => r.json())
+        .then(data => setExpList(data.data || []))
+        .catch(() => setExpList([]))
+        .finally(() => setExpLoading(false));
+    }
+  }, [activeTab, worker?.id, worker?.user_id]);
 
   const handleDepositRefund = async () => {
     if (!worker || depositRefundForm.amount <= 0) return;
@@ -791,6 +812,18 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
           className={cn('px-4 py-2 text-sm font-medium border-b-2 transition-colors', activeTab === 'info' ? 'border-[#1e3a5f] text-[#1e3a5f]' : 'border-transparent text-slate-500 hover:text-slate-700')}
           onClick={() => setActiveTab('info')}
         >基本信息</button>
+        <button
+          className={cn('px-4 py-2 text-sm font-medium border-b-2 transition-colors', activeTab === 'media' ? 'border-[#1e3a5f] text-[#1e3a5f]' : 'border-transparent text-slate-500 hover:text-slate-700')}
+          onClick={() => setActiveTab('media')}
+        >
+          <Camera className="h-4 w-4 inline mr-1" />照片/视频
+        </button>
+        <button
+          className={cn('px-4 py-2 text-sm font-medium border-b-2 transition-colors', activeTab === 'experience' ? 'border-[#1e3a5f] text-[#1e3a5f]' : 'border-transparent text-slate-500 hover:text-slate-700')}
+          onClick={() => setActiveTab('experience')}
+        >
+          <Briefcase className="h-4 w-4 inline mr-1" />上户记录
+        </button>
         <button
           className={cn('px-4 py-2 text-sm font-medium border-b-2 transition-colors', activeTab === 'courses' ? 'border-[#1e3a5f] text-[#1e3a5f]' : 'border-transparent text-slate-500 hover:text-slate-700')}
           onClick={() => setActiveTab('courses')}
@@ -963,6 +996,77 @@ function WorkerDetailDialog({ worker, onEdit, onShare }: { worker: WorkerProfile
           </Button>
         </div>
         </>)}
+
+        {activeTab === 'media' && (
+          <div>
+            <h3 className="font-semibold mb-3 text-slate-700 flex items-center gap-2">
+              <Camera className="h-4 w-4" />照片/视频
+            </h3>
+            {mediaLoading ? (
+              <div className="text-center py-8 text-slate-400">加载中...</div>
+            ) : mediaList.length === 0 ? (
+              <div className="text-center py-8 text-slate-400">暂无照片/视频</div>
+            ) : (
+              <div className="space-y-4">
+                {/* 照片 */}
+                {mediaList.filter((m: any) => m.type === 'photo').length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-600 mb-2">照片 ({mediaList.filter((m: any) => m.type === 'photo').length}张)</h4>
+                    <div className="grid grid-cols-3 gap-2">
+                      {mediaList.filter((m: any) => m.type === 'photo').map((p: any) => (
+                        <div key={p.id} className="aspect-square rounded-lg bg-slate-100 overflow-hidden relative group">
+                          <img src={p.url} alt={p.category || '照片'} className="w-full h-full object-cover" loading="lazy" />
+                          <span className="absolute bottom-1 left-1 bg-black/50 text-white text-[10px] px-1 rounded">{p.category}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* 视频 */}
+                {mediaList.filter((m: any) => m.type === 'video').length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-600 mb-2">视频 ({mediaList.filter((m: any) => m.type === 'video').length}个)</h4>
+                    <div className="space-y-2">
+                      {mediaList.filter((m: any) => m.type === 'video').map((v: any) => (
+                        <div key={v.id} className="bg-slate-100 rounded-lg overflow-hidden" style={{aspectRatio: '16/9'}}>
+                          <video src={v.url} controls className="w-full h-full object-cover" preload="metadata" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'experience' && (
+          <div>
+            <h3 className="font-semibold mb-3 text-slate-700 flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />上户记录
+            </h3>
+            {expLoading ? (
+              <div className="text-center py-8 text-slate-400">加载中...</div>
+            ) : expList.length === 0 ? (
+              <div className="text-center py-8 text-slate-400">暂无上户记录</div>
+            ) : (
+              <div className="space-y-2">
+                {expList.map((exp: any) => (
+                  <div key={exp.id} className="bg-slate-50 rounded-lg p-3 border-l-2 border-[#1e3a5f]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge className="text-xs bg-[#1e3a5f]/10 text-[#1e3a5f] border-0">{exp.period}</Badge>
+                      {exp.job_type && <Badge variant="outline" className="text-xs">{exp.job_type}</Badge>}
+                      {exp.employer && <span className="text-xs text-slate-500">雇主: {exp.employer}</span>}
+                    </div>
+                    {exp.description && (
+                      <p className="text-sm text-slate-600 mt-1">{exp.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {activeTab === 'courses' && (
           <div>

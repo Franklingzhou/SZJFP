@@ -44,8 +44,9 @@ export async function POST(request: NextRequest) {
   if (!session) return unauthorizedResponse();
   try {
     const body = await request.json();
-    const { name, type, content, description, is_active, sort_order } = body as {
-      name: string;
+    const { name, template_name, type, content, description, is_active, sort_order } = body as {
+      name?: string;
+      template_name?: string;  // 别名
       type: string;
       content: string;
       description?: string;
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
       sort_order?: number;
     };
 
-    if (!name || !content) {
+    const finalName = name || template_name;
+    if (!finalName || !content) {
       return NextResponse.json({ error: '缺少必要参数(name, content)' }, { status: 400 });
     }
 
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('contract_templates')
       .insert({
-        name,
+        name: finalName,
         type: finalType,
         content,
         description: description || null,
@@ -149,8 +151,16 @@ export async function DELETE(request: NextRequest) {
   const session = await checkPermission(request, 'contract-templates:write');
   if (!session) return unauthorizedResponse();
   try {
-    const body = await request.json();
-    const { id } = body as { id: string };
+    let id: string | undefined;
+    // 优先从 URL 参数取
+    id = request.nextUrl.searchParams.get('id') || undefined;
+    // 兼容 body 方式
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = (body as Record<string, unknown>).id as string;
+      } catch { /* body 为空或非JSON */ }
+    }
 
     if (!id) {
       return NextResponse.json({ error: '缺少模板ID' }, { status: 400 });

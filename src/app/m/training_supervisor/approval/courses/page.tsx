@@ -1,55 +1,98 @@
 'use client';
 
-import React, { useState } from 'react';
-import { mockCourses } from '@/lib/data-service';
-import type { TrainingCourse } from '@/lib/types';
-import { Clock, Users, CheckCircle, XCircle, FileText } from 'lucide-react';
-import { updateRecord } from '@/lib/data-service';
+import React, { useState, useEffect } from 'react';
+import { Clock, Users, CheckCircle, XCircle, FileText, RefreshCw } from 'lucide-react';
+
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+  if (token) headers['x-session'] = token;
+  return headers;
+}
 
 export default function TrainingSupervisorCourseApprovalPage() {
-  const [courses, setCourses] = useState<TrainingCourse[]>([...mockCourses]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [submitting, setSubmitting] = useState<string | null>(null);
 
-  const pendingCourses = courses.filter(c => c.status === 'pending_approval');
-  const approvedCourses = courses.filter(c => c.status === 'upcoming' || c.status === 'ongoing' || c.status === 'completed');
-  const rejectedCourses = courses.filter(c => c.status === 'rejected');
+  const loadCourses = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/courses', { headers: getAuthHeaders() });
+      const result = await res.json();
+      const data = result.data || result.courses || [];
+      setCourses(Array.isArray(data) ? data : []);
+    } catch {
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadCourses(); }, []);
+
+  const isPending = (c: any) => c.status === 'pending_approval' || c.status === 'pending';
+  const isApproved = (c: any) =>
+    c.status === 'upcoming' || c.status === 'ongoing' || c.status === 'completed' || c.status === 'active' || c.status === 'approved';
+  const isRejected = (c: any) => c.status === 'rejected';
+
+  const pendingCourses = courses.filter(isPending);
+  const approvedCourses = courses.filter(isApproved);
+  const rejectedCourses = courses.filter(isRejected);
 
   const displayCourses = tab === 'pending' ? pendingCourses : tab === 'approved' ? approvedCourses : rejectedCourses;
 
   const handleApproval = async (courseId: string, approved: boolean) => {
-    const newStatus = approved ? 'upcoming' : 'rejected';
-    await updateRecord('courses', { id: courseId, status: newStatus });
-    setCourses(prev => prev.map(c => c.id === courseId ? { ...c, status: newStatus } : c));
-    const target = mockCourses.find(c => c.id === courseId);
-    if (target) target.status = newStatus;
-    alert(approved ? '课程已通过审批' : '课程已驳回');
+    setSubmitting(courseId);
+    try {
+      const res = await fetch('/api/courses', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          id: courseId,
+          status: approved ? 'upcoming' : 'rejected',
+        }),
+      });
+      const result = await res.json();
+      if (result.success || result.ok) {
+        setCourses(prev => prev.map(c =>
+          c.id === courseId ? { ...c, status: approved ? 'upcoming' : 'rejected' } : c
+        ));
+      } else {
+        alert('操作失败：' + (result.error || '请重试'));
+      }
+    } catch {
+      alert('网络错误，请重试');
+    } finally {
+      setSubmitting(null);
+    }
   };
 
   const statusLabel = (status: string) => {
     const map: Record<string, string> = {
-      pending_approval: '待审批',
-      upcoming: '已通过',
-      ongoing: '进行中',
-      completed: '已结束',
+      pending_approval: '待审批', pending: '待审批',
+      upcoming: '已通过', ongoing: '进行中', completed: '已结束', active: '已通过', approved: '已通过',
       rejected: '已驳回',
     };
     return map[status] || status;
   };
 
   const statusColor = (status: string) => {
-    const map: Record<string, string> = {
-      pending_approval: 'bg-amber-50 text-amber-700',
-      upcoming: 'bg-blue-50 text-blue-700',
-      ongoing: 'bg-green-50 text-green-700',
-      completed: 'bg-slate-50 text-slate-600',
-      rejected: 'bg-red-50 text-red-700',
-    };
-    return map[status] || 'bg-slate-50 text-slate-600';
+    if (isPending({ status })) return 'bg-amber-50 text-amber-700';
+    if (isApproved({ status })) return 'bg-blue-50 text-blue-700';
+    if (isRejected({ status })) return 'bg-red-50 text-red-700';
+    return 'bg-slate-50 text-slate-600';
   };
 
   return (
     <div className="pb-20 px-4 pt-4">
-      <h1 className="text-lg font-semibold text-slate-800 mb-3">课程审批</h1>
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-lg font-semibold text-slate-800">课程审批</h1>
+        <button onClick={loadCourses} className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200" title="刷新">
+          <RefreshCw className="h-4 w-4 text-slate-500" />
+        </button>
+      </div>
 
       {/* Tab切换 */}
       <div className="flex gap-2 mb-3">
@@ -64,58 +107,65 @@ export default function TrainingSupervisorCourseApprovalPage() {
         </button>
       </div>
 
-      {/* 课程列表 */}
-      <div className="space-y-3">
-        {displayCourses.map(c => (
-          <div key={c.id} className="bg-white rounded-xl p-4 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <FileText className="h-4 w-4 text-blue-500" />
-                  <span className="text-sm font-medium text-slate-800">{c.name}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${statusColor(c.status)}`}>{statusLabel(c.status)}</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {c.hours || 0}课时</span>
-                  <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {c.currentStudents}人</span>
-                  <span>讲师：{c.instructorName || '待定'}</span>
-                </div>
-                {c.certificateOptions.length > 0 && (
-                  <div className="flex gap-1 mt-1.5">
-                    {c.certificateOptions.map((cert: string) => (
-                      <span key={cert} className="text-[10px] px-1.5 py-0.5 bg-purple-50 text-purple-600 rounded">{cert}</span>
-                    ))}
+      {loading ? (
+        <div className="text-center py-10 text-slate-400">加载中...</div>
+      ) : (
+        <div className="space-y-3">
+          {displayCourses.map(c => (
+            <div key={c.id} className="bg-white rounded-xl p-4 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FileText className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm font-medium text-slate-800">{c.name || c.title || '未命名课程'}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${statusColor(c.status)}`}>{statusLabel(c.status)}</span>
                   </div>
-                )}
+                  <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                    {(c.hours || c.duration) && <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {c.hours || c.duration}课时</span>}
+                    {(c.currentStudents !== undefined) && <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {c.currentStudents}人</span>}
+                    {(c.instructorName || c.instructor_name) && <span>讲师：{c.instructorName || c.instructor_name}</span>}
+                  </div>
+                  {c.certificateOptions?.length > 0 && (
+                    <div className="flex gap-1 mt-1.5">
+                      {c.certificateOptions.map((cert: string) => (
+                        <span key={cert} className="text-[10px] px-1.5 py-0.5 bg-purple-50 text-purple-600 rounded">{cert}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-amber-600">¥{c.price || 0}</span>
               </div>
-              <span className="text-sm font-semibold text-amber-600">¥{c.price}</span>
-            </div>
 
-            {/* 审批按钮 - 仅待审批状态显示 */}
-            {c.status === 'pending_approval' && (
-              <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
-                <button
-                  onClick={() => handleApproval(c.id, true)}
-                  className="flex-1 py-2 bg-green-500 text-white text-xs rounded-lg flex items-center justify-center gap-1"
-                >
-                  <CheckCircle className="h-3.5 w-3.5" /> 通过
-                </button>
-                <button
-                  onClick={() => handleApproval(c.id, false)}
-                  className="flex-1 py-2 bg-red-500 text-white text-xs rounded-lg flex items-center justify-center gap-1"
-                >
-                  <XCircle className="h-3.5 w-3.5" /> 驳回
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-        {displayCourses.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-8">
-            {tab === 'pending' ? '暂无待审批课程' : tab === 'approved' ? '暂无已通过课程' : '暂无已驳回课程'}
-          </p>
-        )}
-      </div>
+              {/* 审批按钮 - 仅待审批状态显示 */}
+              {isPending(c) && (
+                <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+                  <button
+                    onClick={() => handleApproval(c.id, true)}
+                    disabled={submitting === c.id}
+                    className="flex-1 py-2 bg-green-500 text-white text-xs rounded-lg flex items-center justify-center gap-1 disabled:opacity-50"
+                  >
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    {submitting === c.id ? '处理中...' : '通过'}
+                  </button>
+                  <button
+                    onClick={() => handleApproval(c.id, false)}
+                    disabled={submitting === c.id}
+                    className="flex-1 py-2 bg-red-500 text-white text-xs rounded-lg flex items-center justify-center gap-1 disabled:opacity-50"
+                  >
+                    <XCircle className="h-3.5 w-3.5" />
+                    {submitting === c.id ? '处理中...' : '驳回'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+          {displayCourses.length === 0 && (
+            <p className="text-sm text-slate-400 text-center py-8">
+              {tab === 'pending' ? '暂无待审批课程' : tab === 'approved' ? '暂无已通过课程' : '暂无已驳回课程'}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
