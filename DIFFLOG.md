@@ -178,7 +178,7 @@
 
 ---
 
-## 2026-06-27 第十轮：部署012回归修复 (未commit，szjfp-012)
+## 2026-06-27 第十轮：部署012回归修复 (commit: c9efb3f，szjfp-012)
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
@@ -193,3 +193,90 @@
 | `src/components/miniapp/tab-bar.tsx` | 修改 | 加客户tab |
 
 **第十轮合计：9文件（新建5 + 修改3 + 重写1）**
+
+---
+
+## 2026-06-27 第十一轮：commit第十轮未提交代码 + N-Schema防御 (commit: c9efb3f, 部署 szjfp-013)
+
+**根因**: 第十轮所有修复为 uncommitted，szjfp-012 部署的是第九轮代码
+
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `src/app/api/resume-reviews/[id]/approve/route.ts` | 修改 | 重写重试逻辑：逐列检测 notes/review_note/review_comment，最多3次 |
+| `src/app/api/commission-settlements/route.ts` | 新建 | 分账结算API |
+| `src/app/api/clients/route.ts` | 新建 | 客户管理API |
+| `src/app/api/contracts/[id]/student-confirm/route.ts` | 新建 | 学员签约确认 |
+| `src/app/api/course-schedules/[id]/approve/route.ts` | 新建 | 课表审核API |
+| `src/app/api/customer-leads/route.ts` | 新建 | 客户线索API |
+| `src/app/api/dev/run-migration/route.ts` | 新建 | 开发迁移工具 |
+| `src/app/api/enrollments/[id]/grade/route.ts` | 新建 | 讲师考核打分 |
+| `src/app/api/leads/[id]/follow-ups/route.ts` | 新建 | 线索跟进别名（已列第十轮） |
+| `src/app/api/leads/[id]/followups/route.ts` | 修改 | 线索跟进实现 |
+| `src/app/api/levels/route.ts` | 新建 | 等级管理API |
+| `src/app/api/operation-logs/route.ts` | 新建 | 操作日志API |
+| `src/app/api/orders/[id]/cancel/route.ts` | 新建 | 订单取消API |
+| `src/app/api/orders/[id]/change-worker/route.ts` | 新建 | 换阿姨别名（已列第十轮） |
+| `src/app/api/orders/[id]/replace/route.ts` | 修改 | 换阿姨实现 |
+| `src/app/api/platform-fees/[id]/confirm/route.ts` | 新建 | 平台费确认 |
+| `src/app/api/profile/route.ts` | 新建 | 个人资料API |
+| `src/app/api/recommendations/[id]/accept/route.ts` | 新建 | 推荐接受API |
+| `src/app/api/recommendations/[id]/route.ts` | 新建 | 推荐详情API |
+| `src/app/api/recommendations/route.ts` | 修改 | 推荐去重逻辑 |
+| `src/app/api/referral/apply/route.ts` | 新建 | 转介绍申请 |
+| `src/app/api/referral/my-code/route.ts` | 新建 | 我的推荐码 |
+| `src/app/api/referral/my-referrals/route.ts` | 新建 | 我的推荐列表 |
+| `src/app/api/referral-rewards/route.ts` | 新建 | 推荐奖励API |
+| `src/app/api/resume-reviews/route.ts` | 修改 | 审核列表筛选 |
+| `src/app/api/resume-reviews/[id]/reject/route.ts` | 修改 | 列名自动检测 |
+| `src/app/api/resume-transfers/route.ts` | 新建 | 简历转介API |
+| `src/app/api/reviews/[id]/route.ts` | 新建 | 评价详情API |
+| `src/app/api/reviews/route.ts` | 修改 | 评价列表API |
+| `src/app/api/search/route.ts` | 新建 | 搜索API（已列第十轮） |
+| `src/app/api/settings/route.ts` | 修改 | 系统设置API |
+| `src/app/api/students/[id]/confirm/route.ts` | 新建 | 学员确认（已列第十轮） |
+| `src/app/api/student/[id]/convert-to-worker/route.ts` | 新建 | 学员转阿姨 |
+| `src/app/api/users/[id]/route.ts` | 新建 | 用户详情API |
+| `src/app/api/venues/route.ts` | 修改 | 场地管理API |
+| `src/app/api/worker-tiers/route.ts` | 新建 | 阿姨等级API |
+| `src/app/api/workers/[id]/media/route.ts` | 新建 | 阿姨媒体文件 |
+| `src/app/api/workers/[id]/pause/route.ts` | 新建 | 阿姨暂停接单 |
+| `src/app/api/workers/[id]/resume/route.ts` | 新建 | 阿姨恢复接单 |
+| `src/app/api/workers/[id]/route.ts` | 修改 | 阿姨详情API |
+| `src/app/api/workers/[id]/work-experience/route.ts` | 新建 | 阿姨工作经历 |
+| `src/app/admin/assessments/page.tsx` | 新建 | 考核管理页 |
+| `src/app/admin/customer-leads/page.tsx` | 新建 | 客户线索页 |
+| `src/app/admin/hall/page.tsx` | 修改 | 合单大厅增强 |
+| `src/app/admin/levels/page.tsx` | 新建 | 等级管理页 |
+| `src/app/admin/points/page.tsx` | 新建 | 积分管理页 |
+| `src/app/admin/referrals/page.tsx` | 新建 | 转介绍管理页 |
+| `src/app/admin/resume-reviews/page.tsx` | 修改 | 审核列表增强 |
+| `src/app/admin/roles/page.tsx` | 修改 | 角色管理增强 |
+| `src/app/admin/tiers/page.tsx` | 新建 | 层级管理页 |
+| `src/app/m/customer/contracts/page.tsx` | 新建 | 客户端合同页 |
+| `src/app/m/recruiter/leads/page.tsx` | 新建 | 招生端线索页 |
+| `src/app/m/training_supervisor/approval/courses/page.tsx` | 重写 | 课程审批页 |
+| `src/app/m/training_supervisor/leads/page.tsx` | 修改 | 培训主管线索页 |
+| `src/app/m/worker/customers/page.tsx` | 新建 | 阿姨端客户页（已列第十轮） |
+| `src/app/m/worker/jobs/page.tsx` | 修改 | 接单大厅合并 |
+| `src/app/m/worker/onboard/page.tsx` | 新建 | 阿姨入职页 |
+| `src/app/m/worker/profile/page.tsx` | 修改 | 个人简历增强 |
+| `src/app/m/worker/recommendations/page.tsx` | 新建 | 阿姨推荐接收页 |
+| `src/app/m/worker/resume/page.tsx` | 修改 | 简历编辑增强 |
+| `src/app/m/worker/training/page.tsx` | 新建 | 阿姨培训页 |
+| `src/app/m/login/page.tsx` | 修改 | 登录页增强 |
+| `src/app/page.tsx` | 修改 | 首页更新 |
+| `src/components/admin/header.tsx` | 修改 | 顶部栏增强 |
+| `src/components/admin/notification-bell.tsx` | 新建 | 通知铃铛组件 |
+| `src/components/admin/sidebar.tsx` | 修改 | 侧边栏增加菜单项 |
+| `src/components/miniapp/tab-bar.tsx` | 修改 | 加客户tab |
+| `src/hooks/use-toast.ts` | 新建 | Toast Hook |
+| `src/lib/auth-middleware.ts` | 修改 | 权限矩阵扩展 |
+| `src/lib/commission-utils.ts` | 修改 | 佣金计算增强 |
+| `src/lib/data-service.ts` | 修改 | 数据服务增强 |
+| `src/lib/mock-data.ts` | 修改 | Mock数据更新 |
+| `src/lib/notification-helper.ts` | 新建 | 通知助手 |
+| `src/lib/schema.ts` | 修改 | Schema更新 |
+| `src/lib/types.ts` | 修改 | 类型定义扩展 |
+| `src/storage/database/shared/schema.ts` | 修改 | 数据库Schema |
+
+**第十一轮合计：115文件（新建74 + 修改36 + 重写1）**

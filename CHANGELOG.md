@@ -405,7 +405,7 @@
 
 ---
 
-## 2026-06-27 第十轮修复 — 部署012回归（测试反馈） (未commit，已部署 szjfp-012)
+## 2026-06-27 第十轮修复 — 部署012回归（测试反馈） (commit: c9efb3f，部署 szjfp-012)
 
 ### 后端修复
 
@@ -438,3 +438,32 @@
 | `src/app/m/worker/customers/page.tsx` | 新建 |
 | `src/app/m/training_supervisor/approval/courses/page.tsx` | 重写：对接真实API |
 | `src/components/miniapp/tab-bar.tsx` | 修改：加客户tab |
+
+---
+
+## 2026-06-27 第十一轮修复 — 提交第十轮未commit代码 + N-Schema防御增强 (commit: c9efb3f, 部署 szjfp-013)
+
+### 根因分析
+
+第十轮所有修复为 uncommitted 状态，szjfp-012 部署时使用的是第九轮代码（f89b0ad），导致：
+- 所有新增 API 路由 404（线索跟进、学员确认、换阿姨等）
+- 所有新增前端页面 404（阿姨端客户、操作日志、分账等）
+- `notes` 列缺失错误未得到防御
+
+### 修复内容
+
+| 问题 | 修复方式 |
+|------|----------|
+| **第十轮代码未部署** | commit + push 全部变更（115文件，+7246/-784），重新部署 szjfp-013 |
+| **N-Schema approve仍报notes列不存在** | 重写重试逻辑：逐列检测缺失并删除，支持 notes/review_note/review_comment 三种列名，最多重试3次 |
+| **阿姨端5页面404** | 页面文件本地已存在，部署后生效 |
+| **搜索400** | 代码已修复（safeQuery截断），部署后生效 |
+| **操作日志前端404** | 代码已修复（admin/logs + /api/operation-logs），部署后生效 |
+| **分账404** | 代码已修复（admin/settlement + /api/commission-settlements），部署后生效 |
+
+### 文件清单
+
+| 文件 | 操作 |
+|------|------|
+| `src/app/api/resume-reviews/[id]/approve/route.ts` | 修改：逐列重试防御 |
+| 其余114个文件 | 第十轮变更全部 commit |
