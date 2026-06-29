@@ -34,6 +34,11 @@ const SUITE_MAP = {
   update: { name: '更新类接口',   file: 'update.test.js',  export: 'updateSuite' },
   delete: { name: '删除类接口',   file: 'delete.test.js',  export: 'deleteSuite' },
   e2e:    { name: '端到端流程',   file: 'e2e.test.js',     export: 'e2eSuite' },
+  n_series: { name: 'N系列-简历审核专项', file: 'n-series.test.js', export: 'default' },
+  finance: { name: '财务模块',    file: 'finance.test.js', export: 'financeSuite' },
+  training:{ name: '培训模块',    file: 'training.test.js',export: 'trainingSuite' },
+  misc:   { name: '杂项模块',    file: 'misc.test.js',    export: 'miscSuite' },
+  supplement:{ name: '补充覆盖🆕', file: 'supplement.test.js', export: 'supplementSuite' },
 };
 
 async function main() {
@@ -47,14 +52,20 @@ async function main() {
   }
 
   // 预检：重置测试数据库到干净状态
-  const axios = require('axios');
   try {
     console.log(chalk.gray('  数据库重置中...'));
-    const initRes = await axios.post(`${config.BASE_URL}/api/auth/init-users`, {}, { timeout: 10000, validateStatus: () => true });
-    if (initRes.data?.success) {
-      console.log(chalk.green(`  数据库已重置 (${initRes.data.results?.length || 0}个用户)\n`));
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+    const initFetch = await fetch(`${config.BASE_URL}/api/auth/init-users`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: '{}', signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    const initData = await initFetch.json();
+    if (initData?.success) {
+      console.log(chalk.green(`  数据库已重置 (${initData.results?.length || 0}个用户)\n`));
     } else {
-      console.log(chalk.yellow(`  重置警告: ${JSON.stringify(initRes.data).slice(0, 100)}\n`));
+      console.log(chalk.yellow(`  重置警告: ${JSON.stringify(initData).slice(0, 100)}\n`));
     }
   } catch (e) {
     console.log(chalk.red(`  重置失败: ${e.message}\n`));

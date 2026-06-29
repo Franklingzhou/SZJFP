@@ -13,9 +13,9 @@ export default function TrainingSupervisorCoursesPage() {
   // 使用共享数据：课程（排除待审批的）
   const courses = mockCourses.filter(c => c.status !== 'pending_approval');
 
-  // 使用共享数据：学员 = 线索中正在培训/已合格/已转化的
+  // 学员 = 线索中已转化的（培训进度通过报名状态追踪）
   const students = mockRecruiterLeads.filter(l =>
-    ['training', 'qualified', 'converted'].includes(l.status)
+    l.status === 'converted'
   );
 
   const filteredStudents = search
@@ -114,13 +114,9 @@ export default function TrainingSupervisorCoursesPage() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium text-slate-800">{s.name}</p>
-                          <p className="text-xs text-slate-400">{s.intention || '未选择'} · {s.status === 'training' ? '学习中' : s.status === 'qualified' ? '已合格' : '已转化'}</p>
+                          <p className="text-xs text-slate-400">{s.intention || '未选择'} · 已转化</p>
                         </div>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          s.status === 'training' ? 'bg-blue-50 text-blue-700' :
-                          s.status === 'qualified' ? 'bg-green-50 text-green-700' :
-                          'bg-emerald-50 text-emerald-700'
-                        }`}>{s.status === 'training' ? '学习中' : s.status === 'qualified' ? '已合格' : '已转化'}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">已转化</span>
                       </div>
                     ))}
                   </div>
@@ -159,11 +155,7 @@ export default function TrainingSupervisorCoursesPage() {
                   <p className="text-xs text-slate-400">{s.intention || '未选择'} · 来源：{s.recruiterName}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs px-1.5 py-0.5 rounded ${
-                    s.status === 'training' ? 'bg-blue-50 text-blue-700' :
-                    s.status === 'qualified' ? 'bg-green-50 text-green-700' :
-                    'bg-emerald-50 text-emerald-700'
-                  }`}>{s.status === 'training' ? '学习中' : s.status === 'qualified' ? '已合格' : '已转化'}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700`}>已转化</span>
                   <ChevronRight className="h-4 w-4 text-slate-300" />
                 </div>
               </div>
@@ -199,9 +191,7 @@ export default function TrainingSupervisorCoursesPage() {
                   </div>
                   <div className="flex justify-between py-2 border-b border-slate-50">
                     <span className="text-slate-400">培训状态</span>
-                    <span className={student.status === 'converted' ? 'text-emerald-600' : student.status === 'qualified' ? 'text-green-600' : 'text-blue-600'}>
-                      {student.status === 'training' ? '学习中' : student.status === 'qualified' ? '已合格' : '已转化'}
-                    </span>
+                    <span className="text-emerald-600">已转化</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-slate-50">
                     <span className="text-slate-400">来源招生</span>

@@ -7,7 +7,7 @@ import { RecruiterLead } from '@/lib/data-service';
 import { Users, BookOpen, FileText, ChevronRight, ClipboardCheck, Briefcase } from 'lucide-react';
 
 const STATUS_MAP: Record<string, string> = {
-  new: '新线索', contacted: '跟进中', training: '培训中', qualified: '已合格', converted: '已转化', lost: '已流失'
+  new: '新线索', following: '跟进中', signed: '已签约', converted: '已转化', lost: '已流失'
 };
 
 export default function TrainingSupervisorHomePage() {
@@ -15,7 +15,7 @@ export default function TrainingSupervisorHomePage() {
   const [search, setSearch] = useState('');
 
   const totalLeads = leads.length;
-  const followingLeads = leads.filter(l => l.status === 'contacted').length;
+  const followingLeads = leads.filter(l => l.status === 'following').length;
   const convertedLeads = leads.filter(l => l.status === 'converted').length;
   const lostLeads = leads.filter(l => l.status === 'lost').length;
   const totalStudents = mockWorkers.length;
@@ -86,7 +86,6 @@ export default function TrainingSupervisorHomePage() {
         </div>
         <div className="grid grid-cols-4 gap-2 text-center">
           <div><p className="text-sm font-semibold text-blue-600">{followingLeads}</p><p className="text-xs text-slate-400">跟进中</p></div>
-          <div><p className="text-sm font-semibold text-amber-600">{leads.filter(l=>l.status==='qualified').length}</p><p className="text-xs text-slate-400">已合格</p></div>
           <div><p className="text-sm font-semibold text-green-600">{convertedLeads}</p><p className="text-xs text-slate-400">已转化</p></div>
           <div><p className="text-sm font-semibold text-red-600">{lostLeads}</p><p className="text-xs text-slate-400">已流失</p></div>
         </div>
@@ -104,7 +103,8 @@ export default function TrainingSupervisorHomePage() {
             </div>
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               l.status === 'new' ? 'bg-blue-100 text-blue-700' :
-              l.status === 'contacted' ? 'bg-amber-100 text-amber-700' :
+              l.status === 'following' ? 'bg-amber-100 text-amber-700' :
+              l.status === 'signed' ? 'bg-indigo-100 text-indigo-700' :
               l.status === 'converted' ? 'bg-green-100 text-green-700' :
               l.status === 'lost' ? 'bg-red-100 text-red-700' :
               'bg-slate-100 text-slate-700'

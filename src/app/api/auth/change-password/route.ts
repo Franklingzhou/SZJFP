@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // 修改密码（需登录态，通过 x-session 识别用户）
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'profile:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'profile:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const body = await request.json();

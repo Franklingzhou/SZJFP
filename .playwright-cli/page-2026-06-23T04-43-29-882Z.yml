@@ -1,0 +1,79 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e105]
+  - generic [ref=e106]:
+    - heading "阿姨端" [level=1] [ref=e132]
+    - generic [ref=e133]:
+      - generic [ref=e135]:
+        - generic [ref=e136]: 王
+        - generic [ref=e137]:
+          - generic [ref=e138]:
+            - generic [ref=e139]: 王秀兰
+            - generic [ref=e140]: 空闲
+          - paragraph [ref=e141]: 月嫂 · 育儿嫂 · 8年经验
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - img [ref=e144]
+          - generic [ref=e146]: "95"
+          - generic [ref=e147]: 诚信分
+        - generic [ref=e148]:
+          - img [ref=e149]
+          - generic [ref=e151]: "48"
+          - generic [ref=e152]: 积分
+        - generic [ref=e153]:
+          - img [ref=e154]
+          - generic [ref=e157]: "0"
+          - generic [ref=e158]: 完成单
+        - generic [ref=e159]:
+          - img [ref=e160]
+          - generic [ref=e163]: "3"
+          - generic [ref=e164]: 好评
+      - generic [ref=e166]:
+        - generic [ref=e167]:
+          - heading "上岗状态" [level=3] [ref=e168]
+          - paragraph [ref=e169]: 切换状态影响接单大厅可见性
+        - generic [ref=e170]:
+          - button "空闲" [ref=e171]
+          - button "在户" [ref=e172]
+          - button "暂停" [ref=e173]
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - heading "接单大厅" [level=3] [ref=e176]
+          - generic [ref=e177]: 1 个可接订单
+        - generic [ref=e179]:
+          - generic [ref=e180]:
+            - text: 育儿嫂急需
+            - generic [ref=e181]:
+              - generic [ref=e182]: 育儿嫂
+              - generic [ref=e183]: 西城区
+            - paragraph [ref=e184]: 1岁宝宝，需要育儿嫂全天照顾
+          - generic [ref=e185]:
+            - generic [ref=e186]: ¥10,000-¥13,000
+            - button "接单" [ref=e188]
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - heading "我的课程" [level=3] [ref=e191]
+          - generic [ref=e192]: 1 门课程
+        - generic [ref=e194]:
+          - img [ref=e196]
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - generic [ref=e200]: 高级月嫂技能提升
+              - generic [ref=e201]: 已通过
+            - paragraph [ref=e202]: 讲师：李敏 · 得分：92 · 2026-04-15
+    - navigation [ref=e203]:
+      - link "首页" [ref=e204] [cursor=pointer]:
+        - /url: /m/worker
+        - img [ref=e205]
+        - generic [ref=e208]: 首页
+      - link "接单" [ref=e209] [cursor=pointer]:
+        - /url: /m/worker/jobs
+        - img [ref=e210]
+        - generic [ref=e213]: 接单
+      - link "简历" [ref=e214] [cursor=pointer]:
+        - /url: /m/worker/resume
+        - img [ref=e215]
+        - generic [ref=e218]: 简历
+      - link "我的" [ref=e219] [cursor=pointer]:
+        - /url: /m/worker/profile
+        - img [ref=e220]
+        - generic [ref=e223]: 我的

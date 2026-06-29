@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/customer-followups — 获取跟进记录
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'customers:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'customers:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { searchParams } = new URL(request.url);
     const customer_id = searchParams.get('customer_id');
@@ -53,8 +54,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/customer-followups — 新建跟进记录
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'customers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'customers:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { customer_id, content, result } = body as {

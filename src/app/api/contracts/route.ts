@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     const status = request.nextUrl.searchParams.get('status');
     const partyAId = request.nextUrl.searchParams.get('party_a_id');
     const partyBId = request.nextUrl.searchParams.get('party_b_id');
+    const idFilter = request.nextUrl.searchParams.get('id');
     let type = request.nextUrl.searchParams.get('type');
 
     // 根据角色自动过滤合同类型
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
     if (partyAId) query = query.eq('party_a_id', partyAId);
     if (partyBId) query = query.eq('party_b_id', partyBId);
     if (type) query = query.eq('type', type);
+    if (idFilter) query = query.eq('id', idFilter);
 
     // 数据权限过滤：非admin只看自己相关的合同
     if (session.role !== 'admin') {
@@ -101,7 +103,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     // 同时支持多种参数名：type/contract_type, title, order_id, worker_id/customer_id, amount/price
-    const { title, type, contract_type, party_b_name, party_b_phone, party_b_id_card, party_a_id, course_id, price, start_date, end_date, order_id, worker_id, customer_id, amount } = body as {
+    const { title, type, contract_type, party_b_name, party_b_phone, party_b_id_card, party_a_id, course_id, price, start_date, end_date, worker_id, customer_id, amount } = body as {
       title?: string;
       type?: string;
       contract_type?: string;
@@ -113,7 +115,6 @@ export async function POST(request: NextRequest) {
       price?: number;
       start_date?: string;
       end_date?: string;
-      order_id?: string;
       worker_id?: string;
       customer_id?: string;
       amount?: number;
@@ -246,18 +247,25 @@ export async function PUT(request: NextRequest) {
 
     // v7: 状态流转校验
     if (status) {
-      const { data: current } = await supabase
+      const { data: current, error: currentErr } = await supabase
         .from('contracts')
-        .select('id, status')
+        .select('id, status, party_a_id')
         .eq('id', id)
-        .single();
+        .maybeSingle();
+
+      if (currentErr) {
+        console.error('[contracts PUT] status query error:', currentErr);
+        return NextResponse.json({ error: '查询合同失败' }, { status: 500 });
+      }
 
       if (current) {
         const validTransitions: Record<string, string[]> = {
           draft: ['signed', 'rejected'],           // 招生发起 → 学员签署 或 驳回
           pending_student: ['signed', 'rejected'], // 2.0: 待学员确认 → 学员确认/主管代确认 或 驳回
           signed: ['active', 'rejected'],          // 学员已签 → 主管确认到账 或 驳回
-          active: [],                               // 已签约，不可再改
+          active: ['closed', 'expired'],            // v35: 已签约 → 可手动关闭或到期
+          closed: [],                               // 已关闭，不可再改
+          expired: [],                              // 已过期
           rejected: ['draft'],                      // 驳回可重新发起
         };
         const allowed = validTransitions[current.status] || [];
@@ -306,6 +314,23 @@ export async function PUT(request: NextRequest) {
         body.approved_by = session.userId;
         if (!approved_at) body.approved_at = new Date().toISOString();
       }
+      // v35: 手动关闭合同时，记录关闭时间 + 关联平台费标记逾期
+      if (status === 'closed') {
+        body.closed_at = new Date().toISOString();
+        body.closed_by = session.userId;
+        // 将该合同关联的待支付平台费标记为逾期
+        try {
+          const { error: pfErr } = await supabase
+            .from('platform_fees')
+            .update({ status: 'overdue', updated_at: new Date().toISOString() })
+            .eq('contract_id', id)
+            .eq('status', 'pending');
+          if (pfErr) console.warn('[contracts PUT] platform_fees overdue cascade error:', pfErr.message);
+          else console.log('[contracts PUT] contract closed → platform_fees marked overdue for contract_id=', id);
+        } catch (e) {
+          console.warn('[contracts PUT] platform_fees cascade error:', e);
+        }
+      }
     }
 
     // 显式白名单更新
@@ -326,6 +351,9 @@ export async function PUT(request: NextRequest) {
     if (approved_by !== undefined || body.approved_by !== undefined) updates.approved_by = approved_by || body.approved_by;
     if (approved_at !== undefined || body.approved_at !== undefined) updates.approved_at = approved_at || body.approved_at;
     if (signed_at !== undefined || body.signed_at !== undefined) updates.signed_at = signed_at || body.signed_at;
+    // v35: 手动关闭合同字段
+    if (body.closed_at !== undefined) updates.closed_at = body.closed_at;
+    if (body.closed_by !== undefined) updates.closed_by = body.closed_by;
 
     const { data, error } = await supabase
       .from('contracts')

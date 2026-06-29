@@ -37,19 +37,10 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      // 已有该手机号的用户，直接返回
-      const token = generateToken(existing.id);
-      return NextResponse.json({
-        success: true,
-        user: {
-          id: existing.id,
-          name: existing.name,
-          phone: existing.phone,
-          role: existing.role,
-          reviewStatus: existing.review_status,
-        },
-        token,
-      });
+      return NextResponse.json(
+        { error: '该手机号已注册，请直接登录', code: 'DUPLICATE_PHONE' },
+        { status: 409 }
+      );
     }
 
     // 外部角色（阿姨/客户）注册自动通过，内部角色需管理员审核

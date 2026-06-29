@@ -274,6 +274,8 @@ CREATE TABLE IF NOT EXISTS order_signings (
   contract_end_date VARCHAR(20),
   status VARCHAR(20) NOT NULL DEFAULT 'active',
   replace_reason TEXT,
+  created_by VARCHAR(36),                              -- 创建人ID（BUG-E12修复）
+  notes TEXT,                                          -- 备注（BUG-E12修复）
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ
 );
@@ -296,6 +298,22 @@ CREATE TABLE IF NOT EXISTS commission_rules (
 
 CREATE INDEX IF NOT EXISTS commission_rules_type_idx ON commission_rules(type);
 CREATE INDEX IF NOT EXISTS commission_rules_role_idx ON commission_rules(role);
+
+-- 16. 阿姨自荐/申请记录表（BUG-W16修复）
+CREATE TABLE IF NOT EXISTS worker_applications (
+  id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  worker_id VARCHAR(36) NOT NULL REFERENCES workers(id),
+  order_id VARCHAR(36) REFERENCES orders(id),
+  notes TEXT,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  applicant_id VARCHAR(36) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS worker_applications_worker_id_idx ON worker_applications(worker_id);
+CREATE INDEX IF NOT EXISTS worker_applications_status_idx ON worker_applications(status);
+CREATE INDEX IF NOT EXISTS worker_applications_applicant_id_idx ON worker_applications(applicant_id);
 
 -- 15. 分账记录表
 CREATE TABLE IF NOT EXISTS settlements (

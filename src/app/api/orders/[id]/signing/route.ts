@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/orders/[id]/signing — 创建签约
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'order-signings:create');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'order-signings:create');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;
@@ -50,8 +51,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'order-signings:update');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'order-signings:update');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;

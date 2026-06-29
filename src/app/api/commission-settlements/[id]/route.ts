@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // PUT /api/commission-settlements/[id] — 更新结算状态
@@ -7,8 +7,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'commission-settlements:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'commission-settlements:write');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {

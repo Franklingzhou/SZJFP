@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // POST /api/leads/[id]/convert — 线索签约（自动创建worker+contract+resume_review）
 // 业务规则2.0: 签约即自动创建worker(status=pending)，同一phone不重复创建
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'leads:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'leads:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id: leadId } = await params;

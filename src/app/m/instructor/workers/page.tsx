@@ -15,16 +15,13 @@ export default function InstructorWorkersPage() {
   const [filterStatus, setFilterStatus] = useState('');
   const [search, setSearch] = useState('');
 
-  // 使用共享数据：学员 = 线索中正在培训/已合格/已转化的
+  // 使用共享数据：学员 = 线索中已转化的（签约后即学员，转化后进简历池）
   const studentLeads = mockRecruiterLeads.filter(l =>
-    ['training', 'qualified', 'converted'].includes(l.status)
+    l.status === 'converted'
   );
 
   const filteredStudents = studentLeads.filter(s => {
     if (filterType && !(s.intention || '').includes(filterType)) return false;
-    if (filterStatus === 'training' && s.status !== 'training') return false;
-    if (filterStatus === 'qualified' && s.status !== 'qualified') return false;
-    if (filterStatus === 'converted' && s.status !== 'converted') return false;
     if (search && !s.name.includes(search) && !(s.intention || '').includes(search)) return false;
     return true;
   });
@@ -87,8 +84,6 @@ export default function InstructorWorkersPage() {
                 <div className="flex gap-1.5">
                   {[
                     { val: '', label: '全部' },
-                    { val: 'training', label: '学习中' },
-                    { val: 'qualified', label: '已合格' },
                     { val: 'converted', label: '已转化' },
                   ].map(s => (
                     <button key={s.val} onClick={() => setFilterStatus(s.val)}
@@ -120,12 +115,8 @@ export default function InstructorWorkersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-slate-800">{s.name}</span>
-                        <span className={`text-xs px-1.5 py-0.5 rounded ${
-                          s.status === 'training' ? 'bg-blue-50 text-blue-700' :
-                          s.status === 'qualified' ? 'bg-green-50 text-green-700' :
-                          'bg-emerald-50 text-emerald-700'
-                        }`}>
-                          {s.status === 'training' ? '学习中' : s.status === 'qualified' ? '已合格' : '已转化'}
+                        <span className={`text-xs px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700`}>
+                          已转化
                         </span>
                       </div>
                       <p className="text-xs text-slate-400">{s.intention || '未选择'} · 来源：{s.recruiterName}</p>

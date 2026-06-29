@@ -1,0 +1,61 @@
+name = "每日变更纪要更新"
+scheduleType = "recurring"
+rrule = "FREQ=DAILY;BYHOUR=15;BYMINUTE=0"
+cwds = ["."]
+status = "ACTIVE"
+
+prompt = """
+你需要自动更新 CHANGELOG.md 和 docs/DIFFLOG.md 两个文件，记录自上次纪要以来的所有代码变更。
+
+## 执行步骤
+
+### 1. 检测变更
+- 读取 CHANGELOG.md，找到最后一条记录的日期（如 "## 2026-06-23"）
+- 执行 `git --no-pager log --oneline --since="最后记录日期" --reverse` 获取新增的 commit 列表
+- 如果没有新 commit，在 LATEST_LOG.txt 写入一条 "no new changes" 记录后退出
+
+### 2. 逐 commit 分析变更
+对每个新 commit：
+- 执行 `git --no-pager diff-tree --no-commit-id --name-only -r <commit>` 获取该 commit 修改的文件列表
+- 对每个修改的文件，执行 `git --no-pager diff <commit>^..<commit> -- <file>` 查看具体改动内容
+- 总结每个文件的：改动内容（新增/修改/删除了什么）、改动原因（从 commit message 和代码语义推断）
+
+### 3. 写入 CHANGELOG.md
+在文件末尾追加（不要在已有内容中间插入），格式严格遵循现有风格：
+```
+## YYYY-MM-DD 第N轮 — 简短标题 (commit: xxx)
+
+### 代码改动
+| 文件 | 改动 | 说明 |
+|------|------|------|
+| path/to/file.ts | +X/-Y 行 | 具体改动描述 |
+
+### 变更原因
+- 原因1
+- 原因2
+```
+
+### 4. 写入 docs/DIFFLOG.md
+在文件末尾追加，格式严格遵循现有风格（含变更占比标注）：
+```
+## 第N轮 — 简短标题
+
+文件名 | 变更行 | 文件总行 | 占比 | 状态 | 用户授权
+path/to/file.ts | +X/-Y | ~N | ~X% | ✅ 安全 |
+
+### 变更说明
+1. 具体说明1
+2. 具体说明2
+```
+
+### 5. 轮次编号
+- N = 上一轮编号 + 1
+- 从 CHANGELOG.md 和 DIFFLOG.md 中查找最大的轮次编号
+
+### 注意事项
+- 如果当日没有新 commit，不写入 CHANGELOG/DIFFLOG（避免空记录）
+- 变更占比 = 变更行数 / 文件总行数，超 30% ⚠️ 标黄，超 60% 🔴 标红
+- 文件总行数通过 PowerShell `Get-Content xxx | Measure-Object -Line` 获取
+- 保持现有文件的 Markdown 格式风格完全一致
+- 执行过程中不 commit 任何内容，仅追加写入 CHANGELOG 和 DIFFLOG
+"""

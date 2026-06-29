@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/contract-templates — 获取合同模板列表
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'contract-templates:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contract-templates:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -40,8 +41,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/contract-templates — 创建合同模板
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'contract-templates:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contract-templates:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { name, template_name, type, content, description, is_active, sort_order } = body as {
@@ -92,8 +94,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/contract-templates — 更新合同模板
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'contract-templates:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contract-templates:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id, name, type, content, description, is_active, sort_order } = body as {
@@ -148,8 +151,9 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/contract-templates — 停用模板（软删除）
 export async function DELETE(request: NextRequest) {
-  const session = await checkPermission(request, 'contract-templates:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contract-templates:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     let id: string | undefined;
     // 优先从 URL 参数取

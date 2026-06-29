@@ -1,0 +1,226 @@
+========================================
+Phase 1: Static Code Check
+========================================
+
+Sidebar: 41 hrefs, 41 roles, 41 metas
+
+[1/5] PAGE_ID_TO_HREF vs DEFAULT_ROLES consistency
+  OK    dashboard
+  OK    reviews
+  OK    role-reviews
+  OK    users
+  OK    workers
+  OK    clients
+  OK    leads
+  OK    audits
+  OK    review-audits
+  OK    commission
+  OK    settlement
+  OK    hall
+  OK    orders
+  OK    recommendations
+  OK    students
+  OK    courses
+  OK    course-schedules
+  OK    course-grading
+  OK    notifications
+  OK    contracts
+  OK    contract-templates
+  OK    lead-contracts
+  OK    training-contracts
+  OK    certificates
+  OK    levels
+  OK    points
+  OK    team
+  OK    venues
+  OK    settings
+  OK    profile-settings
+  OK    reset-password
+  OK    resume-reviews
+  OK    credit
+  OK    deposit
+  OK    role-permissions
+  OK    data-permissions
+  OK    field-permissions
+  OK    refunds
+  OK    platform-fees
+  OK    tiers
+  OK    logs
+
+[2/5] Sidebar href -> page.tsx
+  Found 55 pages
+  OK    dashboard -> /admin/dashboard
+  OK    reviews -> /admin/reviews
+  OK    role-reviews -> /admin/roles
+  OK    users -> /admin/users
+  OK    workers -> /admin/workers
+  OK    clients -> /admin/clients
+  OK    leads -> /admin/leads
+  OK    audits -> /admin/audits
+  OK    review-audits -> /admin/review-audits
+  OK    commission -> /admin/commission
+  OK    settlement -> /admin/settlement
+  OK    hall -> /admin/hall
+  OK    orders -> /admin/orders
+  OK    recommendations -> /admin/recommendations
+  OK    students -> /admin/students
+  OK    courses -> /admin/courses
+  OK    course-schedules -> /admin/course-schedules
+  OK    course-grading -> /admin/course-grading
+  OK    notifications -> /admin/notifications
+  OK    contracts -> /admin/contracts
+  OK    contract-templates -> /admin/contract-templates
+  OK    lead-contracts -> /admin/lead-contracts
+  OK    training-contracts -> /admin/training-contracts
+  OK    certificates -> /admin/certificates
+  OK    levels -> /admin/levels
+  OK    points -> /admin/points
+  OK    team -> /admin/team
+  OK    venues -> /admin/venues
+  OK    settings -> /admin/settings
+  OK    profile-settings -> /admin/profile-settings
+  OK    reset-password -> /admin/reset-password
+  OK    resume-reviews -> /admin/resume-reviews
+  OK    credit -> /admin/credit
+  OK    deposit -> /admin/deposit
+  OK    role-permissions -> /admin/role-permissions
+  OK    data-permissions -> /admin/data-permissions
+  OK    field-permissions -> /admin/field-permissions
+  OK    refunds -> /admin/refunds
+  OK    platform-fees -> /admin/platform-fees
+  OK    tiers -> /admin/tiers
+  OK    logs -> /admin/logs
+
+[3/5] API requireRole patterns
+  OK    /api/admin/db-migrate: 1 call(s)
+  OK    /api/admin/diag: 2 call(s)
+  OK    /api/admin/refresh-schema: 0 call(s)
+  OK    /api/admin/users: 0 call(s)
+  OK    /api/auth/change-password: 0 call(s)
+  OK    /api/auth/init-users: 0 call(s)
+  OK    /api/auth/password-login: 0 call(s)
+  OK    /api/auth/phone-login: 0 call(s)
+  OK    /api/auth/phone-register: 0 call(s)
+  OK    /api/auth/profile: 0 call(s)
+  OK    /api/auth/register: 0 call(s)
+  OK    /api/auth/reset-password: 0 call(s)
+  OK    /api/auth/session: 0 call(s)
+  OK    /api/auth/sms-send: 0 call(s)
+  OK    /api/auth/update-profile: 0 call(s)
+  OK    /api/auth/wechat-login: 0 call(s)
+  OK    /api/auth/wechat-register: 0 call(s)
+  OK    /api/backup: 1 call(s)
+  OK    /api/certificates: 0 call(s)
+  OK    /api/commission: 0 call(s)
+  OK    /api/commission/settle: 0 call(s)
+  OK    /api/commission-records: 0 call(s)
+  OK    /api/commission-settlements: 0 call(s)
+  OK    /api/contract-templates: 0 call(s)
+  OK    /api/contracts: 0 call(s)
+  OK    /api/course-package-items: 0 call(s)
+  OK    /api/course-schedules: 0 call(s)
+  OK    /api/courses: 0 call(s)
+  OK    /api/credit-check: 1 call(s)
+  OK    /api/cron/contract-expiry: 0 call(s)
+  OK    /api/cron/expiry-check: 0 call(s)
+  OK    /api/cron/fee-overdue: 0 call(s)
+  OK    /api/customer-followups: 0 call(s)
+  OK    /api/customers: 0 call(s)
+  OK    /api/dashboard: 0 call(s)
+  OK    /api/enrollments: 0 call(s)
+  OK    /api/favorites: 0 call(s)
+  OK    /api/file-url: 0 call(s)
+  OK    /api/id-card-verify: 0 call(s)
+  OK    /api/lead-contracts: 0 call(s)
+  OK    /api/leads: 0 call(s)
+  OK    /api/me: 0 call(s)
+  OK    /api/notifications: 0 call(s)
+  OK    /api/operation-logs: 2 call(s)
+  OK    /api/order-signings: 0 call(s)
+  OK    /api/orders/hall: 0 call(s)
+  OK    /api/orders/recommendations: 0 call(s)
+  OK    /api/orders: 0 call(s)
+  OK    /api/platform-fees: 0 call(s)
+  OK    /api/recommendations: 0 call(s)
+  OK    /api/resume-reviews: 0 call(s)
+  OK    /api/reviews: 0 call(s)
+  OK    /api/settings: 0 call(s)
+  OK    /api/settlement: 0 call(s)
+  OK    /api/students: 0 call(s)
+  OK    /api/team: 0 call(s)
+  OK    /api/training-contracts: 0 call(s)
+  OK    /api/upload: 0 call(s)
+  OK    /api/users: 0 call(s)
+  OK    /api/worker-applications: 0 call(s)
+  OK    /api/workers/me: 0 call(s)
+  OK    /api/workers: 0 call(s)
+
+[4/5] Customer FK pattern check
+  OK    orders/route.ts customer FK looks correct
+
+[5/5] Dashboard link audit
+  OK    All dashboard links point to valid pages
+
+========================================
+Phase 2: Deploy Check -> https://szjfp-274552-8-1444411996.sh.run.tcloudbase.com
+========================================
+
+[API] Critical endpoints
+  OK    GET /api/workers -> 401
+  OK    GET /api/orders -> 401
+  OK    GET /api/customers -> 401
+  OK    GET /api/settings -> 401
+  OK    GET /api/operation-logs -> 401
+  OK    GET /api/resume-reviews -> 401
+  OK    GET /api/courses -> 401
+  OK    GET /api/leads -> 401
+  OK    GET /api/reviews -> 401
+  OK    GET /api/contracts -> 401
+
+[Pages] All sidebar routes
+  OK    dashboard: /admin/dashboard -> 200
+  OK    reviews: /admin/reviews -> 200
+  OK    role-reviews: /admin/roles -> 200
+  OK    users: /admin/users -> 200
+  OK    workers: /admin/workers -> 200
+  OK    clients: /admin/clients -> 200
+  OK    leads: /admin/leads -> 200
+  OK    audits: /admin/audits -> 200
+  OK    review-audits: /admin/review-audits -> 200
+  OK    commission: /admin/commission -> 200
+  OK    settlement: /admin/settlement -> 200
+  OK    hall: /admin/hall -> 200
+  OK    orders: /admin/orders -> 200
+  OK    recommendations: /admin/recommendations -> 200
+  OK    students: /admin/students -> 200
+  OK    courses: /admin/courses -> 200
+  OK    course-schedules: /admin/course-schedules -> 200
+  OK    course-grading: /admin/course-grading -> 200
+  OK    notifications: /admin/notifications -> 200
+  OK    contracts: /admin/contracts -> 200
+  OK    contract-templates: /admin/contract-templates -> 200
+  OK    lead-contracts: /admin/lead-contracts -> 200
+  OK    training-contracts: /admin/training-contracts -> 200
+  OK    certificates: /admin/certificates -> 200
+  OK    levels: /admin/levels -> 200
+  OK    points: /admin/points -> 200
+  OK    team: /admin/team -> 200
+  OK    venues: /admin/venues -> 200
+  OK    settings: /admin/settings -> 200
+  OK    profile-settings: /admin/profile-settings -> 200
+  OK    reset-password: /admin/reset-password -> 200
+  OK    resume-reviews: /admin/resume-reviews -> 200
+  OK    credit: /admin/credit -> 200
+  OK    deposit: /admin/deposit -> 200
+  OK    role-permissions: /admin/role-permissions -> 200
+  OK    data-permissions: /admin/data-permissions -> 200
+  OK    field-permissions: /admin/field-permissions -> 200
+  OK    refunds: /admin/refunds -> 200
+  OK    platform-fees: /admin/platform-fees -> 200
+  OK    tiers: /admin/tiers -> 200
+  FAIL  logs: /admin/logs -> 404
+
+==================================================
+Result: 196 passed, 1 failed
+==================================================
+FIX REQUIRED!

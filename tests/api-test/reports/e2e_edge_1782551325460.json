@@ -1,0 +1,201 @@
+{
+  "time": "2026-06-27T09:08:45.459Z",
+  "base": "https://szjfp-274552-8-1444411996.sh.run.tcloudbase.com",
+  "results": [
+    {
+      "label": "S1 首页可达",
+      "pass": true,
+      "detail": "标题: 风险提醒"
+    },
+    {
+      "label": "S_admin 登录",
+      "pass": false,
+      "detail": "page.waitForSelector: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for loc"
+    },
+    {
+      "label": "A01 仪表盘 /admin/dashboard",
+      "pass": true,
+      "detail": "内容长度: 2209"
+    },
+    {
+      "label": "A02 审核列表 /admin/audits",
+      "pass": true,
+      "detail": "内容长度: 2203"
+    },
+    {
+      "label": "A03 用户管理 /admin/users",
+      "pass": true,
+      "detail": "内容长度: 2201"
+    },
+    {
+      "label": "A04 阿姨库 /admin/workers",
+      "pass": true,
+      "detail": "内容长度: 2205"
+    },
+    {
+      "label": "A05 订单管理 /admin/orders",
+      "pass": true,
+      "detail": "内容长度: 2203"
+    },
+    {
+      "label": "A06 课程管理 /admin/courses",
+      "pass": true,
+      "detail": "内容长度: 2205"
+    },
+    {
+      "label": "A07 推荐管理 /admin/recommendations",
+      "pass": true,
+      "detail": "内容长度: 2221"
+    },
+    {
+      "label": "A08 评价管理 /admin/reviews",
+      "pass": true,
+      "detail": "内容长度: 2205"
+    },
+    {
+      "label": "A09 系统设置 /admin/settings",
+      "pass": true,
+      "detail": "内容长度: 2207"
+    },
+    {
+      "label": "A10 场地管理 /admin/venues",
+      "pass": true,
+      "detail": "内容长度: 2203"
+    },
+    {
+      "label": "A11 合同管理 /admin/contracts",
+      "pass": true,
+      "detail": "内容长度: 2209"
+    },
+    {
+      "label": "A12 佣金配置 /admin/commission",
+      "pass": true,
+      "detail": "内容长度: 2211"
+    },
+    {
+      "label": "A13 分账管理 /admin/settlement",
+      "pass": true,
+      "detail": "内容长度: 2211"
+    },
+    {
+      "label": "A14 诚信分 /admin/credit",
+      "pass": true,
+      "detail": "内容长度: 2203"
+    },
+    {
+      "label": "A15 保证金 /admin/deposit",
+      "pass": true,
+      "detail": "内容长度: 2205"
+    },
+    {
+      "label": "A16 积分管理 /admin/points",
+      "pass": true,
+      "detail": "内容长度: 2203"
+    },
+    {
+      "label": "A17 客户管理 /admin/clients",
+      "pass": true,
+      "detail": "内容长度: 2205"
+    },
+    {
+      "label": "A18 线索管理 /admin/leads",
+      "pass": true,
+      "detail": "内容长度: 2201"
+    },
+    {
+      "label": "A19 通知管理 /admin/notifications",
+      "pass": true,
+      "detail": "内容长度: 2217"
+    },
+    {
+      "label": "A20 团队管理 /admin/team",
+      "pass": true,
+      "detail": "内容长度: 2199"
+    },
+    {
+      "label": "B01 管理员侧边栏菜单",
+      "pass": false,
+      "detail": "菜单项数: 0"
+    },
+    {
+      "label": "截图 dashboard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "E02 审核列表有数据",
+      "pass": false,
+      "detail": "元素数: 0"
+    },
+    {
+      "label": "E05 阿姨库有数据",
+      "pass": false,
+      "detail": "行数: 0"
+    },
+    {
+      "label": "E08 订单管理页面",
+      "pass": true,
+      "detail": "标题: 风险提醒"
+    },
+    {
+      "label": "E11 设置页面有内容",
+      "pass": true,
+      "detail": "HTML长度: 16915"
+    },
+    {
+      "label": "W01 阿姨登录",
+      "pass": false,
+      "detail": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('"
+    },
+    {
+      "label": "W02 阿姨-接单大厅",
+      "pass": true,
+      "detail": "内容: 2195字"
+    },
+    {
+      "label": "W03 阿姨-个人简历",
+      "pass": true,
+      "detail": "内容: 2212字"
+    },
+    {
+      "label": "W04 阿姨-我的订单",
+      "pass": true,
+      "detail": "内容: 2206字"
+    },
+    {
+      "label": "W05 阿姨-我的评价",
+      "pass": true,
+      "detail": "内容: 2212字"
+    },
+    {
+      "label": "C01 客户登录",
+      "pass": false,
+      "detail": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('"
+    },
+    {
+      "label": "C02 客户-首页",
+      "pass": true,
+      "detail": "内容: 2199字"
+    },
+    {
+      "label": "C03 客户-我的订单",
+      "pass": true,
+      "detail": "内容: 2214字"
+    },
+    {
+      "label": "C04 客户-个人中心",
+      "pass": true,
+      "detail": "内容: 2216字"
+    },
+    {
+      "label": "B07 阿姨访问admin被拒",
+      "pass": false,
+      "detail": ""
+    }
+  ],
+  "summary": {
+    "pass": 31,
+    "fail": 7,
+    "total": 38
+  }
+}

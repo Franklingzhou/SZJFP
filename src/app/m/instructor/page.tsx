@@ -20,9 +20,9 @@ export default function InstructorHomePage() {
   // 如果没有匹配到讲师ID，显示所有非待审批课程
   const displayCourses = myCourses.length > 0 ? myCourses : mockCourses.filter(c => c.status !== 'pending_approval');
 
-  // 共享学员数据 = 线索中正在培训/已合格/已转化的
+  // 共享学员数据 = 线索中已转化的（签约后即学员，转化后进简历池）
   const studentLeads = mockRecruiterLeads.filter(l =>
-    ['training', 'qualified', 'converted'].includes(l.status)
+    l.status === 'converted'
   );
 
   return (
@@ -132,11 +132,7 @@ export default function InstructorHomePage() {
                 <p className="text-sm font-medium text-slate-800">{s.name}</p>
                 <p className="text-xs text-slate-500">{s.intention || '未选择'} · 来源：{s.recruiterName}</p>
               </div>
-              <span className={`text-xs px-1.5 py-0.5 rounded ${
-                s.status === 'training' ? 'bg-blue-50 text-blue-700' :
-                s.status === 'qualified' ? 'bg-green-50 text-green-700' :
-                'bg-emerald-50 text-emerald-700'
-              }`}>{s.status === 'training' ? '学习中' : s.status === 'qualified' ? '已合格' : '已转化'}</span>
+              <span className="text-xs px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">已转化</span>
               <ChevronRight className="h-4 w-4 text-slate-300" />
             </div>
           ))}

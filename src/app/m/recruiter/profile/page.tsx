@@ -33,7 +33,7 @@ export default function RecruiterProfilePage() {
   const myReferrals = mockReferrals.filter(r => r.referrerId === user?.id);
   const totalCommission = myReferrals.reduce((s, r) => s + r.commissionAmount, 0);
   const myLeads = mockRecruiterLeads.filter((l: { recruiterId?: string }) => l.recruiterId === user?.id);
-  const enrolledLeads = myLeads.filter((l: { status: string }) => l.status === 'converted' || l.status === 'contacted');
+  const enrolledLeads = myLeads.filter((l: { status: string }) => l.status === 'converted' || l.status === 'following');
 
   // 加载诚信分
   const [creditScore, setCreditScore] = useState(1000);

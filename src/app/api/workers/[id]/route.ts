@@ -16,7 +16,7 @@ export async function GET(
     // 1. 查阿姨信息
     const { data: worker, error: workerErr } = await supabase
       .from('workers')
-      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, status, available_date, credit_score, deposit, points, resume_review_status, photo, created_at')
+      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, certificates, expected_salary_min, expected_salary_max, status, available_date, credit_score, deposit, points, resume_review_status, photo, created_at')
       .eq('id', id)
       .maybeSingle();
 
@@ -36,7 +36,7 @@ export async function GET(
 
     // 3. 查评价人信息
     const reviewerIds = (reviews || []).map((r: { reviewer_id: string }) => r.reviewer_id).filter(Boolean);
-    let reviewerMap: Record<string, { name: string; role: string }> = {};
+    const reviewerMap: Record<string, { name: string; role: string }> = {};
     if (reviewerIds.length > 0) {
       const { data: reviewers } = await supabase
         .from('users')
@@ -126,6 +126,7 @@ export async function GET(
         creditScore: worker.credit_score || 1000,
         specialties: worker.specialties ? (typeof worker.specialties === 'string' ? worker.specialties.split(',').filter(Boolean) : worker.specialties) : [],
         certifications: worker.certifications ? (typeof worker.certifications === 'string' ? worker.certifications.split(',').filter(Boolean) : worker.certifications) : [],
+        certificates: Array.isArray(worker.certificates) ? worker.certificates : [],
         reviews: formattedReviews,
         avgRating,
         reviewCount: (reviews || []).length,
@@ -183,8 +184,8 @@ export async function PUT(
       return NextResponse.json({ error: '阿姨记录不存在' }, { status: 404 });
     }
 
-    // 白名单字段
-    const allowedFields = ['status', 'available_date', 'resume_review_status', 'credit_score', 'deposit', 'points', 'remark', 'name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'expected_salary_min', 'expected_salary_max', 'id_card', 'photo'];
+    // 白名单字段（status 由 PATCH 审批接口控制，不在此处开放直改）
+    const allowedFields = ['available_date', 'resume_review_status', 'credit_score', 'deposit', 'points', 'remark', 'name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'certificates', 'expected_salary_min', 'expected_salary_max', 'id_card', 'photo'];
     const updates: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };

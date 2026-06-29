@@ -3,10 +3,11 @@ import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from
 
 // 合法状态流转映射
 const VALID_TRANSITIONS: Record<string, string[]> = {
-  enrolled: ['attending'],
-  attending: ['qualified', 'failed'],
+  enrolled: ['attending', 'dropped'],
+  attending: ['qualified', 'failed', 'dropped'],
   qualified: [],
   failed: [],
+  dropped: [],
 };
 
 // PATCH /api/enrollments/[id] — 更新报名记录（状态流转、结课考核）2.0适配worker_id
@@ -52,7 +53,7 @@ export async function PATCH(
 
     // 状态流转校验
     if (updates.status !== undefined) {
-      const validStatuses = ['enrolled', 'attending', 'qualified', 'failed'];
+      const validStatuses = ['enrolled', 'attending', 'qualified', 'failed', 'dropped'];
       if (!validStatuses.includes(updates.status as string)) {
         return NextResponse.json({ error: `无效状态，可选: ${validStatuses.join('/')}` }, { status: 400 });
       }
@@ -81,8 +82,8 @@ export async function PATCH(
       updates.graded_at = new Date().toISOString();
     }
 
-    // 状态变为 qualified/failed 时自动设 completed_at
-    if (updates.status === 'qualified' || updates.status === 'failed') {
+    // 状态变为 terminal 状态时自动设 completed_at
+    if (['qualified', 'failed', 'dropped'].includes(updates.status as string)) {
       updates.completed_at = new Date().toISOString();
     }
 

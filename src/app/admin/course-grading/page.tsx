@@ -107,7 +107,7 @@ export default function CourseGradingPage() {
   // 统计
   const stats = {
     total: enrollments.length,
-    passed: enrollments.filter((e: any) => e.status === 'passed').length,
+    passed: enrollments.filter((e: any) => e.status === 'qualified').length,
     failed: enrollments.filter((e: any) => e.status === 'failed').length,
     pending: enrollments.filter((e: any) => e.status === 'enrolled').length,
   };
@@ -244,7 +244,7 @@ export default function CourseGradingPage() {
                         )
                       ) : (
                         <Badge variant="outline" className="text-xs">
-                          {enr.status === 'passed' ? (
+                          {enr.status === 'qualified' ? (
                             <><Award className="h-3 w-3 mr-1" />已考核</>
                           ) : (
                             '已考核'

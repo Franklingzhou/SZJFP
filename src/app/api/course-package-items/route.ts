@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/course-package-items — 查询套餐项目
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -64,8 +65,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/course-package-items — 新建套餐项目
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { package_course_id, item_course_id, sort_order, package_id, item_id, item_name } = body as {
@@ -154,8 +156,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/course-package-items — 更新套餐项目
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id } = body as { id: string; [key: string]: unknown };
@@ -202,8 +205,9 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/course-package-items — 删除套餐项目
 export async function DELETE(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     let id = request.nextUrl.searchParams.get('id');
     // 兼容 body 方式传 id

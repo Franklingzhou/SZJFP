@@ -8,18 +8,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 // enrollments 表 status 枚举
 const ENROLLMENT_STATUS_LABELS: Record<string, string> = {
   enrolled: '已报名',
-  in_training: '培训中',
-  completed: '已结业',
-  passed: '已通过',
+  attending: '培训中',
+  qualified: '已合格',
   failed: '未通过',
-  dropped: '已退课',
+  dropped: '已退学',
 };
 
 const ENROLLMENT_STATUS_COLORS: Record<string, string> = {
   enrolled: 'bg-blue-100 text-blue-800',
-  in_training: 'bg-amber-100 text-amber-800',
-  completed: 'bg-green-100 text-green-800',
-  passed: 'bg-emerald-100 text-emerald-800',
+  attending: 'bg-amber-100 text-amber-800',
+  qualified: 'bg-emerald-100 text-emerald-800',
   failed: 'bg-red-100 text-red-800',
   dropped: 'bg-slate-100 text-slate-500',
 };

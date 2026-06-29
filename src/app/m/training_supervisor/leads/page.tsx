@@ -106,10 +106,7 @@ export default function TrainingSupervisorLeadsPage() {
   const statusColors: Record<LeadStatus, string> = {
     new: 'bg-slate-50 text-slate-600',
     following: 'bg-blue-50 text-blue-700',
-    contacted: 'bg-cyan-50 text-cyan-700',
     signed: 'bg-green-50 text-green-700',
-    training: 'bg-amber-50 text-amber-700',
-    qualified: 'bg-purple-50 text-purple-700',
     converted: 'bg-emerald-50 text-emerald-700',
     lost: 'bg-red-50 text-red-700',
   };

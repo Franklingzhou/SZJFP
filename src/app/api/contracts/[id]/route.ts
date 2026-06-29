@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // PUT /api/contracts/[id] — 更新合同状态
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'contracts:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contracts:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;
@@ -104,8 +105,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'contracts:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'contracts:read');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;

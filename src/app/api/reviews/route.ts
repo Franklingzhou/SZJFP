@@ -151,10 +151,22 @@ export async function PUT(request: NextRequest) {
     }
 
     // 白名单：允许修改的字段
-    const allowedFields = ['rating', 'content', 'hidden', 'status', 'hide_reason'];
+    // admin 可以改审核相关字段（hidden/status/hide_reason），其他人只能改评分和内容
+    const adminOnlyFields = ['hidden', 'status', 'hide_reason'];
+    const allowedFields = session.role === 'admin'
+      ? ['rating', 'content', 'hidden', 'status', 'hide_reason']
+      : ['rating', 'content'];
     const safeUpdates: Record<string, unknown> = {};
     for (const key of allowedFields) {
       if (key in updates) safeUpdates[key] = updates[key];
+    }
+    // 非admin尝试改审核字段 → 拒绝
+    if (session.role !== 'admin') {
+      for (const key of adminOnlyFields) {
+        if (key in updates) {
+          return NextResponse.json({ error: `无权修改 ${key} 字段，仅管理员可操作` }, { status: 403 });
+        }
+      }
     }
     safeUpdates.updated_at = new Date().toISOString();
 

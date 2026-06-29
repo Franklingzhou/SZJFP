@@ -1,0 +1,618 @@
+{
+  "summary": {
+    "total": 34,
+    "pass": 0,
+    "fail": 34,
+    "byCategory": {
+      "正向功能": 14,
+      "参数异常": 9,
+      "边界值": 5,
+      "重复操作": 2,
+      "权限校验": 4
+    },
+    "byModule": {
+      "auth": 34
+    }
+  },
+  "results": [
+    {
+      "label": "A01-admin密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1532,
+      "timestamp": "2026-06-27T15:07:35.636Z"
+    },
+    {
+      "label": "R01-招生密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13500003456",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1516,
+      "timestamp": "2026-06-27T15:07:37.153Z"
+    },
+    {
+      "label": "T01-讲师密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13700007890",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1546,
+      "timestamp": "2026-06-27T15:07:38.699Z"
+    },
+    {
+      "label": "S01-培训主管密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13100001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1521,
+      "timestamp": "2026-06-27T15:07:40.221Z"
+    },
+    {
+      "label": "B01-经纪人密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1516,
+      "timestamp": "2026-06-27T15:07:41.737Z"
+    },
+    {
+      "label": "W01-阿姨运营密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13200002222",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1547,
+      "timestamp": "2026-06-27T15:07:43.285Z"
+    },
+    {
+      "label": "K01-阿姨密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1521,
+      "timestamp": "2026-06-27T15:07:44.807Z"
+    },
+    {
+      "label": "C01-客户密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900009876",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1516,
+      "timestamp": "2026-06-27T15:07:46.325Z"
+    },
+    {
+      "label": "登录返回token含user字段",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1517,
+      "timestamp": "2026-06-27T15:07:47.843Z"
+    },
+    {
+      "label": "缺少手机号",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1515,
+      "timestamp": "2026-06-27T15:07:49.359Z"
+    },
+    {
+      "label": "缺少密码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1517,
+      "timestamp": "2026-06-27T15:07:50.876Z"
+    },
+    {
+      "label": "空请求体",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1506,
+      "timestamp": "2026-06-27T15:07:52.383Z"
+    },
+    {
+      "label": "手机号格式错误(含字母)",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "abc12345678",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1511,
+      "timestamp": "2026-06-27T15:07:53.894Z"
+    },
+    {
+      "label": "密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "wrongpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1516,
+      "timestamp": "2026-06-27T15:07:55.411Z"
+    },
+    {
+      "label": "手机号不存在",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19900000000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1517,
+      "timestamp": "2026-06-27T15:07:56.928Z"
+    },
+    {
+      "label": "超长手机号(20位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001222233334",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1512,
+      "timestamp": "2026-06-27T15:07:58.441Z"
+    },
+    {
+      "label": "超短手机号(5位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1516,
+      "timestamp": "2026-06-27T15:07:59.957Z"
+    },
+    {
+      "label": "密码最小长度1位",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "1"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1519,
+      "timestamp": "2026-06-27T15:08:01.477Z"
+    },
+    {
+      "label": "空字符串手机号",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1513,
+      "timestamp": "2026-06-27T15:08:02.990Z"
+    },
+    {
+      "label": "同一账号连续登录2次",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1521,
+      "timestamp": "2026-06-27T15:08:04.512Z"
+    },
+    {
+      "label": "有效token获取session",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 0,
+      "timestamp": "2026-06-27T15:08:04.512Z"
+    },
+    {
+      "label": "获取用户profile",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/profile",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 0,
+      "timestamp": "2026-06-27T15:08:04.512Z"
+    },
+    {
+      "label": "无token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/session",
+      "duration": 1528,
+      "timestamp": "2026-06-27T15:08:06.040Z"
+    },
+    {
+      "label": "伪造token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/session",
+      "duration": 1519,
+      "timestamp": "2026-06-27T15:08:07.559Z"
+    },
+    {
+      "label": "过期token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/session",
+      "duration": 1529,
+      "timestamp": "2026-06-27T15:08:09.088Z"
+    },
+    {
+      "label": "A25-修改密码-正向",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "test9999"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1,
+      "timestamp": "2026-06-27T15:08:09.090Z"
+    },
+    {
+      "label": "改密后恢复原密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "test9999",
+        "new_password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1523,
+      "timestamp": "2026-06-27T15:08:10.613Z"
+    },
+    {
+      "label": "改密-当前密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "wrong",
+        "new_password": "newpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 0,
+      "timestamp": "2026-06-27T15:08:10.613Z"
+    },
+    {
+      "label": "改密-新密码太短",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "12"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 0,
+      "timestamp": "2026-06-27T15:08:10.614Z"
+    },
+    {
+      "label": "改密-未登录",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "123456"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/password-login",
+      "duration": 1,
+      "timestamp": "2026-06-27T15:08:10.615Z"
+    },
+    {
+      "label": "A13-新用户注册",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009219",
+        "name": "测试用户",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 201,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/register",
+      "duration": 1515,
+      "timestamp": "2026-06-27T15:08:12.130Z"
+    },
+    {
+      "label": "注册-手机号格式错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "123",
+        "name": "测试",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/register",
+      "duration": 1504,
+      "timestamp": "2026-06-27T15:08:13.634Z"
+    },
+    {
+      "label": "注册-已存在手机号",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "name": "重复",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 409,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/register",
+      "duration": 1515,
+      "timestamp": "2026-06-27T15:08:15.150Z"
+    },
+    {
+      "label": "注册-缺少验证码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009999",
+        "name": "测试",
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "Failed to parse URL from http://localhost:5000 /api/auth/register",
+      "duration": 1509,
+      "timestamp": "2026-06-27T15:08:16.659Z"
+    }
+  ]
+}

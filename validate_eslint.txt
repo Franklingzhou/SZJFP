@@ -1,0 +1,1048 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+f:\CB-szjfp\src\app\admin\agency-contracts\page.tsx
+    6:29  warning  'CardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+    6:41  warning  'CardTitle' is defined but never used   @typescript-eslint/no-unused-vars
+   11:10  warning  'Textarea' is defined but never used    @typescript-eslint/no-unused-vars
+   14:10  warning  'Checkbox' is defined but never used    @typescript-eslint/no-unused-vars
+   15:51  warning  'XCircle' is defined but never used     @typescript-eslint/no-unused-vars
+   15:60  warning  'FileText' is defined but never used    @typescript-eslint/no-unused-vars
+   15:70  warning  'Download' is defined but never used    @typescript-eslint/no-unused-vars
+  177:14  warning  'err' is defined but never used         @typescript-eslint/no-unused-vars
+  203:14  warning  'err' is defined but never used         @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\audits\[id]\page.tsx
+    5:56  warning  'ArrowRight' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+  118:6   warning  React Hook useEffect has a missing dependency: 'loadReview'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\certificates\page.tsx
+    4:38  warning  'Clock' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  235:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+f:\CB-szjfp\src\app\admin\clients\page.tsx
+  10:24  warning  'UserCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\commission\page.tsx
+  72:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\contract-templates\page.tsx
+  65:6  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\contracts\page.tsx
+    4:48  warning  'FileText' is defined but never used                  @typescript-eslint/no-unused-vars
+   13:6   warning  'ContractStatus' is defined but never used            @typescript-eslint/no-unused-vars
+  129:10  warning  'showRefund' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  130:24  warning  'setRefundTarget' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  132:10  warning  'refunding' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  274:9   warning  'handleRefund' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\course-grading\page.tsx
+   29:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  110:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:37  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:30  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  177:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\course-schedules\page.tsx
+   36:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   37:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  103:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  143:41  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:24  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:30  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  229:32  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\courses\page.tsx
+    4:58  warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   42:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:54  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:52  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  205:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  211:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  240:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  264:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  271:30  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  303:39  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  311:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  385:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  413:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  500:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  692:39  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  692:81  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  703:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\credit\page.tsx
+  106:11  error    'url' is never reassigned. Use 'const' instead                                                                   prefer-const
+  119:6   warning  React Hook useCallback has a missing dependency: 'roleFilter'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  170:9   warning  'quickAdjust' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  271:9   warning  'tabs_filter' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\customer-leads\page.tsx
+   4:29  warning  'CardHeader' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   4:41  warning  'CardTitle' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  13:42  warning  'Phone' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  13:49  warning  'MapPin' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  13:57  warning  'DollarSign' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+  13:69  warning  'User' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  71:38  warning  React Hook useEffect has a missing dependency: 'fetchLeads'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\dashboard\page.tsx
+   9:3   warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+  21:10  warning  'Button' is defined but never used         @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\data-permissions\page.tsx
+  226:9  warning  'getVisibilityLabel' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\field-permissions\page.tsx
+   11:10  warning  'Switch' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+   12:24  warning  'FieldConfig' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   64:6   warning  React Hook useEffect has a missing dependency: 'loadConfigs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  214:14  warning  'err' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\lead-contracts\page.tsx
+   33:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   34:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:40  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   53:52  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  136:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  144:41  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:25  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  197:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  297:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\leads\page.tsx
+  112:46  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  359:10  warning  'showConvertDialog' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  360:10  warning  'convertLead' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  361:10  warning  'converting' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  741:37  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\operation-logs\page.tsx
+  51:36  warning  React Hook useEffect has a missing dependency: 'loadLogs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\orders\page.tsx
+     4:38  warning  'UserRoundX' is defined but never used                @typescript-eslint/no-unused-vars
+    14:47  warning  'OrderStatus' is defined but never used               @typescript-eslint/no-unused-vars
+    58:10  warning  'currentUserRole' is assigned a value but never used  @typescript-eslint/no-unused-vars
+    62:40  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+    65:44  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+    74:56  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+    80:50  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+    98:60  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   108:54  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   113:66  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   114:68  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   193:40  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   254:14  warning  'e' is defined but never used                         @typescript-eslint/no-unused-vars
+   371:59  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   390:42  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   651:31  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   651:36  warning  'idx' is defined but never used                       @typescript-eslint/no-unused-vars
+  1117:50  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\platform-fees\page.tsx
+    4:73  warning  'Filter' is defined but never used  @typescript-eslint/no-unused-vars
+   95:14  warning  'err' is defined but never used     @typescript-eslint/no-unused-vars
+  120:14  warning  'err' is defined but never used     @typescript-eslint/no-unused-vars
+  157:14  warning  'err' is defined but never used     @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\points\page.tsx
+   83:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  107:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\recommendations\page.tsx
+  92:6  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\referrals\page.tsx
+    4:29  warning  'CardHeader' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+    4:41  warning  'CardTitle' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   11:10  warning  'Textarea' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   13:54  warning  'Copy' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+   15:11  warning  'ReferralRecord' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+  111:37  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\refunds\page.tsx
+   4:29  warning  'CardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+   4:41  warning  'CardTitle' is defined but never used   @typescript-eslint/no-unused-vars
+  10:10  warning  'Search' is defined but never used      @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\register\page.tsx
+  5:18  warning  'UserPlus' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\resume-reviews\page.tsx
+   63:6   warning  React Hook useEffect has a missing dependency: 'loadReviews'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  109:14  warning  'error' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  141:14  warning  'error' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\roles\page.tsx
+  330:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  332:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\settings\page.tsx
+  4:110  warning  'ReferralType' is defined but never used        @typescript-eslint/no-unused-vars
+  4:146  warning  'ReviewWorkflowItem' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10   warning  'cn' is defined but never used                  @typescript-eslint/no-unused-vars
+  7:19   warning  'Plus' is defined but never used                @typescript-eslint/no-unused-vars
+  7:25   warning  'Trash2' is defined but never used              @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\settlement\page.tsx
+  29:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  34:48  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  56:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  62:31  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\students\page.tsx
+    4:43  warning  'Edit' is defined but never used          @typescript-eslint/no-unused-vars
+    4:56  warning  'UserCheck' is defined but never used     @typescript-eslint/no-unused-vars
+   31:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:42  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:52  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  132:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  161:43  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:27  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:30  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  307:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\team\page.tsx
+    9:10  warning  'Label' is defined but never used          @typescript-eslint/no-unused-vars
+   10:10  warning  'Select' is defined but never used         @typescript-eslint/no-unused-vars
+   10:18  warning  'SelectContent' is defined but never used  @typescript-eslint/no-unused-vars
+   10:33  warning  'SelectItem' is defined but never used     @typescript-eslint/no-unused-vars
+   10:45  warning  'SelectTrigger' is defined but never used  @typescript-eslint/no-unused-vars
+   10:60  warning  'SelectValue' is defined but never used    @typescript-eslint/no-unused-vars
+   11:10  warning  'Dialog' is defined but never used         @typescript-eslint/no-unused-vars
+   11:18  warning  'DialogContent' is defined but never used  @typescript-eslint/no-unused-vars
+   11:33  warning  'DialogHeader' is defined but never used   @typescript-eslint/no-unused-vars
+   11:47  warning  'DialogTitle' is defined but never used    @typescript-eslint/no-unused-vars
+   11:60  warning  'DialogFooter' is defined but never used   @typescript-eslint/no-unused-vars
+   14:73  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   34:38  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   56:38  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   58:41  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   65:25  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   71:33  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   72:39  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  127:29  error    Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\admin\tiers\page.tsx
+   8:54  warning  'DollarSign' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+  61:37  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\training-contracts\page.tsx
+  111:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\users\page.tsx
+  63:6  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\admin\venues\page.tsx
+  5:29  warning  'CardHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:41  warning  'CardTitle' is defined but never used   @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\admin\workers\page.tsx
+     4:18   warning  'Filter' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+     4:52   warning  'X' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+     4:80   warning  'Pause' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+     4:87   warning  'Play' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+     4:93   warning  'Ban' is defined but never used                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+     4:149  warning  'DollarSign' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+     5:29   warning  'CardHeader' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+     5:41   warning  'CardTitle' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    20:10   warning  'loading' is assigned a value but never used                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+    58:43   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+    58:58   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   146:16   warning  'e' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   724:62   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   728:46   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   730:42   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1012:39   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1014:103  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1016:45   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1016:81   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1018:27   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1026:39   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1028:103  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1030:45   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1030:81   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1054:36   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  1082:46   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\api\admin\refresh-schema\route.ts
+  13:28  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\admin\run-migration\route.ts
+  40:11  warning  'supabase' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\auth\phone-register\route.ts
+  57:13  warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\auth\wechat-register\route.ts
+  135:3  warning  'name' is defined but never used   @typescript-eslint/no-unused-vars
+  136:3  warning  'phone' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\clients\route.ts
+  118:17  warning  'name' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  118:23  warning  'phone' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  118:38  warning  'source' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  118:46  warning  'requirement' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  118:59  warning  'address' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  118:68  warning  'agent_id' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\contracts\[id]\send-code\route.ts
+  20:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\course-package-items\route.ts
+  71:81  warning  'item_name' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\course-schedules\route.ts
+  12:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\courses\[id]\assign\route.ts
+  2:49  warning  'forbiddenResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\contract-expiry\route.ts
+  6:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\contract-unsigned\route.ts
+  14:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\enrollment-reminder\route.ts
+  14:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\enrollment-unscheduled\route.ts
+  12:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\fee-overdue\route.ts
+  6:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\lead-unfollowed\route.ts
+  12:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\order-unmatched\route.ts
+  12:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\cron\worker-inactive\route.ts
+  12:27  warning  '_request' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\enrollments\[id]\grade\route.ts
+  16:20  warning  'comment' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\enrollments\[id]\route.ts
+  109:13  warning  'courseName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\enrollments\route.ts
+  290:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\field-permissions\route.ts
+  14:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+
+f:\CB-szjfp\src\app\api\grading\route.ts
+  48:9   warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:43  warning  'notes' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\id-card-verify\route.ts
+  3:10  warning  'getSupabaseClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\init-db\route.ts
+  11:9  warning  'pool' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\leads\[id]\follow-ups\route.ts
+  1:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\leads\route.ts
+   39:28  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+   92:87  warning  'recruiter_name' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  157:9   warning  'session' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\notifications\route.ts
+  59:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\orders\[id]\change-worker\route.ts
+  1:23  warning  'NextResponse' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\orders\route.ts
+    3:10  warning  'filterDataByPermission' is defined but never used            @typescript-eslint/no-unused-vars
+    3:34  warning  'filterSensitiveFields' is defined but never used             @typescript-eslint/no-unused-vars
+    6:7   warning  'sensitiveFieldsByModule' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  194:9   warning  'session' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\platform-fees\route.ts
+  12:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  50:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\resume-reviews\route.ts
+  226:13  warning  'reviewType' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\reviews\[id]\route.ts
+  34:9  error  'updates' is never reassigned. Use 'const' instead  prefer-const
+
+f:\CB-szjfp\src\app\api\schedules\route.ts
+  50:17  error  'error' is never reassigned. Use 'const' instead  prefer-const
+
+f:\CB-szjfp\src\app\api\students\[id]\route.ts
+  15:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\students\route.ts
+  93:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\training-contracts\route.ts
+   12:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  104:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\training-leads\route.ts
+  48:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\api\training\route.ts
+  24:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\upload\route.ts
+  57:11  warning  'ext' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\users\route.ts
+  11:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  52:9  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\worker-tiers\route.ts
+  21:12  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  52:12  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\[id]\media\route.ts
+   26:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+   78:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  116:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\[id]\route.ts
+   39:9    error    'reviewerMap' is never reassigned. Use 'const' instead     prefer-const
+  166:9    warning  'session' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:13   warning  'status' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:21   warning  'available_date' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  171:37   warning  'resume_review_status' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  171:59   warning  'credit_score' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  171:73   warning  'deposit' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:82   warning  'points' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:90   warning  'remark' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:98   warning  'name' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+  171:104  warning  'phone' is assigned a value but never used                 @typescript-eslint/no-unused-vars
+  171:111  warning  'age' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  171:116  warning  'gender' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:124  warning  'origin' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:132  warning  'job_types' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  171:143  warning  'experience_years' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  171:161  warning  'specialties' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  171:174  warning  'certifications' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  171:190  warning  'expected_salary_min' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  171:211  warning  'expected_salary_max' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  171:232  warning  'id_card' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:241  warning  'photo' is assigned a value but never used                 @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\[id]\work-experience\route.ts
+   26:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+   78:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  136:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  174:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\route.ts
+    3:33   warning  'filterSensitiveFields' is defined but never used  @typescript-eslint/no-unused-vars
+  164:105  warning  'certificates' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  296:9    warning  'session' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\client\notifications\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadNotifications` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\client\notifications\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadNotifications(); }, []);
+     |                     ^^^^^^^^^^^^^^^^^ `loadNotifications` accessed before it is declared
+  22 |
+  23 |   const loadNotifications = async () => {
+  24 |     try {
+
+f:\CB-szjfp\src\app\client\notifications\page.tsx:23:3
+  21 |   useEffect(() => { loadNotifications(); }, []);
+  22 |
+> 23 |   const loadNotifications = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/notifications', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setNotifications(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadNotifications` is declared here
+  31 |
+  32 |   const markAsRead = async (id: string) => {
+  33 |     try {  react-hooks/immutability
+
+f:\CB-szjfp\src\app\client\orders\page.tsx
+  22:21  error  Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\client\orders\page.tsx:22:21
+  20 |   const [activeTab, setActiveTab] = useState('all');
+  21 |
+> 22 |   useEffect(() => { loadOrders(); }, []);
+     |                     ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  23 |
+  24 |   const loadOrders = async () => {
+  25 |     try {
+
+f:\CB-szjfp\src\app\client\orders\page.tsx:24:3
+  22 |   useEffect(() => { loadOrders(); }, []);
+  23 |
+> 24 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     try {
+     | ^^^^^^^^^
+> 26 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 27 |       const res = await fetch(`/api/orders?customer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 28 |       const data = await res.json();
+     | ^^^^^^^^^
+> 29 |       if (data.data) setOrders(data.data || []);
+     | ^^^^^^^^^
+> 30 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 31 |     setLoading(false);
+     | ^^^^^^^^^
+> 32 |   };
+     | ^^^^^ `loadOrders` is declared here
+  33 |
+  34 |   const filtered = activeTab === 'all' ? orders : orders.filter(o => o.status === activeTab);
+  35 |  react-hooks/immutability
+
+f:\CB-szjfp\src\app\client\reviews\page.tsx
+   5:16  warning  'MessageSquare' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   5:31  warning  'Eye' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  26:21  error    Error: Cannot access variable before it is declared
+
+`loadReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\client\reviews\page.tsx:26:21
+  24 |   const [orders, setOrders] = useState<Order[]>([]);
+  25 |
+> 26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+     |                     ^^^^^^^^^^^ `loadReviews` accessed before it is declared
+  27 |
+  28 |   const loadReviews = async () => {
+  29 |     try {
+
+f:\CB-szjfp\src\app\client\reviews\page.tsx:28:3
+  26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+  27 |
+> 28 |   const loadReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |     try {
+     | ^^^^^^^^^
+> 30 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 31 |       const res = await fetch(`/api/reviews?reviewer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 32 |       const data = await res.json();
+     | ^^^^^^^^^
+> 33 |       if (data.data) setReviews(data.data || []);
+     | ^^^^^^^^^
+> 34 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 35 |   };
+     | ^^^^^ `loadReviews` is declared here
+  36 |
+  37 |   const loadOrders = async () => {
+  38 |     try {                                                                                                                                                                                                                         react-hooks/immutability
+  26:36  error    Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\client\reviews\page.tsx:26:36
+  24 |   const [orders, setOrders] = useState<Order[]>([]);
+  25 |
+> 26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+     |                                    ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  27 |
+  28 |   const loadReviews = async () => {
+  29 |     try {
+
+f:\CB-szjfp\src\app\client\reviews\page.tsx:37:3
+  35 |   };
+  36 |
+> 37 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 |     try {
+     | ^^^^^^^^^
+> 39 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 40 |       const res = await fetch(`/api/orders?customer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 41 |       const data = await res.json();
+     | ^^^^^^^^^
+> 42 |       if (data.data) setOrders((data.data || []).map((o: Record<string, unknown>) => ({ id: o.id as string, title: o.title as string, worker_id: (o.worker_id as string) || '' })));
+     | ^^^^^^^^^
+> 43 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 44 |     setLoading(false);
+     | ^^^^^^^^^
+> 45 |   };
+     | ^^^^^ `loadOrders` is declared here
+  46 |
+  47 |   const handleSubmitReview = async () => {
+  48 |     if (!createForm.content || !createForm.order_id) return alert('请选择订单并填写评价内容');  react-hooks/immutability
+
+f:\CB-szjfp\src\app\m\agent\customers\page.tsx
+   4:25  warning  'mockWorkers' is defined but never used               @typescript-eslint/no-unused-vars
+  10:11  warning  'user' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  18:10  warning  'orderCustomerId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:9   warning  'selected' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  36:9   warning  'handleEdit' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  41:9   warning  'handleSaveEdit' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\agent\orders\page.tsx
+    9:24  warning  'Eye' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+    9:29  warning  'X' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   19:46  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   20:42  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   21:58  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   35:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   37:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   87:77  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  272:91  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  273:95  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  274:95  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  330:41  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\m\agent\page.tsx
+   7:10  warning  'WORKER_STATUS_LABELS' is defined but never used  @typescript-eslint/no-unused-vars
+  10:3   warning  'Users' is defined but never used                 @typescript-eslint/no-unused-vars
+  10:36  warning  'Send' is defined but never used                  @typescript-eslint/no-unused-vars
+  11:3   warning  'Briefcase' is defined but never used             @typescript-eslint/no-unused-vars
+  11:14  warning  'UserCheck' is defined but never used             @typescript-eslint/no-unused-vars
+  11:50  warning  'FileText' is defined but never used              @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\agent\profile\page.tsx
+  7:10  warning  'ROLE_REVIEW_CATEGORIES' is defined but never used  @typescript-eslint/no-unused-vars
+  9:32  warning  'ChevronRight' is defined but never used            @typescript-eslint/no-unused-vars
+  9:46  warning  'Copy' is defined but never used                    @typescript-eslint/no-unused-vars
+  9:52  warning  'Users' is defined but never used                   @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\customer\contracts\page.tsx
+  42:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\customer\orders\page.tsx
+   16:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   22:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   24:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   36:43  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  106:90  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  107:96  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  108:96  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  109:97  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  110:97  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  154:39  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\m\customer\profile\page.tsx
+  7:37  warning  'Star' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\instructor\follow\page.tsx
+  5:10  warning  'mockWorkers' is defined but never used      @typescript-eslint/no-unused-vars
+  6:35  warning  'CheckCircle' is defined but never used      @typescript-eslint/no-unused-vars
+  6:69  warning  'Star' is defined but never used             @typescript-eslint/no-unused-vars
+  9:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\instructor\page.tsx
+  14:9  warning  'employedWorkers' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\instructor\students\page.tsx
+  4:23  warning  'mockCourses' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\instructor\workers\page.tsx
+  10:11  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\login\page.tsx
+    6:10  warning  'ROLE_LABELS' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   15:3   warning  'Smartphone' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  119:6   warning  React Hook useEffect has a missing dependency: 'handleLoginSuccess'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\recruiter\page.tsx
+   6:23  warning  'mockOrders' is defined but never used     @typescript-eslint/no-unused-vars
+   7:41  warning  'updateRecord' is defined but never used   @typescript-eslint/no-unused-vars
+   9:15  warning  'LeadStatus' is defined but never used     @typescript-eslint/no-unused-vars
+  11:3   warning  'Users' is defined but never used          @typescript-eslint/no-unused-vars
+  11:10  warning  'GraduationCap' is defined but never used  @typescript-eslint/no-unused-vars
+  11:25  warning  'DollarSign' is defined but never used     @typescript-eslint/no-unused-vars
+  11:51  warning  'Plus' is defined but never used           @typescript-eslint/no-unused-vars
+  12:3   warning  'Star' is defined but never used           @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\approval\contracts\page.tsx
+  4:20  warning  'CheckCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\approval\courses\page.tsx
+  14:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\m\training_supervisor\courses\page.tsx
+  5:49  warning  'Star' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\leads\page.tsx
+   57:9   warning  'leadIdCounter' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  117:11  warning  'recruiter' is assigned a value but never used      @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\page.tsx
+   7:10  warning  'Users' is defined but never used                   @typescript-eslint/no-unused-vars
+   7:51  warning  'ClipboardCheck' is defined but never used          @typescript-eslint/no-unused-vars
+   7:67  warning  'Briefcase' is defined but never used               @typescript-eslint/no-unused-vars
+  21:9   warning  'totalStudents' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:9   warning  'recruiters' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\profile\page.tsx
+   5:18  warning  'User' is defined but never used                 @typescript-eslint/no-unused-vars
+  13:9   warning  'totalLeads' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\training_supervisor\students\page.tsx
+  6:17  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\worker\contracts\page.tsx
+  41:6  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\worker\customers\page.tsx
+   7:46  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  19:6   warning  React Hook useEffect has a missing dependency: 'loadCustomers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\worker\jobs\page.tsx
+   18:48  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   19:44  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   26:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   49:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   63:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   71:63  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   88:80  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  183:90  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  185:97  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  186:97  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\app\m\worker\onboard\page.tsx
+   4:38  warning  'User' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+   7:40  error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+  10:38  warning  React Hook useEffect has a missing dependency: 'loadOrders'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\worker\orders\page.tsx
+    5:30  warning  'getStatusColor' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+    6:10  warning  'ORDER_STATUS_LABELS' is defined but never used                                                              @typescript-eslint/no-unused-vars
+    7:10  warning  'Badge' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   15:58  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   16:10  warning  'myWorkerId' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+   20:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   34:52  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  143:17  warning  'orderId' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\worker\page.tsx
+   9:64  warning  'XCircle' is defined but never used            @typescript-eslint/no-unused-vars
+  13:11  warning  'userName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\worker\recommendations\page.tsx
+  14:42  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  17:39  warning  React Hook useEffect has a missing dependency: 'loadRecords'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\worker\resume\page.tsx
+   10:92  warning  'Play' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   21:11  warning  'currentRole' is assigned a value but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   86:6   warning  React Hook useEffect has a missing dependency: 'emptyWorker'. Either include it or remove the dependency array                                                                                                                                                                           react-hooks/exhaustive-deps
+  118:10  warning  'showVideoUpload' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  118:27  warning  'setShowVideoUpload' is assigned a value but never used                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  172:31  warning  'setRequestTrainingSent' is assigned a value but never used                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  186:14  warning  '_e' is defined but never used                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  448:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  662:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+f:\CB-szjfp\src\app\m\worker\training\page.tsx
+   4:20  warning  'ChevronRight' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+   7:42  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  10:39  warning  React Hook useEffect has a missing dependency: 'loadCourses'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\m\worker_operator\page.tsx
+   9:21  warning  'ClipboardList' is defined but never used    @typescript-eslint/no-unused-vars
+   9:50  warning  'TrendingUp' is defined but never used       @typescript-eslint/no-unused-vars
+  13:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\worker_operator\profile\page.tsx
+  30:9  warning  'reviewsFromWorker' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  31:9  warning  'reviewsFromAgent' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  32:9  warning  'reviewsFromRecruiter' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  33:9  warning  'reviewsFromInstructor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\m\worker_operator\workers\page.tsx
+  10:11  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\resume\[id]\page.tsx
+  257:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  311:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+f:\CB-szjfp\src\app\worker\applications\page.tsx
+  24:21  error  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\worker\applications\page.tsx:24:21
+  22 |   const [loading, setLoading] = useState(true);
+  23 |
+> 24 |   useEffect(() => { loadData(); }, []);
+     |                     ^^^^^^^^ `loadData` accessed before it is declared
+  25 |
+  26 |   const loadData = async () => {
+  27 |     try {
+
+f:\CB-szjfp\src\app\worker\applications\page.tsx:26:3
+  24 |   useEffect(() => { loadData(); }, []);
+  25 |
+> 26 |   const loadData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     try {
+     | ^^^^^^^^^
+> 28 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     …
+     | ^^^^^^^^^
+> 38 |     setLoading(false);
+     | ^^^^^^^^^
+> 39 |   };
+     | ^^^^^ `loadData` is declared here
+  40 |
+  41 |   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  42 |     pending: { label: '待处理', color: 'text-amber-600 bg-amber-50', icon: <Clock className="w-3.5 h-3.5" /> },  react-hooks/immutability
+
+f:\CB-szjfp\src\app\worker\contracts\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadContracts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\worker\contracts\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadContracts(); }, []);
+     |                     ^^^^^^^^^^^^^ `loadContracts` accessed before it is declared
+  22 |
+  23 |   const loadContracts = async () => {
+  24 |     try {
+
+f:\CB-szjfp\src\app\worker\contracts\page.tsx:23:3
+  21 |   useEffect(() => { loadContracts(); }, []);
+  22 |
+> 23 |   const loadContracts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/contracts', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setContracts(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadContracts` is declared here
+  31 |
+  32 |   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  33 |     draft: { label: '草稿', color: 'text-slate-500 bg-slate-100', icon: <FileText className="w-3.5 h-3.5" /> },  react-hooks/immutability
+
+f:\CB-szjfp\src\app\worker\courses\page.tsx
+   5:20  warning  'Clock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   5:27  warning  'CheckCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   5:40  warning  'XCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  22:21  error    Error: Cannot access variable before it is declared
+
+`loadCourses` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\worker\courses\page.tsx:22:21
+  20 |   const [enrolling, setEnrolling] = useState<string | null>(null);
+  21 |
+> 22 |   useEffect(() => { loadCourses(); }, [tab]);
+     |                     ^^^^^^^^^^^ `loadCourses` accessed before it is declared
+  23 |
+  24 |   const loadCourses = async () => {
+  25 |     try {
+
+f:\CB-szjfp\src\app\worker\courses\page.tsx:24:3
+  22 |   useEffect(() => { loadCourses(); }, [tab]);
+  23 |
+> 24 |   const loadCourses = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     try {
+     | ^^^^^^^^^
+> 26 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     …
+     | ^^^^^^^^^
+> 54 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 55 |   };
+     | ^^^^^ `loadCourses` is declared here
+  56 |
+  57 |   const handleEnroll = async (courseId: string) => {
+  58 |     const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';  react-hooks/immutability
+  22:39  warning  React Hook useEffect has a missing dependency: 'loadCourses'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\worker\notifications\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadNotifications` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\worker\notifications\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadNotifications(); }, []);
+     |                     ^^^^^^^^^^^^^^^^^ `loadNotifications` accessed before it is declared
+  22 |
+  23 |   const loadNotifications = async () => {
+  24 |     try {
+
+f:\CB-szjfp\src\app\worker\notifications\page.tsx:23:3
+  21 |   useEffect(() => { loadNotifications(); }, []);
+  22 |
+> 23 |   const loadNotifications = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/notifications', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setNotifications(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadNotifications` is declared here
+  31 |
+  32 |   const markRead = async (id: string) => {
+  33 |     try {  react-hooks/immutability
+
+f:\CB-szjfp\src\app\worker\orders\page.tsx
+   5:18  warning  'Briefcase' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   5:47  warning  'Clock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   5:54  warning  'CheckCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   5:67  warning  'XCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  25:21  error    Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\src\app\worker\orders\page.tsx:25:21
+  23 |   const [message, setMessage] = useState('');
+  24 |
+> 25 |   useEffect(() => { loadOrders(); }, [jobFilter]);
+     |                     ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  26 |
+  27 |   const loadOrders = async () => {
+  28 |     try {
+
+f:\CB-szjfp\src\app\worker\orders\page.tsx:27:3
+  25 |   useEffect(() => { loadOrders(); }, [jobFilter]);
+  26 |
+> 27 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |     try {
+     | ^^^^^^^^^
+> 29 |       const params = new URLSearchParams({ status: 'created' });
+     | ^^^^^^^^^
+> 30 |       if (jobFilter !== '全部') params.set('job_type', jobFilter);
+     | ^^^^^^^^^
+> 31 |       const res = await fetch(`/api/orders?${params}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 32 |       const data = await res.json();
+     | ^^^^^^^^^
+> 33 |       if (data.success) setOrders(data.data || []);
+     | ^^^^^^^^^
+> 34 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 35 |   };
+     | ^^^^^ `loadOrders` is declared here
+  36 |
+  37 |   const handleApply = async (orderId: string) => {
+  38 |     try {  react-hooks/immutability
+  25:38  warning  React Hook useEffect has a missing dependency: 'loadOrders'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\app\worker\resume\page.tsx
+   6:10  warning  'FileText' is defined but never used         @typescript-eslint/no-unused-vars
+  44:9   warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  87:14  warning  'e' is defined but never used                @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\components\admin\sidebar.tsx
+  14:3  warning  'FilePenLine' is defined but never used  @typescript-eslint/no-unused-vars
+  41:3  warning  'Share2' is defined but never used       @typescript-eslint/no-unused-vars
+  46:3  warning  'Sliders' is defined but never used      @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\components\file-upload.tsx
+  77:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+f:\CB-szjfp\src\components\miniapp\add-customer-form.tsx
+  4:26  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\components\miniapp\context.tsx
+  67:10  warning  'dataReady' is assigned a value but never used                                                                             @typescript-eslint/no-unused-vars
+  98:6   warning  React Hook useEffect has a missing dependency: 'attemptWechatAutoLogin'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+f:\CB-szjfp\src\components\miniapp\hall.tsx
+   40:46  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   41:48  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   47:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  139:35  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\components\miniapp\reviews.tsx
+  16:48  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  23:36  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  36:31  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\components\miniapp\tab-bar.tsx
+  12:3  warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\lib\commission-utils.ts
+  259:11  warning  'creatorRate' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  267:11  warning  'estimatedAmount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\lib\schema.ts
+   11:3   warning  'primaryKey' is defined but never used    @typescript-eslint/no-unused-vars
+  413:46  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+f:\CB-szjfp\src\storage\database\shared\relations.ts
+  1:10  warning  'relations' is defined but never used  @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\storage\database\supabase-client.ts
+  93:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+✖ 473 problems (159 errors, 314 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/workers/[id]/share — 经纪人分享阿姨简历
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'workers:read');
-  if (!session) return NextResponse.json({ error: '无权限' }, { status: 403 });
+  const session = await requirePermission(request, 'workers:read');
+  if (session instanceof NextResponse) return session;
 
   const { id: workerId } = await params;
 

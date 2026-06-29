@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/commission/settle — 执行分账结算
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'commission:settle');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'commission:settle');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {

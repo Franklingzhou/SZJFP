@@ -360,7 +360,11 @@ export default function ResumeReviewsPage() {
                     <div>
                       <span className="text-slate-500">工种：</span>
                       <span className="font-medium">
-                        {selectedReview.workers?.job_types?.join(', ') || '-'}
+                        {selectedReview.workers?.job_types
+                          ? (Array.isArray(selectedReview.workers.job_types)
+                            ? selectedReview.workers.job_types.join(', ')
+                            : String(selectedReview.workers.job_types))
+                          : '-'}
                       </span>
                     </div>
                     <div>

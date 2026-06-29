@@ -27,13 +27,14 @@ interface Lead {
   updated_at: string | null;
 }
 
-// P0-1 线索状态枚举（2.0: 签约后自动创建worker，不再走training→qualified→converted流程）
-type StatusTab = 'all' | 'new' | 'following' | 'signed' | 'lost';
+// P0-1 线索状态枚举（2.0: new→following→signed→converted→简历池）
+type StatusTab = 'all' | 'new' | 'following' | 'signed' | 'converted' | 'lost';
 
 const STATUS_LABELS: Record<string, string> = {
   new: '新线索',
   following: '跟进中',
   signed: '已签约',
+  converted: '已转化',
   lost: '已流失',
 };
 
@@ -41,6 +42,7 @@ const STATUS_COLORS: Record<string, string> = {
   new: 'bg-blue-100 text-blue-800',
   following: 'bg-yellow-100 text-yellow-800',
   signed: 'bg-green-100 text-green-800',
+  converted: 'bg-emerald-100 text-emerald-800',
   lost: 'bg-red-100 text-red-800',
 };
 
@@ -66,6 +68,7 @@ const STATUS_TABS: { key: StatusTab; label: string; color: string }[] = [
   { key: 'new', label: '新线索', color: 'bg-blue-500' },
   { key: 'following', label: '跟进中', color: 'bg-yellow-500' },
   { key: 'signed', label: '已签约', color: 'bg-green-500' },
+  { key: 'converted', label: '已转化', color: 'bg-emerald-500' },
   { key: 'lost', label: '已流失', color: 'bg-red-500' },
 ];
 
@@ -348,6 +351,7 @@ export default function LeadsPage() {
     new: leads.filter(l => l.status === 'new').length,
     following: leads.filter(l => l.status === 'following').length,
     signed: leads.filter(l => l.status === 'signed').length,
+    converted: leads.filter(l => l.status === 'converted').length,
     lost: leads.filter(l => l.status === 'lost').length,
   };
 

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/grading — 获取待考核学员列表
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'grading:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'grading:read');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
@@ -37,15 +38,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/grading — 提交考核打分
 export async function POST(request: NextRequest) {
-  // 使用checkPermissionDetailed区分未登录和无权限
-  const result = await checkPermissionDetailed(request, 'enrollments:write');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') {
-      return unauthorizedResponse();
-    }
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'enrollments:write');
+  if (session instanceof NextResponse) return session;
 
   try {
     const body = await request.json();
@@ -84,6 +78,32 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('[grading POST] DB error:', JSON.stringify(error, null, 2));
       return NextResponse.json({ error: '打分失败', details: error.message }, { status: 500 });
+    }
+
+    // 考核通过 → 关联线索自动变为 converted（培训线终点）
+    if (passed && data) {
+      const workerId = (data as Record<string, unknown>).worker_id as string;
+      if (workerId) {
+        const { data: worker } = await supabase
+          .from('workers')
+          .select('phone')
+          .eq('id', workerId)
+          .maybeSingle();
+        if (worker?.phone) {
+          const { data: lead } = await supabase
+            .from('leads')
+            .select('id, status')
+            .eq('phone', worker.phone)
+            .maybeSingle();
+          if (lead && lead.status === 'signed') {
+            await supabase
+              .from('leads')
+              .update({ status: 'converted' })
+              .eq('id', lead.id);
+            console.log(`[grading] lead ${lead.id} → converted (worker ${workerId})`);
+          }
+        }
+      }
     }
 
     return NextResponse.json({ success: true, data });

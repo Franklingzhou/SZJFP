@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/courses/[id]/approve — 管理员审核课程
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'courses:approve');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:approve');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;

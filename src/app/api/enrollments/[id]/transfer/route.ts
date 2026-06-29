@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/enrollments/[id]/transfer — 学员转班
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'enrollments:transfer');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'enrollments:transfer');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;
@@ -32,6 +33,17 @@ export async function POST(
       return NextResponse.json({ ok: false, error: '目标课程不存在' }, { status: 404 });
     }
 
+    // 先检查报名记录是否存在
+    const { data: existing } = await supabase
+      .from('enrollments')
+      .select('id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (!existing) {
+      return NextResponse.json({ ok: false, error: '报名记录不存在' }, { status: 404 });
+    }
+
     const { data, error } = await supabase
       .from('enrollments')
       .update({ course_id: target_course_id })
@@ -41,10 +53,6 @@ export async function POST(
 
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
-    }
-
-    if (!data) {
-      return NextResponse.json({ ok: false, error: '报名记录不存在' }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, data });

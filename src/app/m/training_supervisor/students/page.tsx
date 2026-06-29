@@ -25,7 +25,7 @@ export default function TrainingSupervisorStudentsPage() {
       <h1 className="text-base font-semibold mb-3">学员管理</h1>
       <input value={search} onChange={e => setSearch(e.target.value)} placeholder="搜索姓名" className="w-full border rounded-lg px-3 py-2 text-sm mb-2" />
       <div className="flex gap-1.5 mb-3 overflow-x-auto">
-        {['all','new','following','qualified','converted','lost'].map(s => (
+        {['all','new','following','converted','lost'].map(s => (
           <button key={s} onClick={() => setStatusFilter(s)}
             className={`text-xs px-3 py-1 rounded-full whitespace-nowrap ${statusFilter === s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
             {s === 'all' ? '全部' : STATUS_MAP[s]}

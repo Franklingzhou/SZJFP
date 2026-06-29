@@ -39,6 +39,11 @@ export function getStatusColor(status: string): string {
     matched: 'bg-blue-50 text-blue-700',
     confirmed: 'bg-indigo-50 text-indigo-700',
     in_service: 'bg-green-50 text-green-700',
+    // 订单状态
+    open: 'bg-amber-50 text-amber-700',
+    interviewing: 'bg-orange-50 text-orange-700',
+    signed: 'bg-blue-50 text-blue-700',
+    in_progress: 'bg-teal-50 text-teal-700',
     completed: 'bg-gray-50 text-gray-700',
     cancelled: 'bg-red-50 text-red-700',
     upcoming: 'bg-blue-50 text-blue-700',

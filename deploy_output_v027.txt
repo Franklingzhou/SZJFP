@@ -1,0 +1,10 @@
+﻿CloudBase CLI 3.5.8
+试试 tcb ai 命令，开启 AI 原生开发
+node.exe : - 数据加载中...
+所在位置 C:\Users\Administrator\AppData\Roaming\npm\tcb.ps1:24 字符: 5
++     & "node$exe"  "$basedir/node_modules/@cloudbase/cli/bin/tcb" $arg ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (- 数据加载中...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+✖ 请使用 -e 或 --envId 指定环境 ID

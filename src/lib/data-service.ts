@@ -142,7 +142,7 @@ function mapWorkerFromDb(db: Record<string, unknown>): WorkerProfile {
 // 转换数据库线索数据为RecruiterLead格式（mock-data.ts定义的类型）
 function mapLeadFromDb(db: Record<string, unknown>): RecruiterLead {
   const status = asStr(db.status, 'new');
-  const validStatus = (['new', 'following', 'contacted', 'signed', 'training', 'qualified', 'converted', 'lost'] as const).includes(status as RecruiterLead['status'])
+  const validStatus = (['new', 'following', 'signed', 'converted', 'lost'] as const).includes(status as RecruiterLead['status'])
     ? status as RecruiterLead['status'] : 'new';
   const level = asStr(db.level, 'C');
   const validLevel = (['A', 'B', 'C', 'D'] as const).includes(level as RecruiterLead['level'])
@@ -196,7 +196,7 @@ function mapCourseFromDb(db: Record<string, unknown>): TrainingCourse {
 // 转换数据库订单数据（2.0: open/interviewing/signed/completed/cancelled；2.9+ 兼容 created 作为待匹配）
 function mapOrderFromDb(db: Record<string, unknown>): Order {
   const status = asStr(db.status, 'open');
-  const validStatus: OrderStatus = ['created', 'open', 'interviewing', 'signed', 'completed', 'cancelled'].includes(status)
+  const validStatus: OrderStatus = ['open', 'interviewing', 'signed', 'completed', 'cancelled'].includes(status)
     ? status as OrderStatus : 'open';
   return {
     id: asStr(db.id),

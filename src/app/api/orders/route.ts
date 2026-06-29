@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { filterDataByPermission, filterSensitiveFields, getDataVisibilitySync } from '@/lib/data-permissions';
 
 // 敏感字段映射（API级别过滤）
@@ -12,12 +12,9 @@ const sensitiveFieldsByModule: Record<string, string[]> = {
 
 // GET /api/orders — 获取订单/合单列表
 export async function GET(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'orders:read');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'orders:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -84,12 +81,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/orders — 创建订单/合单
 export async function POST(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'orders:write');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'orders:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { title, job_type, salary_min, salary_max, location, description, agent_id, worker_id, customer_id, service_type, amount, price, start_date, salary_type, work_duration, contact_name, contact_phone } = body as {
@@ -186,12 +180,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/orders — 更新订单（匹配、状态变更等）
 // v9: 加显式字段白名单，禁止{...updates}直接写入
 export async function PUT(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'orders:write');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'orders:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id } = body as { id: string; [key: string]: unknown };

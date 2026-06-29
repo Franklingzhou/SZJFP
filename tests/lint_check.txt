@@ -1,0 +1,45 @@
+
+f:\CB-szjfp\JZ-projects\src\app\admin\logs\page.tsx
+   9:10  warning  'Select' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   9:18  warning  'SelectContent' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   9:33  warning  'SelectItem' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   9:45  warning  'SelectTrigger' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   9:60  warning  'SelectValue' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  54:21  error    Error: Cannot access variable before it is declared
+
+`loadLogs` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+f:\CB-szjfp\JZ-projects\src\app\admin\logs\page.tsx:54:21
+  52 |   const pageSize = 20;
+  53 |
+> 54 |   useEffect(() => { loadLogs(); }, [page]);
+     |                     ^^^^^^^^ `loadLogs` accessed before it is declared
+  55 |
+  56 |   const loadLogs = async () => {
+  57 |     setLoading(true);
+
+f:\CB-szjfp\JZ-projects\src\app\admin\logs\page.tsx:56:3
+  54 |   useEffect(() => { loadLogs(); }, [page]);
+  55 |
+> 56 |   const loadLogs = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 58 |     try {
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 74 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 75 |   };
+     | ^^^^^ `loadLogs` is declared here
+  76 |
+  77 |   const handleSearch = () => {
+  78 |     setPage(0);  react-hooks/immutability
+  54:36  warning  React Hook useEffect has a missing dependency: 'loadLogs'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+f:\CB-szjfp\JZ-projects\src\app\api\auth\phone-register\route.ts
+   51:13  warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  102:10  warning  'generateToken' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 9 problems (1 error, 8 warnings)
+

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // GET /api/field-permissions — 获取字段权限配置列表
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'settings:manage');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'settings:manage');
+
+  if (session instanceof NextResponse) return session;
   
   try {
     const supabase = getSupabaseClient();
@@ -38,8 +39,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/field-permissions — 创建或批量更新字段权限配置
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'settings:manage');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'settings:manage');
+
+  if (session instanceof NextResponse) return session;
   
   try {
     const body = await request.json();
@@ -116,8 +118,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/field-permissions — 删除配置
 export async function DELETE(request: NextRequest) {
-  const session = await checkPermission(request, 'settings:manage');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'settings:manage');
+
+  if (session instanceof NextResponse) return session;
   
   try {
     const { searchParams } = request.nextUrl;

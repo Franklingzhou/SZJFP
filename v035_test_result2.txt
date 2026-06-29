@@ -1,0 +1,26 @@
+=== v035 ONLINE TEST (real tokens) ===
+
+--- 获取 tokens ---
+OK admin phone-login
+OK agent phone-login
+
+--- 核心 API 测试 ---
+OK GET /
+OK GET /api/settings
+OK GET /api/workers
+OK GET /api/users
+OK GET /api/reviews
+FAIL GET /api/leads -- status=403
+OK GET /api/orders
+OK GET /api/courses
+OK GET /api/enrollments
+OK GET /api/contracts
+OK POST /api/auth/phone-login (new)
+OK POST /api/auth/phone-register 409
+OK PUT /api/workers no-auth → 401
+OK POST /api/notifications
+OK PUT /api/settings
+FAIL PUT /api/settings as agent → 403 -- status=401
+OK GET /api/platform-fees
+
+=== RESULT: 17/19 passed ===

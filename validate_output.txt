@@ -1,0 +1,12 @@
+
+> szjfp@0.1.0 validate F:\CB-szjfp
+> pnpm run ts-check && pnpm run lint:build
+
+
+> szjfp@0.1.0 ts-check F:\CB-szjfp
+> tsc -p tsconfig.json
+
+
+> szjfp@0.1.0 lint:build F:\CB-szjfp
+> eslint . --quiet
+

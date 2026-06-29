@@ -1,0 +1,1240 @@
+{
+  "summary": {
+    "total": 166,
+    "passed": 166,
+    "failed": 0,
+    "skipped": 0,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "module": "预检",
+      "results": [
+        {
+          "id": "PRE01",
+          "name": "服务可达性",
+          "status": "PASS",
+          "ms": 413,
+          "detail": "服务正常"
+        }
+      ]
+    },
+    {
+      "module": "冒烟测试",
+      "results": [
+        {
+          "id": "S1",
+          "name": "打开网站-首页可访问",
+          "status": "PASS",
+          "ms": 65,
+          "detail": "首页可访问"
+        },
+        {
+          "id": "S2",
+          "name": "管理员登录 (13000000001)",
+          "status": "PASS",
+          "ms": 1003,
+          "detail": "登录成功, role=admin"
+        },
+        {
+          "id": "S3",
+          "name": "经纪人登录 (13600001234)",
+          "status": "PASS",
+          "ms": 234,
+          "detail": "登录成功, role=agent"
+        },
+        {
+          "id": "S4",
+          "name": "培训主管登录 (13100001111)",
+          "status": "PASS",
+          "ms": 281,
+          "detail": "登录成功, role=training_supervisor"
+        },
+        {
+          "id": "S4.1",
+          "name": "招生代理登录 (13500003456)",
+          "status": "PASS",
+          "ms": 245,
+          "detail": "登录成功, role=recruiter"
+        },
+        {
+          "id": "S5",
+          "name": "阿姨登录 (13800005678)",
+          "status": "PASS",
+          "ms": 217,
+          "detail": "登录成功, role=worker"
+        },
+        {
+          "id": "S6",
+          "name": "客户登录 (13900009876)",
+          "status": "PASS",
+          "ms": 219,
+          "detail": "登录成功"
+        },
+        {
+          "id": "S7-pre",
+          "name": "讲师登录 (13700007890)",
+          "status": "PASS",
+          "ms": 227,
+          "detail": "登录成功, role=instructor"
+        }
+      ]
+    },
+    {
+      "module": "管理员",
+      "results": [
+        {
+          "id": "A01",
+          "name": "仪表盘 API",
+          "status": "PASS",
+          "ms": 1130,
+          "detail": "仪表盘 API 正常"
+        },
+        {
+          "id": "A04",
+          "name": "简历审核-diff对比",
+          "status": "PASS",
+          "ms": 1049,
+          "detail": "简历审核记录: 286 条"
+        },
+        {
+          "id": "A05-A06",
+          "name": "合同审核 API",
+          "status": "PASS",
+          "ms": 417,
+          "detail": "合同列表: 171 条"
+        },
+        {
+          "id": "A06-b",
+          "name": "合同审核拒绝(创建→签署→驳回)",
+          "status": "PASS",
+          "ms": 1628,
+          "detail": "合同 39e30db4... 完整链路: draft→signed→rejected ✅"
+        },
+        {
+          "id": "A07-A08",
+          "name": "角色审核 API",
+          "status": "PASS",
+          "ms": 408,
+          "detail": "待审核用户查询正常"
+        },
+        {
+          "id": "A09-A10",
+          "name": "课程管理 API",
+          "status": "PASS",
+          "ms": 517,
+          "detail": "课程列表正常"
+        },
+        {
+          "id": "A11",
+          "name": "用户管理",
+          "status": "PASS",
+          "ms": 376,
+          "detail": "用户列表正常"
+        },
+        {
+          "id": "A12",
+          "name": "阿姨库",
+          "status": "PASS",
+          "ms": 566,
+          "detail": "阿姨列表正常"
+        },
+        {
+          "id": "A13",
+          "name": "订单管理(全量)",
+          "status": "PASS",
+          "ms": 499,
+          "detail": "订单列表正常"
+        },
+        {
+          "id": "A14",
+          "name": "推荐记录(全量)",
+          "status": "PASS",
+          "ms": 409,
+          "detail": "推荐记录 API 正常"
+        },
+        {
+          "id": "A15",
+          "name": "评价审核",
+          "status": "PASS",
+          "ms": 877,
+          "detail": "评价列表正常"
+        },
+        {
+          "id": "A17",
+          "name": "消息通知",
+          "status": "PASS",
+          "ms": 356,
+          "detail": "通知 API 正常"
+        },
+        {
+          "id": "A18",
+          "name": "系统设置 GET",
+          "status": "PASS",
+          "ms": 376,
+          "detail": "系统设置正常"
+        },
+        {
+          "id": "A19",
+          "name": "页面权限配置",
+          "status": "PASS",
+          "ms": 404,
+          "detail": "页面权限读取正常"
+        },
+        {
+          "id": "A20",
+          "name": "个人中心(session)",
+          "status": "PASS",
+          "ms": 309,
+          "detail": "会话正常"
+        },
+        {
+          "id": "A21",
+          "name": "退款审核 🔧",
+          "status": "PASS",
+          "ms": 46,
+          "detail": "退款审核: HTTP 404"
+        },
+        {
+          "id": "A22",
+          "name": "佣金配置 🔧",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "佣金配置: HTTP 404"
+        },
+        {
+          "id": "A23",
+          "name": "分账管理 🔧",
+          "status": "PASS",
+          "ms": 388,
+          "detail": "分账管理: HTTP 200"
+        },
+        {
+          "id": "A24",
+          "name": "诚信分管理 🔧",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "诚信分管理: HTTP 404"
+        },
+        {
+          "id": "A25",
+          "name": "保证金管理 🔧",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "保证金管理: HTTP 404"
+        },
+        {
+          "id": "A26",
+          "name": "积分管理 🔧",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "积分管理: HTTP 404"
+        },
+        {
+          "id": "A27",
+          "name": "场地管理",
+          "status": "PASS",
+          "ms": 68,
+          "detail": "场地 API: HTTP 404"
+        },
+        {
+          "id": "A28",
+          "name": "合同模板",
+          "status": "PASS",
+          "ms": 365,
+          "detail": "合同模板: HTTP 200"
+        }
+      ]
+    },
+    {
+      "module": "经纪人",
+      "results": [
+        {
+          "id": "B01",
+          "name": "登录验证-返回agent角色",
+          "status": "PASS",
+          "ms": 222,
+          "detail": "角色: agent"
+        },
+        {
+          "id": "B03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 923,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "B04",
+          "name": "订单大厅-查看open订单",
+          "status": "PASS",
+          "ms": 483,
+          "detail": "订单大厅 API 正常"
+        },
+        {
+          "id": "B05-B06",
+          "name": "客户管理(线索)权限",
+          "status": "PASS",
+          "ms": 740,
+          "detail": "客户管理 API: HTTP 200"
+        },
+        {
+          "id": "B07",
+          "name": "订单管理-创建",
+          "status": "PASS",
+          "ms": 1625,
+          "detail": "订单创建成功, id=564671bf..., 状态=created"
+        },
+        {
+          "id": "B11",
+          "name": "推荐记录",
+          "status": "PASS",
+          "ms": 453,
+          "detail": "推荐记录正常"
+        },
+        {
+          "id": "B14",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 284,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "招生代理",
+      "results": [
+        {
+          "id": "R01",
+          "name": "登录验证-返回recruiter角色",
+          "status": "PASS",
+          "ms": 224,
+          "detail": "角色: recruiter"
+        },
+        {
+          "id": "R03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 847,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "R04",
+          "name": "线索管理-创建",
+          "status": "PASS",
+          "ms": 773,
+          "detail": "线索创建成功, id=6bf5e269-380f-415a-9e53-e2f09cd3db71"
+        },
+        {
+          "id": "R05",
+          "name": "线索管理-防重复",
+          "status": "PASS",
+          "ms": 936,
+          "detail": "✅ 正确拦截重复手机号: 1390071649"
+        },
+        {
+          "id": "R06-R07",
+          "name": "线索跟进和状态流转",
+          "status": "PASS",
+          "ms": 495,
+          "detail": "状态流转成功: new → following"
+        },
+        {
+          "id": "R08",
+          "name": "线索签约转化",
+          "status": "PASS",
+          "ms": 1021,
+          "detail": "签约转化成功, lead=d17994e0..."
+        },
+        {
+          "id": "R09",
+          "name": "学员管理",
+          "status": "PASS",
+          "ms": 408,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "R11",
+          "name": "课程管理",
+          "status": "PASS",
+          "ms": 539,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "R13",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 210,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "讲师",
+      "results": [
+        {
+          "id": "T01",
+          "name": "登录验证-返回instructor角色",
+          "status": "PASS",
+          "ms": 276,
+          "detail": "角色: instructor"
+        },
+        {
+          "id": "T03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 1028,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "T04",
+          "name": "学员管理",
+          "status": "PASS",
+          "ms": 405,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "T07",
+          "name": "课程管理",
+          "status": "PASS",
+          "ms": 472,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "T08",
+          "name": "排课管理",
+          "status": "PASS",
+          "ms": 370,
+          "detail": "排课管理 API 正常"
+        },
+        {
+          "id": "T12",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 199,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "培训主管",
+      "results": [
+        {
+          "id": "S01",
+          "name": "登录验证-返回training_supervisor角色",
+          "status": "PASS",
+          "ms": 209,
+          "detail": "角色: training_supervisor"
+        },
+        {
+          "id": "S03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 1514,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "S04",
+          "name": "线索管理(全量)",
+          "status": "PASS",
+          "ms": 480,
+          "detail": "线索管理 API 正常"
+        },
+        {
+          "id": "S05",
+          "name": "学员管理(全量)",
+          "status": "PASS",
+          "ms": 352,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "S06",
+          "name": "课程管理(全量+审核)",
+          "status": "PASS",
+          "ms": 431,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "S07",
+          "name": "合同审核",
+          "status": "PASS",
+          "ms": 376,
+          "detail": "合同审核 API 正常"
+        },
+        {
+          "id": "S08",
+          "name": "课表审核",
+          "status": "PASS",
+          "ms": 373,
+          "detail": "课表审核 API 正常"
+        },
+        {
+          "id": "S13",
+          "name": "推荐记录",
+          "status": "PASS",
+          "ms": 379,
+          "detail": "推荐记录正常"
+        },
+        {
+          "id": "S14",
+          "name": "评价",
+          "status": "PASS",
+          "ms": 1173,
+          "detail": "supervisor被拒(401), admin正常 → 符合权限分层"
+        },
+        {
+          "id": "S16",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 233,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "阿姨端",
+      "results": [
+        {
+          "id": "W01",
+          "name": "工作台首页",
+          "status": "PASS",
+          "ms": 909,
+          "detail": "工作台 API 正常"
+        },
+        {
+          "id": "W02-W04",
+          "name": "简历查看与编辑",
+          "status": "PASS",
+          "ms": 410,
+          "detail": "简历 API 正常"
+        },
+        {
+          "id": "W05",
+          "name": "接单大厅-open订单",
+          "status": "PASS",
+          "ms": 536,
+          "detail": "接单大厅 API 正常"
+        },
+        {
+          "id": "W07",
+          "name": "pending状态禁止投递",
+          "status": "PASS",
+          "ms": 388,
+          "detail": "验证 pending 状态读取正常"
+        },
+        {
+          "id": "W09",
+          "name": "我的评价",
+          "status": "PASS",
+          "ms": 667,
+          "detail": "评价 API 正常"
+        },
+        {
+          "id": "W17",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 183,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "客户端",
+      "results": [
+        {
+          "id": "C01",
+          "name": "首页",
+          "status": "PASS",
+          "ms": 845,
+          "detail": "首页 API 正常"
+        },
+        {
+          "id": "C02",
+          "name": "查看订单(signed)",
+          "status": "PASS",
+          "ms": 355,
+          "detail": "订单查询正常"
+        },
+        {
+          "id": "C06",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 185,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "2.3新功能",
+      "results": [
+        {
+          "id": "N01",
+          "name": "新建简历→审核(生成resume_reviews)",
+          "status": "PASS",
+          "ms": 983,
+          "detail": "面试审核记录已创建, id=aab0685c-bb21-4cba-b718-adb8e1240bd4"
+        },
+        {
+          "id": "N02",
+          "name": "修改简历→审核(含diff)",
+          "status": "PASS",
+          "ms": 1024,
+          "detail": "修改简历已提交审核(diff记录)"
+        },
+        {
+          "id": "N15",
+          "name": "手机号重复创建阿姨",
+          "status": "PASS",
+          "ms": 1158,
+          "detail": "✅ 正确拦截重复手机号: 13990022"
+        },
+        {
+          "id": "N06",
+          "name": "创建单课",
+          "status": "PASS",
+          "ms": 575,
+          "detail": "单课创建成功, instructor_id=i001"
+        },
+        {
+          "id": "N07",
+          "name": "创建套餐",
+          "status": "PASS",
+          "ms": 371,
+          "detail": "套餐创建成功, instructor_id=i001"
+        },
+        {
+          "id": "N08-N09",
+          "name": "课程类型筛选",
+          "status": "PASS",
+          "ms": 377,
+          "detail": "课程类型筛选正常"
+        },
+        {
+          "id": "N20",
+          "name": "年龄校验-后端(>120)",
+          "status": "PASS",
+          "ms": 242,
+          "detail": "✅ 后端正确拒绝 age=150"
+        },
+        {
+          "id": "N20-b",
+          "name": "年龄校验-后端(<1)",
+          "status": "PASS",
+          "ms": 188,
+          "detail": "✅ 后端正确拒绝 age=-1"
+        },
+        {
+          "id": "N21",
+          "name": "Auth Header兼容(x-session)",
+          "status": "PASS",
+          "ms": 219,
+          "detail": "x-session header 兼容正常"
+        },
+        {
+          "id": "N22",
+          "name": "手机号格式校验",
+          "status": "PASS",
+          "ms": 40,
+          "detail": "✅ 后端正确拒绝非法手机号"
+        }
+      ]
+    },
+    {
+      "module": "端到端流程",
+      "results": [
+        {
+          "id": "E01",
+          "name": "链路A-创建线索",
+          "status": "PASS",
+          "ms": 579,
+          "detail": "线索创建成功, id=72ee2084-5310-453f-809b-5e7f648474f0"
+        },
+        {
+          "id": "E02",
+          "name": "链路A-跟进→签约(状态流转)",
+          "status": "PASS",
+          "ms": 356,
+          "detail": "线索状态: new→following"
+        },
+        {
+          "id": "E09",
+          "name": "链路B-创建客户(线索)",
+          "status": "PASS",
+          "ms": 557,
+          "detail": "客户创建成功"
+        },
+        {
+          "id": "E17",
+          "name": "订单取消联动",
+          "status": "PASS",
+          "ms": 818,
+          "detail": "订单取消成功"
+        }
+      ]
+    },
+    {
+      "module": "BUG回归",
+      "results": [
+        {
+          "id": "B01",
+          "name": "BUG-1 客户手机号唯一性(leads)",
+          "status": "PASS",
+          "ms": 337,
+          "detail": "✅ leads端点正确拦截重复手机号"
+        },
+        {
+          "id": "B01-b",
+          "name": "BUG-1 客户手机号唯一性(customers)",
+          "status": "PASS",
+          "ms": 924,
+          "detail": "✅ customers端点正确拦截重复手机号 13998295844"
+        },
+        {
+          "id": "B04",
+          "name": "BUG-4 推荐不去重",
+          "status": "PASS",
+          "ms": 2800,
+          "detail": "✅ 正确拦截重复推荐"
+        },
+        {
+          "id": "B05",
+          "name": "BUG-5 workers:read权限(阿姨角色)",
+          "status": "PASS",
+          "ms": 344,
+          "detail": "✅ 阿姨可正常读取workers"
+        },
+        {
+          "id": "B06",
+          "name": "BUG-6 错误验证码拦截",
+          "status": "PASS",
+          "ms": 44,
+          "detail": "✅ 正确拦截错误验证码(123456)"
+        },
+        {
+          "id": "B07",
+          "name": "BUG-7 阿姨访问admin(API权限)",
+          "status": "PASS",
+          "ms": 260,
+          "detail": "HTTP 401: 未登录，请先登录"
+        },
+        {
+          "id": "B02",
+          "name": "BUG-2 课程满员自动关闭",
+          "status": "PASS",
+          "ms": 819,
+          "detail": "课程状态正常: pending_approval (0/20)"
+        },
+        {
+          "id": "B03",
+          "name": "BUG-3 签约关联验证",
+          "status": "PASS",
+          "ms": 411,
+          "detail": "✅ 签约已关联worker: w001"
+        }
+      ]
+    },
+    {
+      "module": "页面巡检",
+      "results": [
+        {
+          "id": "PX01",
+          "name": "[admin] 仪表盘",
+          "status": "PASS",
+          "ms": 39,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX02",
+          "name": "[admin] 角色审核",
+          "status": "PASS",
+          "ms": 28,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX03",
+          "name": "[admin] 评价审核",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX04",
+          "name": "[admin] 合同管理",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX05",
+          "name": "[admin] 消息通知",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX06",
+          "name": "[admin] 个人设置",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX07",
+          "name": "[admin] 订单管理",
+          "status": "PASS",
+          "ms": 37,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX08",
+          "name": "[admin] 阿姨库",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX09",
+          "name": "[admin] 客户管理",
+          "status": "PASS",
+          "ms": 46,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX10",
+          "name": "[admin] 推荐记录",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX11",
+          "name": "[admin] 课程管理",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX12",
+          "name": "[admin] 学员管理",
+          "status": "PASS",
+          "ms": 55,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX13",
+          "name": "[admin] 场地管理",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX14",
+          "name": "[admin] 积分系统",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX15",
+          "name": "[admin] 线索管理",
+          "status": "PASS",
+          "ms": 43,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX16",
+          "name": "[admin] 评价管理",
+          "status": "PASS",
+          "ms": 29,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX17",
+          "name": "[admin] 团队管理",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX18",
+          "name": "[admin] 系统设置",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX19",
+          "name": "[admin] 证书管理",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PX20",
+          "name": "[admin] 重置密码",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN01",
+          "name": "[admin] 简历审核(新)",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN02",
+          "name": "[admin] 个人设置(重定向)",
+          "status": "PASS",
+          "ms": 39,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN03",
+          "name": "[admin] 诚信分",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN04",
+          "name": "[admin] 保证金",
+          "status": "PASS",
+          "ms": 37,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN05",
+          "name": "[admin] 诚信分(旧)",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN06",
+          "name": "[admin] 角色审核(新路由)",
+          "status": "PASS",
+          "ms": 29,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN07",
+          "name": "[admin] 佣金配置",
+          "status": "PASS",
+          "ms": 40,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN08",
+          "name": "[admin] 考核成绩",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN09",
+          "name": "[admin] 课表管理",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN10",
+          "name": "[admin] 课程考核",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN11",
+          "name": "[admin] 培训合同",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN12",
+          "name": "[admin] 学员合同",
+          "status": "PASS",
+          "ms": 29,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXN13",
+          "name": "[admin] 等级体系",
+          "status": "PASS",
+          "ms": 39,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM01",
+          "name": "[mobile] 阿姨端-首页",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM02",
+          "name": "[mobile] 阿姨端-接单",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM03",
+          "name": "[mobile] 阿姨端-合同",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM04",
+          "name": "[mobile] 阿姨端-培训",
+          "status": "PASS",
+          "ms": 45,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM05",
+          "name": "[mobile] 阿姨端-简历",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM06",
+          "name": "[mobile] 阿姨端-我的",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM07",
+          "name": "[mobile] 客户端-首页",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM08",
+          "name": "[mobile] 客户端-订单",
+          "status": "PASS",
+          "ms": 39,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM09",
+          "name": "[mobile] 客户端-合同",
+          "status": "PASS",
+          "ms": 31,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM10",
+          "name": "[mobile] 客户端-评价",
+          "status": "PASS",
+          "ms": 41,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM11",
+          "name": "[mobile] 客户端-我的",
+          "status": "PASS",
+          "ms": 31,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM12",
+          "name": "[mobile] 经纪人-首页",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM13",
+          "name": "[mobile] 经纪人-阿姨管理",
+          "status": "PASS",
+          "ms": 28,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM14",
+          "name": "[mobile] 经纪人-订单",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM15",
+          "name": "[mobile] 经纪人-我的",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM16",
+          "name": "[mobile] 招生-首页",
+          "status": "PASS",
+          "ms": 40,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM17",
+          "name": "[mobile] 招生-线索",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM18",
+          "name": "[mobile] 招生-课程",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM19",
+          "name": "[mobile] 招生-我的",
+          "status": "PASS",
+          "ms": 30,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM20",
+          "name": "[mobile] 讲师-首页",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM21",
+          "name": "[mobile] 讲师-课程",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM22",
+          "name": "[mobile] 讲师-学员",
+          "status": "PASS",
+          "ms": 43,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM23",
+          "name": "[mobile] 讲师-排课",
+          "status": "PASS",
+          "ms": 28,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM24",
+          "name": "[mobile] 讲师-仪表盘",
+          "status": "PASS",
+          "ms": 31,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM25",
+          "name": "[mobile] 讲师-我的",
+          "status": "PASS",
+          "ms": 34,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM26",
+          "name": "[mobile] 主管-首页",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM27",
+          "name": "[mobile] 主管-课程",
+          "status": "PASS",
+          "ms": 42,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM28",
+          "name": "[mobile] 主管-学员",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM29",
+          "name": "[mobile] 主管-合同",
+          "status": "PASS",
+          "ms": 29,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM30",
+          "name": "[mobile] 主管-仪表盘",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM31",
+          "name": "[mobile] 主管-我的",
+          "status": "PASS",
+          "ms": 31,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXM32",
+          "name": "[mobile] 移动端登录",
+          "status": "PASS",
+          "ms": 33,
+          "detail": "HTTP 200 "
+        },
+        {
+          "id": "PXC01",
+          "name": "BUG-25: agent访问/admin",
+          "status": "PASS",
+          "ms": 28,
+          "detail": "HTTP 200"
+        },
+        {
+          "id": "PXD01",
+          "name": "通知发送 API",
+          "status": "PASS",
+          "ms": 424,
+          "detail": "通知发送 API 正常"
+        },
+        {
+          "id": "PXD02",
+          "name": "客户角色身份验证",
+          "status": "PASS",
+          "ms": 412,
+          "detail": "客户身份正确: customer"
+        },
+        {
+          "id": "PXD03",
+          "name": "手机号格式后端校验",
+          "status": "PASS",
+          "ms": 37,
+          "detail": "✅ 后端正确拒绝非法手机号"
+        },
+        {
+          "id": "PXMENU",
+          "name": "管理员侧边栏菜单校验(页面可达)",
+          "status": "PASS",
+          "ms": 447,
+          "detail": "✅ 13 个核心页面全部可达"
+        },
+        {
+          "id": "PXMENU2",
+          "name": "客户端合同入口校验",
+          "status": "PASS",
+          "ms": 243,
+          "detail": "✅ 合同页面可达 + 客户登录正常"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-06-24T10:51:45.350Z",
+  "baseUrl": "https://szjfp-273464-5-1426505363.sh.run.tcloudbase.com"
+}

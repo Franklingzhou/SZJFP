@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse, forbiddenResponse } from '@/lib/auth-middleware';
+import { forbiddenResponse, requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/recommendations/[id]/accept — 阿姨接受推荐
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'orders:accept');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'orders:accept');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;

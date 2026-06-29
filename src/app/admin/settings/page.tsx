@@ -193,7 +193,6 @@ export default function SettingsPage() {
   const [modules, setModules] = useState<ModuleConfig[]>(defaultModules.map(m => ({ ...m })));
   const [texts, setTexts] = useState<TextConfig[]>(defaultTexts.map(t => ({ ...t })));
   const [pageAccess, setPageAccess] = useState<Record<string, string[]>>({});
-  const [certMode, setCertMode] = useState<'auto' | 'manual'>('auto');
   const [reminderSettings, setReminderSettings] = useState({
     lead_unfollowed_hours: 24,
     order_unmatched_hours: 48,
@@ -251,12 +250,6 @@ export default function SettingsPage() {
       }
       if (settingsMap.page_access && typeof settingsMap.page_access === 'object') {
         setPageAccess(settingsMap.page_access as Record<string, string[]>);
-      }
-      if (settingsMap.certificate_issuance) {
-        const certSetting = settingsMap.certificate_issuance as Record<string, unknown>;
-        if (certSetting.mode === 'manual' || certSetting.mode === 'auto') {
-          setCertMode(certSetting.mode as 'auto' | 'manual');
-        }
       }
       if (settingsMap.reminder_settings && typeof settingsMap.reminder_settings === 'object') {
         const rem = settingsMap.reminder_settings as Record<string, unknown>;
@@ -328,7 +321,7 @@ export default function SettingsPage() {
       {activeTab === 'points' && <PointsSettings pointRules={pointRules} setPointRules={setPointRules} creditRules={creditRules} setCreditRules={setCreditRules} creditConfig={creditConfig} setCreditConfig={setCreditConfig} />}
       {activeTab === 'modules' && <ModulesSettings modules={modules} setModules={setModules} />}
       {activeTab === 'texts' && <TextsSettings texts={texts} setTexts={setTexts} />}
-      {activeTab === 'certificate' && <CertificateSettings certMode={certMode} setCertMode={setCertMode} />}
+      {activeTab === 'certificate' && <CertificateSettings />}
       {activeTab === 'reminder' && <ReminderSettings settings={reminderSettings} setSettings={setReminderSettings} />}
       {activeTab === 'page_access' && <PageAccessSettings pageAccess={pageAccess} setPageAccess={setPageAccess} />}
       {activeTab === 'referral' && <ReferralSettings config={referralConfig} setConfig={setReferralConfig} />}
@@ -851,94 +844,38 @@ function ModulesSettings({ modules, setModules }: { modules: ModuleConfig[]; set
   );
 }
 
-/* ==================== 证书设置 ==================== */
-function CertificateSettings({ certMode, setCertMode }: {
-  certMode: 'auto' | 'manual';
-  setCertMode: (v: 'auto' | 'manual') => void;
-}) {
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    setSaving(true);
-    const ok = await saveSetting('certificate_issuance', { mode: certMode });
-    setSaving(false);
-    setSaved(ok);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
+/* ==================== 证书设置（v038：已归入简历） ==================== */
+function CertificateSettings() {
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 bg-[#1e3a5f] text-white rounded-md text-sm hover:bg-[#163050] disabled:opacity-50">
-          {saving ? '保存中...' : saved ? '已保存' : '保存设置'}
-        </button>
-      </div>
       <div className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-800">证书颁发模式</h2>
-        <p className="text-sm text-slate-500">
-          设置学员课程考核通过（≥60分）后，证书是自动颁发还是由管理员手动颁发。
-        </p>
-        <div className="flex gap-6 mt-4">
-          <label className={cn(
-            'flex-1 border-2 rounded-lg p-5 cursor-pointer transition-all',
-            certMode === 'auto'
-              ? 'border-green-500 bg-green-50 shadow-sm'
-              : 'border-slate-200 hover:border-slate-300'
-          )}>
-            <input
-              type="radio"
-              name="certMode"
-              value="auto"
-              checked={certMode === 'auto'}
-              onChange={() => setCertMode('auto')}
-              className="sr-only"
-            />
-            <div className="flex items-center gap-3 mb-2">
-              <div className={cn(
-                'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                certMode === 'auto' ? 'border-green-500' : 'border-slate-300'
-              )}>
-                {certMode === 'auto' && <div className="w-3 h-3 rounded-full bg-green-500" />}
-              </div>
-              <h3 className={cn('font-semibold', certMode === 'auto' ? 'text-green-700' : 'text-slate-700')}>
-                🚀 自动颁发
-              </h3>
+        <h2 className="text-lg font-semibold text-slate-800">证书管理说明</h2>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <p className="text-sm text-amber-800 font-medium mb-2">📜 证书已归入简历范畴</p>
+          <ul className="text-sm text-amber-700 space-y-1 list-disc list-inside">
+            <li>内部角色（6个）和阿姨均可上传证书到简历</li>
+            <li>证书上传后状态为「待审核」，由管理员在「证书管理」页面审批</li>
+            <li>审批通过后，证书在阿姨公开简历页对外展示</li>
+            <li>讲师考核仅打分（优秀/合格/不合格），不再自动颁发证书</li>
+          </ul>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="bg-slate-50 rounded-lg p-4 border">
+            <h3 className="font-medium text-slate-700 mb-2">🏅 考核打分标准</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span>分数 ≥ 80</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">优秀</span></div>
+              <div className="flex justify-between"><span>60 ≤ 分数 &lt; 80</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">合格</span></div>
+              <div className="flex justify-between"><span>分数 &lt; 60</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">不合格</span></div>
             </div>
-            <p className="text-sm text-slate-500 ml-8">
-              讲师打分 ≥60 分后，系统自动生成并颁发结业证书，同时发送通知给学员。
-            </p>
-          </label>
-
-          <label className={cn(
-            'flex-1 border-2 rounded-lg p-5 cursor-pointer transition-all',
-            certMode === 'manual'
-              ? 'border-blue-500 bg-blue-50 shadow-sm'
-              : 'border-slate-200 hover:border-slate-300'
-          )}>
-            <input
-              type="radio"
-              name="certMode"
-              value="manual"
-              checked={certMode === 'manual'}
-              onChange={() => setCertMode('manual')}
-              className="sr-only"
-            />
-            <div className="flex items-center gap-3 mb-2">
-              <div className={cn(
-                'w-5 h-5 rounded-full border-2 flex items-center justify-center',
-                certMode === 'manual' ? 'border-blue-500' : 'border-slate-300'
-              )}>
-                {certMode === 'manual' && <div className="w-3 h-3 rounded-full bg-blue-500" />}
-              </div>
-              <h3 className={cn('font-semibold', certMode === 'manual' ? 'text-blue-700' : 'text-slate-700')}>
-                ✋ 手动确认
-              </h3>
+          </div>
+          <div className="bg-slate-50 rounded-lg p-4 border">
+            <h3 className="font-medium text-slate-700 mb-2">📋 证书状态</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span>待审核</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">pending</span></div>
+              <div className="flex justify-between"><span>已通过</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">approved</span></div>
+              <div className="flex justify-between"><span>已拒绝</span><span className="px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">rejected</span></div>
             </div>
-            <p className="text-sm text-slate-500 ml-8">
-              讲师打分后仅更新考核结果，管理员在「证书管理」页面手动审核并颁发证书。
-            </p>
-          </label>
+          </div>
         </div>
       </div>
     </div>

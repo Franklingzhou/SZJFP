@@ -1,0 +1,5 @@
+Starting deploy at 周日 2026/06/28  1:39:35.02 
+CloudBase CLI 3.5.8
+试试 tcb ai 命令，开启 AI 原生开发
+- 数据加载中...
+✖ 请使用 -e 或 --envId 指定环境 ID

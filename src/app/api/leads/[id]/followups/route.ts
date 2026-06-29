@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // GET /api/leads/[id]/followups — 查询线索跟进记录
@@ -7,8 +7,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'leads:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'leads:read');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;
@@ -36,8 +37,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'leads:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'leads:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;

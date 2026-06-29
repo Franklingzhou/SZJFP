@@ -4,7 +4,7 @@
  */
 module.exports = {
   // ─── 环境配置 ───
-  BASE_URL: process.env.API_BASE_URL || 'http://localhost:3000',
+  BASE_URL: (process.env.API_BASE_URL || 'http://localhost:3000').trim(),
   DEV_MODE: process.env.NODE_ENV !== 'production',
 
   // ─── 测试账号（8种角色） ───

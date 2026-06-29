@@ -28,7 +28,7 @@ export interface AuthSession {
 // 按页面权限文档(28页×8角色)配置
 export const ROLE_PERMISSIONS: Record<string, string[]> = {
   // === 订单相关 ===
-  'orders:read':    ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
+  'orders:read':    ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker', 'customer'],
   'orders:write':   ['agent'],  // 仅经纪人能发单！admin也不能！
 
   // === 客户管理 ===
@@ -54,7 +54,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
   // === 评价相关 ===
   'reviews:read': ['admin', 'agent', 'worker', 'customer', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
-  'reviews:write': ['admin', 'agent', 'worker', 'customer', 'recruiter', 'instructor', 'worker_operator'],
+  'reviews:write': ['admin', 'agent', 'worker', 'customer', 'recruiter', 'instructor', 'worker_operator'],  // 提交/编辑自己的评价
+  'reviews:approve': ['admin'],  // 管理员审核通过/拒绝评价
+  'reviews:hide': ['admin'],     // 管理员隐藏/取消隐藏评价
 
   // === 推荐相关 ===
   'recommendations:read': ['admin', 'agent', 'recruiter', 'instructor', 'training_supervisor', 'worker_operator', 'worker'],
@@ -101,7 +103,8 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'order-signings:update': ['admin', 'agent'],
 
   // === 阿姨状态/诚信分 ===
-  'workers:status': ['admin', 'agent', 'worker_operator', 'training_supervisor'],
+  // 所有内部角色均可提交暂停/恢复申请（走resume_reviews审核，仅admin可批）
+  'workers:status': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
   'workers:credit': ['admin'],
   'workers:blacklist': ['admin'],
 
@@ -137,10 +140,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   'platform_fees:read': ['admin'],
   'platform_fees:write': ['admin'],
 
-  // === 证书 ===
-  'certificates:read': ['admin', 'instructor', 'training_supervisor', 'worker'],
-  'certificates:write': ['admin', 'instructor'],
-
   // === 报名扩展 ===
   'enrollments:grade': ['admin', 'instructor', 'training_supervisor'],
   'enrollments:transfer': ['admin', 'training_supervisor'],
@@ -160,6 +159,20 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
   // === 订单取消 ===
   'orders:cancel': ['admin', 'agent'],
   'orders:accept': ['admin', 'worker'],
+
+  // === 上户确认 ===
+  'orders:start': ['admin', 'worker'],
+
+  // === 数据导出 ===
+  'workers:export': ['admin'],
+
+  // === 培训模块独立接口 ===
+  'training:read': ['admin', 'training_supervisor', 'instructor', 'recruiter'],
+  'schedules:read': ['admin', 'instructor', 'training_supervisor', 'recruiter', 'worker'],
+  'schedules:write': ['admin', 'instructor', 'training_supervisor'],
+  'timetables:read': ['admin', 'instructor', 'training_supervisor', 'recruiter', 'worker'],
+  'training_leads:read': ['admin', 'recruiter', 'training_supervisor'],
+  'training_leads:write': ['admin', 'recruiter', 'training_supervisor'],
 
 };
 
@@ -296,6 +309,28 @@ export async function checkPermission(request: NextRequest, permissionKey: strin
     return requireRole(request, ['admin']);
   }
   return requireRole(request, allowedRoles);
+}
+
+/**
+ * 便捷函数：检查权限并返回对应的错误响应
+ * - 未登录 → 401
+ * - 已登录但角色不对 → 403
+ * - 有权限 → session
+ * 
+ * 用法:
+ *   const session = await requirePermission(request, 'settings:write');
+ *   if (session instanceof NextResponse) return session; // 401/403
+ */
+export async function requirePermission(
+  request: NextRequest,
+  permissionKey: string
+): Promise<AuthSession | NextResponse> {
+  const result = await checkPermissionDetailed(request, permissionKey);
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') return unauthorizedResponse();
+    return forbiddenResponse();
+  }
+  return result.session;
 }
 
 /** 权限检查结果 */

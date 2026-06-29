@@ -108,8 +108,8 @@ ON CONFLICT (order_no) DO NOTHING;
 
 INSERT INTO leads (name, phone, source, service_intent, budget_range, status, intent_level) VALUES
 ('刘女士', '13900139001', '微信公众号', '日常保洁', '1000-3000', 'new', 'high'),
-('陈先生', '13900139002', '朋友推荐', '育儿嫂', '5000-8000', 'contacted', 'medium'),
-('杨女士', '13900139003', '小程序', '月嫂', '8000-12000', 'qualified', 'high')
+('陈先生', '13900139002', '朋友推荐', '育儿嫂', '5000-8000', 'following', 'medium'),
+('杨女士', '13900139003', '小程序', '月嫂', '8000-12000', 'converted', 'high')
 ON CONFLICT (phone) DO NOTHING;
 
 -- ============================================

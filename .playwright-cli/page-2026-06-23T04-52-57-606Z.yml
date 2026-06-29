@@ -1,0 +1,34 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - heading "家政云创空间" [level=1] [ref=e8]
+      - paragraph [ref=e9]: 管理后台
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - button "密码登录" [ref=e12]:
+          - img [ref=e13]
+          - text: 密码登录
+        - button "验证码登录" [active] [ref=e16]:
+          - img [ref=e17]
+          - text: 验证码登录
+      - generic [ref=e55]:
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - img [ref=e58]
+            - text: 手机号
+          - textbox "请输入手机号" [ref=e60]: "13000000001"
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - img [ref=e63]
+            - text: 验证码
+          - generic [ref=e65]:
+            - textbox "请输入验证码" [ref=e66]
+            - button "获取验证码" [ref=e67]
+        - button "登录" [ref=e68]
+      - generic [ref=e47]: 其他方式
+      - button "微信扫码登录（即将开放）" [ref=e49]:
+        - img [ref=e50]
+        - text: 微信扫码登录（即将开放）
+    - paragraph [ref=e52]: 苏州家服派 · 家政云创空间
+  - alert [ref=e53]

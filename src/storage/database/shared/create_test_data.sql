@@ -35,7 +35,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO leads (id, name, phone, gender, age, origin, job_types, expected_salary, status, creator_id, creator_role, referrer_id, referrer_role, recruiter_id, created_at, updated_at) VALUES
   ('l001', '李小红', '13800001111', '女', 30, '安徽', '保洁,育婴', 4500, 'registered', 'r001', 'recruiter', NULL, NULL, 'r001', NOW(), NOW()),
   ('l002', '王小花', '13800002222', '女', 38, '河南', '月嫂', 12000, 'signed', 'r001', 'recruiter', 'a001', 'agent', 'r001', NOW(), NOW()),
-  ('l003', '赵小芳', '13800003333', '女', 28, '山东', '育婴', 5000, 'training', 'r001', 'recruiter', NULL, NULL, 'r001', NOW(), NOW())
+  ('l003', '赵小芳', '13800003333', '女', 28, '山东', '育婴', 5000, 'signed', 'r001', 'recruiter', NULL, NULL, 'r001', NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================

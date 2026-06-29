@@ -32,6 +32,16 @@ interface PhotoItem {
   sort_order: number;
 }
 
+interface Certificate {
+  id?: string;
+  name: string;
+  authority?: string;
+  issue_date?: string;
+  expiry_date?: string;
+  image_url?: string;
+  status?: string;
+}
+
 interface WorkExpItem {
   id: string;
   period: string;
@@ -55,6 +65,7 @@ interface WorkerData {
   experienceYears: number;
   specialties: string[];
   certifications: string[];
+  certificates: Certificate[];
   expectedSalaryMin: number;
   expectedSalaryMax: number;
   status: string;
@@ -285,17 +296,44 @@ function PublicResumeContent() {
           </div>
         )}
 
-        {/* 证书 */}
-        {worker.certifications.length > 0 && (
+        {/* 证书（新版JSONB + 旧版certifications兼容） */}
+        {(worker.certificates.length > 0 || worker.certifications.length > 0) && (
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
               <Award className="h-4 w-4 text-amber-500" /> 资格证书
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {worker.certifications.map((c, i) => (
-                <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">{c}</span>
-              ))}
-            </div>
+            {/* 新版证书卡片 */}
+            {worker.certificates.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {worker.certificates.filter(c => c.status !== 'rejected').map((cert, i) => (
+                  <div key={cert.id || i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                    {cert.image_url ? (
+                      <img src={cert.image_url} alt={cert.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <Award className="h-5 w-5 text-amber-600" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-800">{cert.name}</span>
+                        {cert.status === 'pending' && <span className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded">审核中</span>}
+                      </div>
+                      {cert.authority && <p className="text-xs text-slate-500 mt-0.5">颁发机构：{cert.authority}</p>}
+                      {cert.issue_date && <p className="text-xs text-slate-400 mt-0.5">颁发日期：{cert.issue_date}{cert.expiry_date ? ` · 到期：${cert.expiry_date}` : ''}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* 旧版标签（兼容） */}
+            {worker.certifications.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {worker.certifications.map((c, i) => (
+                  <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">{c}</span>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

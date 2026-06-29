@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/admin/users — 获取用户列表（支持筛选+分页）
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'users:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'users:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -48,8 +49,9 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/admin/users — 更新用户（审核、角色、状态等）
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'users:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'users:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id, review_status, is_active, reviewed_by, role, name } = body as {

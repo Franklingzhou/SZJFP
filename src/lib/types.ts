@@ -12,18 +12,18 @@ export const ROLE_LABELS: Record<Role, string> = {
   worker_operator: '阿姨运营',
 };
 
-// 阿姨状态: pending(待审核) → available(空闲) → busy(上户) → paused(暂停) → suspended(封存) / inactive(停用)
-export type WorkerStatus = 'pending' | 'available' | 'busy' | 'inactive' | 'paused' | 'blacklisted' | 'suspended' | 'idle' | 'working';
+// 阿姨状态: pending(待审核) → available(空闲) → working(工作中) / idle(空闲) / paused(暂停接单) / suspended(封存)
+// busy: 忙碌（已接单但未上户）; blacklisted: 诚信分低于阈值自动拉黑
+export type WorkerStatus = 'pending' | 'available' | 'idle' | 'working' | 'busy' | 'suspended' | 'paused' | 'blacklisted';
 export const WORKER_STATUS_LABELS: Record<WorkerStatus, string> = {
   pending: '待审核',
   available: '空闲可用',
-  busy: '上户中',
-  inactive: '停用',
-  paused: '暂停',
-  blacklisted: '黑名单',
-  suspended: '账号封存',
   idle: '空闲',
   working: '工作中',
+  busy: '忙碌',
+  suspended: '账号封存',
+  paused: '暂停接单',
+  blacklisted: '黑名单',
 };
 
 // 工种
@@ -63,12 +63,13 @@ export interface ResumeReviewRecord {
 }
 
 // 订单状态 2.9: created(待匹配) → open(已发布) → interviewing(面试中) → signed(已签约) → completed(已完成) / cancelled(已取消)
-export type OrderStatus = 'created' | 'open' | 'interviewing' | 'signed' | 'completed' | 'cancelled';
+export type OrderStatus = 'created' | 'open' | 'interviewing' | 'signed' | 'in_progress' | 'completed' | 'cancelled';
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   created: '待匹配',
   open: '已发布',
   interviewing: '面试中',
   signed: '已签约',
+  in_progress: '进行中',
   completed: '已完成',
   cancelled: '已取消',
 };
@@ -274,16 +275,12 @@ export interface ReferralRecord {
   createdAt: string;
 }
 
-// 招生线索状态: new(新线索) → following/contacted(跟进中) → signed(已签约) → lost(已流失)
-// 培训相关: training(培训中) → qualified(已合格) → converted(已转化阿姨)
-export type LeadStatus = 'new' | 'following' | 'contacted' | 'signed' | 'training' | 'qualified' | 'converted' | 'lost';
+// 招生线索状态: new(新线索) → following(跟进中) → signed(已签约,学员诞生) → converted(已转化,转简历进大厅) → lost(已流失)
+export type LeadStatus = 'new' | 'following' | 'signed' | 'converted' | 'lost';
 export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   new: '新线索',
   following: '跟进中',
-  contacted: '已联系',
   signed: '已签约',
-  training: '培训中',
-  qualified: '已合格',
   converted: '已转化',
   lost: '已流失',
 };
@@ -327,7 +324,7 @@ export const ORDER_SIGNING_STATUS_LABELS: Record<OrderSigningStatus, string> = {
   replaced: '已替换',
 };
 
-// 学员/报名状态 2.0: enrolled(已报名) → attending(学习中) → qualified(已通过) / failed(未通过) / dropped(已退学)
+// 学员/报名状态: enrolled(已报名) → attending(学习中) → qualified(已通过) / failed(未通过) / dropped(已退学)
 export type EnrollmentStatus = 'enrolled' | 'attending' | 'qualified' | 'failed' | 'dropped';
 export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
   enrolled: '已报名',

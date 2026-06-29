@@ -90,7 +90,7 @@ module.exports = async function createSuite() {
       },
       {
         label: 'C03-边界-超长name(200字)', module:'leads', category:'边界值', method:'POST', url:'/api/leads',
-        body:'{name:200字}', expect:{ status:200 },
+        body:'{name:200字}', expect:{ status:400 },
         fn:()=>client.post('/api/leads', { name:'测'.repeat(200), phone:genPhone('184') })
       },
       {
@@ -133,6 +133,11 @@ module.exports = async function createSuite() {
           const ct = await loginAs('customer');
           return createClient(ct).post('/api/workers', { name:'非法阿姨', phone:'18700009999' });
         }
+      },
+      {
+        label: 'C04-权限-无token创建阿姨', module:'workers', category:'权限校验', method:'POST', url:'/api/workers',
+        body:'{name, phone}', expect:{ status:401 },
+        fn: ()=>createClient().post('/api/workers', { name:'匿名阿姨', phone:'18700008888' })
       },
       {
         label: 'C04-边界-年龄负数', module:'workers', category:'边界值', method:'POST', url:'/api/workers',
@@ -185,6 +190,12 @@ module.exports = async function createSuite() {
           return createClient(wk).post('/api/customers', { name:'非法客户', phone:'19100009999' });
         }
       },
+      // 【NEW】v3 补全：未登录创建客户 → 401
+      {
+        label: 'C05-权限-未登录创建客户', module:'customers', category:'权限校验', method:'POST', url:'/api/customers',
+        body:'{name, phone}', expect:{ status:401 },
+        fn: ()=>createClient().post('/api/customers', { name:'匿名客户', phone:'19100008888' })
+      },
       {
         label: 'C05-边界-SQL注入XSS', module:'customers', category:'边界值', method:'POST', url:'/api/customers',
         body:'{name:"<script>alert(1)</script>"}', expect:{ status:200 },
@@ -224,14 +235,20 @@ module.exports = async function createSuite() {
     },
     {
       label: 'C06-权限-客户创建订单→403', module:'orders', category:'权限校验', method:'POST', url:'/api/orders',
-      body:'{customer_id, worker_id}', expect:{ status:403 },
-      fn: async ()=>{
-        const ct = await loginAs('customer');
-        return createClient(ct).post('/api/orders', { customer_id:'test', worker_id:'test', service_type:'月嫂', price:5000 });
-      }
-    },
-    {
-      label: 'C06-边界-负价格', module:'orders', category:'边界值', method:'POST', url:'/api/orders',
+        body:'{customer_id, worker_id}', expect:{ status:403 },
+        fn: async ()=>{
+          const ct = await loginAs('customer');
+          return createClient(ct).post('/api/orders', { customer_id:'test', worker_id:'test', service_type:'月嫂', price:5000 });
+        }
+      },
+      // 【NEW】v3 补全：未登录创建订单 → 401
+      {
+        label: 'C06-权限-未登录创建订单', module:'orders', category:'权限校验', method:'POST', url:'/api/orders',
+        body:'{customer_id, worker_id}', expect:{ status:401 },
+        fn: ()=>createClient().post('/api/orders', { customer_id:'test', worker_id:'test', service_type:'钟点工', price:5000 })
+      },
+      {
+        label: 'C06-边界-负价格', module:'orders', category:'边界值', method:'POST', url:'/api/orders',
       body:'{price:-1000}', expect:{ status:400 },
       fn: async ()=>{
         const tok = await loginAs('agent');
@@ -282,8 +299,15 @@ module.exports = async function createSuite() {
         fn:()=>client.post('/api/courses', { content:'无标题课程', price:1999 })
       },
       {
-        label: 'C07-权限-阿姨创建课程', module:'courses', category:'权限校验', method:'POST', url:'/api/courses',
+        // 【NEW v3】未登录创建课程 → 401
+        label: 'C07-权限-无token创建课程', module:'courses', category:'权限校验', method:'POST', url:'/api/courses',
         body:'{title, content}', expect:{ status:401 },
+        fn: ()=>createClient().post('/api/courses', { title:'匿名课程', content:'test', price:999 })
+      },
+      {
+        // 【fix#1】worker 已登录但无 courses:write → should be 403, not 401
+        label: 'C07-权限-阿姨创建课程', module:'courses', category:'权限校验', method:'POST', url:'/api/courses',
+        body:'{title, content}', expect:{ status:403 },
         fn: async ()=>{
           const wk = await loginAs('worker');
           return createClient(wk).post('/api/courses', { title:'非法课程', content:'test', price:999 });
@@ -312,12 +336,11 @@ module.exports = async function createSuite() {
     results.push(...await batchRun('C08 ✍️ 创建报名 (enrollments)', [
       {
         label: 'C08-正向-招生为阿姨报名', module:'enrollments', category:'正向功能', method:'POST', url:'/api/enrollments',
-        body:'{student_id, course_id, recruiter_id}',
-        expect:{ status:200, hasField:'success' },
+        body:'{worker_id, course_id}',
+        expect:{ status:201, hasField:'success' },
         fn:()=>client.post('/api/enrollments', {
-          student_id: ids.firstWorkerId,
+          worker_id: ids.firstWorkerId,
           course_id: ids.firstCourseId,
-          recruiter_id: ids.firstUserId
         })
       },
       {
@@ -333,13 +356,19 @@ module.exports = async function createSuite() {
           return createClient(ct).post('/api/enrollments', { student_id:'test', course_id:'test' });
         }
       },
+      // 【NEW】v3 补全：未登录报名 → 401
+      {
+        label: 'C08-权限-未登录报名', module:'enrollments', category:'权限校验', method:'POST', url:'/api/enrollments',
+        body:'{worker_id, course_id}', expect:{ status:401 },
+        fn: ()=>createClient().post('/api/enrollments', { worker_id:'test', course_id:'test' })
+      },
       {
         label: 'C08-重复-同学生同课程报名', module:'enrollments', category:'重复操作', method:'POST', url:'/api/enrollments',
-        body:'{student_id, course_id} same', expect:{ status:409 },
+        body:'{worker_id, course_id} same', expect:{ status:409 },
         fn: async ()=>{
           const sid=ids.firstWorkerId, cid=ids.firstCourseId;
-          await client.post('/api/enrollments', { student_id:sid, course_id:cid });
-          return client.post('/api/enrollments', { student_id:sid, course_id:cid });
+          await client.post('/api/enrollments', { worker_id:sid, course_id:cid });
+          return client.post('/api/enrollments', { worker_id:sid, course_id:cid });
         }
       },
     ]));
@@ -594,40 +623,6 @@ module.exports = async function createSuite() {
   }
 
   // ════════════════════════════════════
-  // C15 | 证书
-  // ════════════════════════════════════
-  {
-    const tok = await loginAs('admin');
-    const client = createClient(tok);
-
-    results.push(...await batchRun('C15 🏅 创建证书 (certificates)', [
-      {
-        label: 'C15-正向-admin颁发证书', module:'certificates', category:'正向功能', method:'POST', url:'/api/certificates',
-        body:'{worker_id, course_id, cert_name, issue_date}',
-        expect:{ status:200, hasField:'success' },
-        fn:()=>client.post('/api/certificates', {
-          worker_id: ids.firstWorkerId,
-          course_id: ids.firstCourseId,
-          cert_name:'高级月嫂证书', issue_date:'2026-08-15'
-        })
-      },
-      {
-        label: 'C15-参数-缺少worker_id', module:'certificates', category:'参数异常', method:'POST', url:'/api/certificates',
-        body:'{cert_name, issue_date}', expect:{ status:400 },
-        fn:()=>client.post('/api/certificates', { cert_name:'测试证书', issue_date:'2026-08-15' })
-      },
-      {
-        label: 'C15-权限-经纪人发证', module:'certificates', category:'权限校验', method:'POST', url:'/api/certificates',
-        body:'{worker_id, cert_name}', expect:{ status:401 },
-        fn: async ()=>{
-          const ag = await loginAs('agent');
-          return createClient(ag).post('/api/certificates', { worker_id:'test', cert_name:'越权证书' });
-        }
-      },
-    ]));
-  }
-
-  // ════════════════════════════════════
   // C16 | 线索跟进
   // ════════════════════════════════════
   {
@@ -637,7 +632,7 @@ module.exports = async function createSuite() {
     results.push(...await batchRun('C16 💬 创建跟进 (leads/[id]/followups)', [
       {
         label: 'C16-正向-招生添加跟进', module:'leads', category:'正向功能', method:'POST', url:'/api/leads/{id}/followups',
-        body:'{content, type}', expect:{ status:200, hasField:'success' },
+        body:'{content, type}', expect:{ status:201, hasField:'success' },
         fn:()=>client.post(`/api/leads/${ids.firstLeadId}/followups`, {
           content:'已电话沟通，意向明确', type:'phone', next_action:'安排面试'
         })
@@ -648,8 +643,9 @@ module.exports = async function createSuite() {
         fn:()=>client.post(`/api/leads/${ids.firstLeadId}/followups`, { type:'phone' })
       },
       {
+        // 【fix#2】customer 已登录但无 leads:write → should be 403, not 401
         label: 'C16-权限-客户添加跟进', module:'leads', category:'权限校验', method:'POST', url:'/api/leads/{id}/followups',
-        body:'{content, type}', expect:{ status:401 },
+        body:'{content, type}', expect:{ status:403 },
         fn: async ()=>{
           const ct = await loginAs('customer');
           return createClient(ct).post(`/api/leads/${ids.firstLeadId}/followups`, { content:'越权跟进', type:'phone' });

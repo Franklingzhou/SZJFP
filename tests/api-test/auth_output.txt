@@ -1,0 +1,145 @@
+[90m  数据库重置中...[0m
+[31m  重置失败: Failed to parse URL from http://localhost:5000 /api/auth/init-users
+[0m
+[36m
+╔══════════════════════════════════════════════╗[0m
+[36m║   家政共创平台 API 自动化测试                  ║[0m
+[36m╚══════════════════════════════════════════════╝[0m
+[90m  环境: http://localhost:5000 [0m
+[90m  时间: 2026-06-27T15:07:34.090Z
+[0m
+[34m
+▶ 运行套件: 认证模块 (auth)[0m
+
+════════════════════════════════════════════════════════════
+  1️⃣  密码登录 — 正向功能 (8角色全覆盖)
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A01-admin密码登录 [90m([33m1532ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] R01-招生密码登录 [90m([33m1516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] T01-讲师密码登录 [90m([33m1546ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] S01-培训主管密码登录 [90m([33m1521ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] B01-经纪人密码登录 [90m([33m1516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] W01-阿姨运营密码登录 [90m([33m1547ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] K01-阿姨密码登录 [90m([33m1521ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] C01-客户密码登录 [90m([33m1516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 登录返回token含user字段 [90m([33m1517ms[0m)[0m
+  ── 合计: 9 | [32m通过 0[0m | [31m失败 9[0m
+
+  ❌ 失败用例:
+     - A01-admin密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - R01-招生密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - T01-讲师密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - S01-培训主管密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - B01-经纪人密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - W01-阿姨运营密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - K01-阿姨密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - C01-客户密码登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 登录返回token含user字段: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  2️⃣  密码登录 — 参数异常
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 缺少手机号 [90m([33m1515ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 缺少密码 [90m([33m1517ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 空请求体 [90m([33m1506ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 手机号格式错误(含字母) [90m([33m1511ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 密码错误 [90m([33m1516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 手机号不存在 [90m([33m1517ms[0m)[0m
+  ── 合计: 6 | [32m通过 0[0m | [31m失败 6[0m
+
+  ❌ 失败用例:
+     - 缺少手机号: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 缺少密码: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 空请求体: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 手机号格式错误(含字母): Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 密码错误: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 手机号不存在: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  3️⃣  密码登录 — 边界值
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 超长手机号(20位) [90m([33m1512ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 超短手机号(5位) [90m([33m1516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 密码最小长度1位 [90m([33m1519ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 空字符串手机号 [90m([33m1513ms[0m)[0m
+  ── 合计: 4 | [32m通过 0[0m | [31m失败 4[0m
+
+  ❌ 失败用例:
+     - 超长手机号(20位): Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 超短手机号(5位): Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 密码最小长度1位: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 空字符串手机号: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  4️⃣  密码登录 — 重复操作
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 同一账号连续登录2次 [90m([33m1521ms[0m)[0m
+  ── 合计: 1 | [32m通过 0[0m | [31m失败 1[0m
+
+  ❌ 失败用例:
+     - 同一账号连续登录2次: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  5️⃣  Session — 正向功能
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 有效token获取session [90m([90m0ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 获取用户profile [90m([90m0ms[0m)[0m
+  ── 合计: 2 | [32m通过 0[0m | [31m失败 2[0m
+
+  ❌ 失败用例:
+     - 有效token获取session: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 获取用户profile: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  6️⃣  Session — 权限校验
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] 无token访问session [90m([33m1528ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 伪造token访问session [90m([33m1519ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 过期token访问session [90m([33m1529ms[0m)[0m
+  ── 合计: 3 | [32m通过 0[0m | [31m失败 3[0m
+
+  ❌ 失败用例:
+     - 无token访问session: Failed to parse URL from http://localhost:5000 /api/auth/session
+     - 伪造token访问session: Failed to parse URL from http://localhost:5000 /api/auth/session
+     - 过期token访问session: Failed to parse URL from http://localhost:5000 /api/auth/session
+
+════════════════════════════════════════════════════════════
+  7️⃣  修改密码
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A25-修改密码-正向 [90m([90m1ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密后恢复原密码 [90m([33m1523ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-当前密码错误 [90m([90m0ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-新密码太短 [90m([90m0ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 改密-未登录 [90m([90m1ms[0m)[0m
+  ── 合计: 5 | [32m通过 0[0m | [31m失败 5[0m
+
+  ❌ 失败用例:
+     - A25-修改密码-正向: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 改密后恢复原密码: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 改密-当前密码错误: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 改密-新密码太短: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+     - 改密-未登录: Failed to parse URL from http://localhost:5000 /api/auth/password-login
+
+════════════════════════════════════════════════════════════
+  8️⃣  注册
+════════════════════════════════════════════════════════════
+  [31m✗[0m [[31mFAIL[0m] A13-新用户注册 [90m([33m1515ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-手机号格式错误 [90m([33m1504ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-已存在手机号 [90m([33m1515ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] 注册-缺少验证码 [90m([33m1509ms[0m)[0m
+  ── 合计: 4 | [32m通过 0[0m | [31m失败 4[0m
+
+  ❌ 失败用例:
+     - A13-新用户注册: Failed to parse URL from http://localhost:5000 /api/auth/register
+     - 注册-手机号格式错误: Failed to parse URL from http://localhost:5000 /api/auth/register
+     - 注册-已存在手机号: Failed to parse URL from http://localhost:5000 /api/auth/register
+     - 注册-缺少验证码: Failed to parse URL from http://localhost:5000 /api/auth/register
+[34m  ── 认证模块 完成: 34条 | [32m通过 0[0m | [31m失败 34[0m[0m
+[36m
+╔══════════════════════════════════════╗[0m
+[36m║   📊 测试总汇总                       ║[0m
+[36m╚══════════════════════════════════════╝[0m
+  总计: 34 | [32m✅ 通过 0[0m | [31m❌ 失败 34[0m | [33m⏭ 跳过 0个套件[0m
+  通过率: 0.0%
+
+📋 报告已保存: f:\CB-szjfp\tests\api-test\reports\report_2026-06-27T15-08-16-661Z.json

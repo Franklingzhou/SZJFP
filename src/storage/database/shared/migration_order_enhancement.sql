@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS order_signings (
   contract_end_date VARCHAR(20),                   -- 合同结束日期
   status VARCHAR(20) NOT NULL DEFAULT 'active',    -- active / replaced / cancelled
   replace_reason TEXT,                              -- 换人原因
+  created_by VARCHAR(36),                           -- 创建人ID
+  notes TEXT,                                       -- 备注
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ
 );

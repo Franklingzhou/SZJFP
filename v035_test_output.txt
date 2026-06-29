@@ -1,0 +1,18 @@
+🧪 v035 线上测试
+
+✅ GET / 首页
+❌ GET /api/settings — status=401
+❌ GET /api/workers — status=403 count=undefined
+❌ GET /api/reviews — status=403 count=undefined
+❌ GET /api/users — status=403
+❌ GET /api/leads (agent) — status=403
+❌ GET /api/orders — status=403
+❌ GET /api/courses — status=401
+❌ GET /api/enrollments — status=403
+❌ GET /api/contracts — status=403
+✅ POST /api/auth/phone-login
+✅ POST /api/auth/phone-register 409
+❌ POST /api/notifications — status=403
+✅ PUT /api/workers 无token 401
+
+📊 总计: 4 通过, 10 失败, 14 项

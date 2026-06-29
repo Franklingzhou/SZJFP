@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // GET /api/worker-tiers — 获取所有等级
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'settings:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'settings:read');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {
@@ -25,8 +26,9 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/worker-tiers — 更新等级
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'settings:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'settings:write');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {

@@ -146,6 +146,31 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ ok: false, error: '未找到该客户' }, { status: 404 });
     }
 
+    // 流程2：客户流失(closed) → 级联关闭关联订单 + 联动拒绝关联推荐
+    if (status === 'closed') {
+      const { data: cancelledOrders, error: cascadeErr } = await supabase
+        .from('orders')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString(), cancel_reason: `客户${id}已流失，关联订单自动取消` })
+        .eq('customer_id', id)
+        .in('status', ['created', 'open', 'assigned', 'signed', 'in_progress'])
+        .select('id');
+      if (cascadeErr) {
+        console.warn('[clients PUT] closed cascade cancel error:', cascadeErr.message);
+      } else {
+        console.log('[clients PUT] closed → cancelled orders for customer', id);
+        // 联动规则9：被取消的订单，其关联推荐全部自动拒绝
+        if (cancelledOrders && cancelledOrders.length > 0) {
+          const orderIds = cancelledOrders.map((o: { id: string }) => o.id);
+          const { error: recErr } = await supabase
+            .from('recommendations')
+            .update({ status: 'rejected', updated_at: new Date().toISOString(), reject_reason: `客户${id}流失，关联订单自动取消` })
+            .in('order_id', orderIds)
+            .neq('status', 'rejected');
+          if (recErr) console.warn('[clients PUT] cascade reject recs error:', recErr.message);
+        }
+      }
+    }
+
     return NextResponse.json({ ok: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '更新失败';

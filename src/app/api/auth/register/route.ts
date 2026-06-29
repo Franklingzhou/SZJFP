@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseClient();
 
     // 查重：手机号是否已存在（任何角色）
+    // v34: maybeSingle 失败时不立即返回500，尝试容错fallback
     const { data: existing, error: queryError } = await supabase
       .from('users')
       .select('id')
@@ -58,7 +59,14 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (queryError) {
-      console.error('[register] Query error:', queryError);
+      // PGRST116 = multiple rows matched → phone already registered (duplicate)
+      if (queryError.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: '该手机号已注册，请直接登录', code: 'DUPLICATE_PHONE' },
+          { status: 409 }
+        );
+      }
+      console.error('[register] Query error:', JSON.stringify(queryError));
       return NextResponse.json(
         { error: '注册失败，请稍后重试' },
         { status: 500 }

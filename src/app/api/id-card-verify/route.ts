@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/id-card-verify — 身份证验证（占位实现）
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'workers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'workers:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const body = await request.json();

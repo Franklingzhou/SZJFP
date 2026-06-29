@@ -120,6 +120,8 @@ CREATE TABLE IF NOT EXISTS order_signings (
   contract_end_date VARCHAR(20),
   status VARCHAR(20) NOT NULL DEFAULT 'active',
   replace_reason TEXT,
+  created_by VARCHAR(36),
+  notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ
 );
@@ -145,6 +147,24 @@ UPDATE users SET review_status = 'approved', register_source = 'admin', reviewed
 
 -- 新增索引
 CREATE INDEX IF NOT EXISTS users_register_source_idx ON users(register_source);
+
+-- ============================================================
+-- 7. BUG-W16: 阿姨自荐/申请记录表
+-- ============================================================
+CREATE TABLE IF NOT EXISTS worker_applications (
+  id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  worker_id VARCHAR(36) NOT NULL REFERENCES workers(id),
+  order_id VARCHAR(36) REFERENCES orders(id),
+  notes TEXT,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  applicant_id VARCHAR(36) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS worker_applications_worker_id_idx ON worker_applications(worker_id);
+CREATE INDEX IF NOT EXISTS worker_applications_status_idx ON worker_applications(status);
+CREATE INDEX IF NOT EXISTS worker_applications_applicant_id_idx ON worker_applications(applicant_id);
 
 -- ============================================================
 -- 完成！所有migration已执行

@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getDataVisibilitySync } from '@/lib/data-permissions';
 
 // GET /api/customers — 获取客户列表
 export async function GET(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'customers:read');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'customers:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name');
@@ -61,15 +58,8 @@ export async function GET(request: NextRequest) {
 // POST /api/customers — 新建客户
 export async function POST(request: NextRequest) {
   console.log('[CUSTOMERS POST] ===== V2 BUILD TEST =====');
-  // 使用checkPermissionDetailed区分未登录和无权限
-  const result = await checkPermissionDetailed(request, 'customers:write');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') {
-      return unauthorizedResponse();
-    }
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'customers:write');
+  if (session instanceof NextResponse) return session;
 
   try {
     const body = await request.json();
@@ -131,8 +121,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/customers — 更新客户
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'customers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'customers:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id, ...updates } = body as { id: string; [key: string]: unknown };
@@ -227,8 +218,9 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/customers — 删除客户（仅admin）
 export async function DELETE(request: NextRequest) {
-  const session = await checkPermission(request, 'customers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'customers:write');
+
+  if (session instanceof NextResponse) return session;
   if (session.role !== 'admin') {
     return NextResponse.json({ error: '仅管理员可删除客户' }, { status: 403 });
   }

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/orders/hall — 订单大厅，查询所有待匹配订单
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'orders:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'orders:read');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');

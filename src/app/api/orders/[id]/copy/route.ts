@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/orders/[id]/copy — 生成格式化订单文本（经纪人自动替换联系人）
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'orders:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'orders:read');
+
+  if (session instanceof NextResponse) return session;
 
   const { id: orderId } = await params;
 

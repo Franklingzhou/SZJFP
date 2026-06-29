@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/resume-reviews — 列出审核记录
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'resume-reviews:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'resume-reviews:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -101,8 +102,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/resume-reviews — 创建审核记录（阿姨提交/修改简历时调用）
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'workers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'workers:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { worker_id, type, review_type, old_data, new_data, changes, proposed_data, original_data, changed_fields } = body as {
@@ -165,8 +167,9 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/resume-reviews — 审核通过/拒绝
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'resume-reviews:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'resume-reviews:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id, status, review_note } = body as {

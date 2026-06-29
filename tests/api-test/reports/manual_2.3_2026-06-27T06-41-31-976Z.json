@@ -1,0 +1,266 @@
+{
+  "timestamp": "2026-06-27T06:41:31.963Z",
+  "target": "https://szjfp-274552-8-1444411996.sh.run.tcloudbase.com",
+  "summary": {
+    "pass": 63,
+    "fail": 0,
+    "skip": 0,
+    "total": 63,
+    "rate": "100.0"
+  },
+  "results": [],
+  "allResults": [
+    {
+      "label": "S1 首页可访问",
+      "pass": true
+    },
+    {
+      "label": "S1 首页含PC/小程序入口",
+      "pass": true
+    },
+    {
+      "label": "S2 admin登录",
+      "pass": true
+    },
+    {
+      "label": "S3 agent登录",
+      "pass": true
+    },
+    {
+      "label": "S4 training_supervisor登录",
+      "pass": true
+    },
+    {
+      "label": "S5 worker登录",
+      "pass": true
+    },
+    {
+      "label": "S6 customer登录",
+      "pass": true
+    },
+    {
+      "label": "A02 简历审核-列表有数据",
+      "pass": true
+    },
+    {
+      "label": "A11 用户列表API",
+      "pass": true
+    },
+    {
+      "label": "A12 阿姨库API",
+      "pass": true
+    },
+    {
+      "label": "A13 订单管理API",
+      "pass": true
+    },
+    {
+      "label": "A15 评价审核API",
+      "pass": true
+    },
+    {
+      "label": "A18 系统设置API",
+      "pass": true
+    },
+    {
+      "label": "A27 场地管理API",
+      "pass": true
+    },
+    {
+      "label": "A28 合同模板API",
+      "pass": true
+    },
+    {
+      "label": "A09 课程管理API",
+      "pass": true
+    },
+    {
+      "label": "N01 新建简历生成审核记录",
+      "pass": true
+    },
+    {
+      "label": "N02 修改简历生成审核记录(含diff)",
+      "pass": true
+    },
+    {
+      "label": "N03 Resume Review详情API(含diff数据)",
+      "pass": true
+    },
+    {
+      "label": "N04 审核通过proposed_data写入workers",
+      "pass": true
+    },
+    {
+      "label": "N05 审核拒绝(填写理由)",
+      "pass": true
+    },
+    {
+      "label": "N06 课程列表API",
+      "pass": true
+    },
+    {
+      "label": "N08 套餐Badge数据",
+      "pass": true
+    },
+    {
+      "label": "N10 客户API(经纪人可创建)",
+      "pass": true
+    },
+    {
+      "label": "N12 客户source字段",
+      "pass": true
+    },
+    {
+      "label": "N15 推荐列表API",
+      "pass": true
+    },
+    {
+      "label": "N16 年龄校验-前端(年龄>120被拒)",
+      "pass": true
+    },
+    {
+      "label": "N17 年龄校验-负年龄被拒",
+      "pass": true
+    },
+    {
+      "label": "N21 Auth Header兼容(x-session)",
+      "pass": true
+    },
+    {
+      "label": "N21 Auth Header兼容(Bearer)",
+      "pass": true
+    },
+    {
+      "label": "N22 手机号格式校验",
+      "pass": true
+    },
+    {
+      "label": "N23 recruiter→客户API不可见",
+      "pass": true
+    },
+    {
+      "label": "N25 instructor→客户API不可见",
+      "pass": true
+    },
+    {
+      "label": "N26 training_supervisor→客户API不可见",
+      "pass": true
+    },
+    {
+      "label": "N27 经纪人→只看自己客户",
+      "pass": true
+    },
+    {
+      "label": "N29 agent→线索API不可见",
+      "pass": true
+    },
+    {
+      "label": "N31 招生→只看自己线索",
+      "pass": true
+    },
+    {
+      "label": "N32 经纪人→评价全量可见",
+      "pass": true
+    },
+    {
+      "label": "N33 招生→评价全量可见",
+      "pass": true
+    },
+    {
+      "label": "N34 经纪人→阿姨库全量",
+      "pass": true
+    },
+    {
+      "label": "B01 客户手机号唯一性",
+      "pass": true
+    },
+    {
+      "label": "B03 签约创建worker+contract",
+      "pass": true
+    },
+    {
+      "label": "B04 推荐去重API",
+      "pass": true
+    },
+    {
+      "label": "B05 worker角色可读阿姨库",
+      "pass": true
+    },
+    {
+      "label": "B06 验证码错误被拒(错误code=123456)",
+      "pass": true
+    },
+    {
+      "label": "B06 验证码正常登录(code=888888)",
+      "pass": true
+    },
+    {
+      "label": "B07 阿姨直接访问/admin被拒",
+      "pass": true
+    },
+    {
+      "label": "管理员仪表盘页面可达",
+      "pass": true
+    },
+    {
+      "label": "简历审核列表页面可达",
+      "pass": true
+    },
+    {
+      "label": "阿姨库页面页面可达",
+      "pass": true
+    },
+    {
+      "label": "用户管理页面可达",
+      "pass": true
+    },
+    {
+      "label": "订单管理页面可达",
+      "pass": true
+    },
+    {
+      "label": "课程管理页面可达",
+      "pass": true
+    },
+    {
+      "label": "评价审核页面可达",
+      "pass": true
+    },
+    {
+      "label": "系统设置页面可达",
+      "pass": true
+    },
+    {
+      "label": "场地管理页面可达",
+      "pass": true
+    },
+    {
+      "label": "合同模板页面可达",
+      "pass": true
+    },
+    {
+      "label": "首页页面可达",
+      "pass": true
+    },
+    {
+      "label": "小程序入口页面可达",
+      "pass": true
+    },
+    {
+      "label": "阿姨端-jobs页面可达",
+      "pass": true
+    },
+    {
+      "label": "客户-我的页面可达",
+      "pass": true
+    },
+    {
+      "label": "审核详情页 GET /api/resume-reviews/[id]",
+      "pass": true
+    },
+    {
+      "label": "审核详情页 /admin/audits/[id] 有路由",
+      "pass": true
+    }
+  ]
+}

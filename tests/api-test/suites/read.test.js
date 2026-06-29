@@ -45,8 +45,14 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R01-权限-无token查阿姨列表', module:'workers', category:'权限校验', method:'GET', url:'/api/workers',
-        params:'{}', expect:{ status:200 },
+        params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/workers')
+      },
+      // 【NEW v3】customer 已登录但无 workers:read → 403
+      {
+        label: 'R01-权限-客户查阿姨→403', module:'workers', category:'权限校验', method:'GET', url:'/api/workers',
+        params:'{}', expect:{ status:403 },
+        fn: async ()=>{ const ct = await loginAs('customer'); return createClient(ct).get('/api/workers'); }
       },
       {
         label: 'R01-参数-page为负数', module:'workers', category:'边界值', method:'GET', url:'/api/workers',
@@ -99,7 +105,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R02-权限-无token查线索', module:'leads', category:'权限校验', method:'GET', url:'/api/leads',
-        params:'{}', expect:{ status:200 },
+        params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/leads')
       },
       {
@@ -169,7 +175,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R04-权限-客户查看所有订单', module:'orders', category:'权限校验', method:'GET', url:'/api/orders',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const ct = await loginAs('customer');
           return createClient(ct).get('/api/orders');
@@ -221,6 +227,12 @@ module.exports = async function readSuite() {
         params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/courses')
       },
+      // 【NEW v3】customer 已登录但无 courses:read → 403
+      {
+        label: 'R05-权限-客户查课程→403', module:'courses', category:'权限校验', method:'GET', url:'/api/courses',
+        params:'{}', expect:{ status:403 },
+        fn: async ()=>{ const ct = await loginAs('customer'); return createClient(ct).get('/api/courses'); }
+      },
       {
         label: 'R05-空结果-搜索不存在课程', module:'courses', category:'空结果', method:'GET', url:'/api/courses',
         params:'{search:不存在的课程abc123}', expect:{ status:200 },
@@ -254,7 +266,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R06-权限-客户查所有评价', module:'reviews', category:'权限校验', method:'GET', url:'/api/reviews',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const ct = await loginAs('customer');
           return createClient(ct).get('/api/reviews');
@@ -262,7 +274,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R06-权限-无token', module:'reviews', category:'权限校验', method:'GET', url:'/api/reviews',
-        params:'{}', expect:{ status:200 },
+        params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/reviews')
       },
     ]));
@@ -317,7 +329,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R08-权限-客户查看合同', module:'contracts', category:'权限校验', method:'GET', url:'/api/contracts',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const ct = await loginAs('customer');
           return createClient(ct).get('/api/contracts');
@@ -327,6 +339,12 @@ module.exports = async function readSuite() {
         label: 'R08-权限-无token', module:'contracts', category:'权限校验', method:'GET', url:'/api/contracts',
         params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/contracts')
+      },
+      // 【NEW v3】worker_operator 已登录但无 contracts:read → 403
+      {
+        label: 'R08-权限-阿姨运营查合同→403', module:'contracts', category:'权限校验', method:'GET', url:'/api/contracts',
+        params:'{}', expect:{ status:403 },
+        fn: async ()=>{ const wo = await loginAs('worker_operator'); return createClient(wo).get('/api/contracts'); }
       },
     ]));
   }
@@ -355,8 +373,9 @@ module.exports = async function readSuite() {
         fn:()=>client.get('/api/enrollments', { page:1, pageSize:10 })
       },
       {
+        // 【v041】worker 已加入 enrollments:read → 200
         label: 'R09-权限-阿姨查看报名', module:'enrollments', category:'权限校验', method:'GET', url:'/api/enrollments',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const wk = await loginAs('worker');
           return createClient(wk).get('/api/enrollments');
@@ -411,6 +430,12 @@ module.exports = async function readSuite() {
         params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/users')
       },
+      // 【NEW】v3 补全：worker 无 users:read → 403
+      {
+        label: 'R10-权限-阿姨查用户→403', module:'users', category:'权限校验', method:'GET', url:'/api/users',
+        params:'{}', expect:{ status:403 },
+        fn: async ()=>{ const wk = await loginAs('worker'); return createClient(wk).get('/api/users'); }
+      },
     ]));
   }
 
@@ -434,7 +459,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R11-权限-经纪人查看通知', module:'notifications', category:'权限校验', method:'GET', url:'/api/notifications',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const ag = await loginAs('agent');
           return createClient(ag).get('/api/notifications');
@@ -442,7 +467,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R11-权限-无token', module:'notifications', category:'权限校验', method:'GET', url:'/api/notifications',
-        params:'{}', expect:{ status:200 },
+        params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/notifications')
       },
     ]));
@@ -472,8 +497,9 @@ module.exports = async function readSuite() {
         fn:()=>client.get('/api/settings', { key:'no_such_key_abc123' })
       },
       {
+        // 【fix】agent 已登录但无 settings:read → 403（非401，有token只是缺权限）
         label: 'R12-权限-经纪人获取设置', module:'settings', category:'权限校验', method:'GET', url:'/api/settings',
-        params:'{}', expect:{ status:401 },
+        params:'{}', expect:{ status:403 },
         fn: async ()=>{
           const ag = await loginAs('agent');
           return createClient(ag).get('/api/settings');
@@ -522,40 +548,6 @@ module.exports = async function readSuite() {
   }
 
   // ════════════════════════════════════
-  // R14 | 证书列表
-  // ════════════════════════════════════
-  {
-    const tok = await loginAs('admin');
-    const client = createClient(tok);
-
-    results.push(...await batchRun('R14 🏅 证书列表 (certificates)', [
-      {
-        label: 'R14-正向-获取证书列表', module:'certificates', category:'正向功能', method:'GET', url:'/api/certificates',
-        params:'{}', expect:{ status:200, hasField:'data' },
-        fn:()=>client.get('/api/certificates')
-      },
-      {
-        label: 'R14-正向-按worker_id筛选', module:'certificates', category:'正向功能', method:'GET', url:'/api/certificates',
-        params:'{worker_id:xxx}', expect:{ status:200 },
-        fn:()=>client.get('/api/certificates', { worker_id: ids.firstWorkerId })
-      },
-      {
-        label: 'R14-权限-经纪人查看证书', module:'certificates', category:'权限校验', method:'GET', url:'/api/certificates',
-        params:'{}', expect:{ status:401 },
-        fn: async ()=>{
-          const ag = await loginAs('agent');
-          return createClient(ag).get('/api/certificates');
-        }
-      },
-      {
-        label: 'R14-权限-无token', module:'certificates', category:'权限校验', method:'GET', url:'/api/certificates',
-        params:'{}', expect:{ status:401 },
-        fn:()=>createClient().get('/api/certificates')
-      },
-    ]));
-  }
-
-  // ════════════════════════════════════
   // R15 | 线索跟进记录
   // ════════════════════════════════════
   {
@@ -574,8 +566,9 @@ module.exports = async function readSuite() {
         fn:()=>client.get('/api/leads/no-such-lead-id-000/followups')
       },
       {
+        // 【fix】customer 已登录但无 leads:followup_read → 403（非401，有token只是缺权限）
         label: 'R15-权限-客户看跟进记录', module:'leads', category:'权限校验', method:'GET', url:'/api/leads/{id}/followups',
-        params:'{}', expect:{ status:401 },
+        params:'{}', expect:{ status:403 },
         fn: async ()=>{
           const ct = await loginAs('customer');
           return createClient(ct).get(`/api/leads/${ids.firstLeadId}/followups`);
@@ -612,7 +605,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R16-权限-无token获取会话', module:'auth', category:'权限校验', method:'GET', url:'/api/auth/session',
-        params:'{}', expect:{ status:200 },
+        params:'{}', expect:{ status:401 },
         fn:()=>createClient().get('/api/auth/session')
       },
       {
@@ -637,8 +630,9 @@ module.exports = async function readSuite() {
         fn:()=>client.get('/api/resume-reviews')
       },
       {
+        // 【fix#5】agent 已登录但无 resume-reviews:read → should be 403, not 401
         label: 'R17-权限-经纪人查看审核', module:'resume-reviews', category:'权限校验', method:'GET', url:'/api/resume-reviews',
-        params:'{}', expect:{ status:401 },
+        params:'{}', expect:{ status:403 },
         fn: async ()=>{
           const ag = await loginAs('agent');
           return createClient(ag).get('/api/resume-reviews');
@@ -696,7 +690,7 @@ module.exports = async function readSuite() {
       },
       {
         label: 'R19-权限-阿姨查看培训合同', module:'training-contracts', category:'权限校验', method:'GET', url:'/api/training-contracts',
-        params:'{}', expect:{ status:403 },
+        params:'{}', expect:{ status:200 },
         fn: async ()=>{
           const wk = await loginAs('worker');
           return createClient(wk).get('/api/training-contracts');

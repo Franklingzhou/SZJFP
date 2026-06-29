@@ -1,0 +1,74 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e5]
+        - text: 多角色协作 · 诚信保障 · 专业培训
+      - heading "家政共创平台" [level=1] [ref=e7]
+      - paragraph [ref=e8]: 连接阿姨、经纪人、招生、讲师、客户的完整家政服务生态
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - img [ref=e11]
+          - generic [ref=e13]: 选择角色快速体验
+        - generic [ref=e14]:
+          - link "阿姨端 接单·订单·评价" [ref=e15] [cursor=pointer]:
+            - /url: /m/login?role=worker
+            - img [ref=e17]
+            - generic [ref=e22]: 阿姨端
+            - generic [ref=e23]: 接单·订单·评价
+          - link "经纪人端 发单·匹配·客户" [ref=e24] [cursor=pointer]:
+            - /url: /m/login?role=agent
+            - img [ref=e26]
+            - generic [ref=e29]: 经纪人端
+            - generic [ref=e30]: 发单·匹配·客户
+          - link "招生端 录入·推荐·转化" [ref=e31] [cursor=pointer]:
+            - /url: /m/login?role=recruiter
+            - img [ref=e33]
+            - generic [ref=e36]: 招生端
+            - generic [ref=e37]: 录入·推荐·转化
+          - link "讲师端 课程·学员·点评" [ref=e38] [cursor=pointer]:
+            - /url: /m/login?role=instructor
+            - img [ref=e40]
+            - generic [ref=e42]: 讲师端
+            - generic [ref=e43]: 课程·学员·点评
+          - link "培训主管端 审批·分配·管理" [ref=e44] [cursor=pointer]:
+            - /url: /m/login?role=training_supervisor
+            - img [ref=e46]
+            - generic [ref=e50]: 培训主管端
+            - generic [ref=e51]: 审批·分配·管理
+      - generic [ref=e52]:
+        - link "管理员后台" [ref=e53] [cursor=pointer]:
+          - /url: /admin/dashboard
+          - img [ref=e54]
+          - text: 管理员后台
+          - img [ref=e56]
+        - link "小程序登录页" [ref=e58] [cursor=pointer]:
+          - /url: /m/login
+          - img [ref=e59]
+          - text: 小程序登录页
+          - img [ref=e61]
+    - generic [ref=e64]:
+      - heading "测试账号一览" [level=3] [ref=e65]
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - img [ref=e69]
+          - generic [ref=e74]: 阿姨端
+          - generic [ref=e75]: "13800005678"
+        - generic [ref=e76]:
+          - img [ref=e78]
+          - generic [ref=e81]: 经纪人端
+          - generic [ref=e82]: "13600001234"
+        - generic [ref=e83]:
+          - img [ref=e85]
+          - generic [ref=e88]: 招生端
+          - generic [ref=e89]: "13500003456"
+        - generic [ref=e90]:
+          - img [ref=e92]
+          - generic [ref=e94]: 讲师端
+          - generic [ref=e95]: "13700007890"
+        - generic [ref=e96]:
+          - img [ref=e98]
+          - generic [ref=e102]: 培训主管端
+          - generic [ref=e103]: "13100001111"
+    - generic [ref=e104]: 家政共创平台 MVP v2 · 后续将上传微信云开发
+  - alert [ref=e105]

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 
 // GET /api/search?q=xxx&table=orders,workers,leads&limit=20
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'orders:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'orders:read');
+
+  if (session instanceof NextResponse) return session;
 
   const q = request.nextUrl.searchParams.get('q')?.trim();
   const tablesParam = request.nextUrl.searchParams.get('table') || 'orders';

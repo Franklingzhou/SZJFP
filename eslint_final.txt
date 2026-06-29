@@ -1,0 +1,46 @@
+npm warn Unknown project config "node-linker". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+f:\CB-szjfp\src\app\admin\certificates\page.tsx
+  235:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+f:\CB-szjfp\src\app\admin\settings\page.tsx
+  4:110  warning  'ReferralType' is defined but never used        @typescript-eslint/no-unused-vars
+  4:146  warning  'ReviewWorkflowItem' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10   warning  'cn' is defined but never used                  @typescript-eslint/no-unused-vars
+  7:19   warning  'Plus' is defined but never used                @typescript-eslint/no-unused-vars
+  7:25   warning  'Trash2' is defined but never used              @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\[id]\route.ts
+  166:9    warning  'session' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:13   warning  'status' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:21   warning  'available_date' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  171:37   warning  'resume_review_status' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  171:59   warning  'credit_score' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  171:73   warning  'deposit' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:82   warning  'points' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:90   warning  'remark' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:98   warning  'name' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+  171:104  warning  'phone' is assigned a value but never used                 @typescript-eslint/no-unused-vars
+  171:111  warning  'age' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  171:116  warning  'gender' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:124  warning  'origin' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  171:132  warning  'job_types' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  171:143  warning  'experience_years' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  171:161  warning  'specialties' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  171:174  warning  'certifications' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  171:190  warning  'expected_salary_min' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  171:211  warning  'expected_salary_max' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  171:232  warning  'id_card' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  171:241  warning  'photo' is assigned a value but never used                 @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\api\workers\route.ts
+    3:33   warning  'filterSensitiveFields' is defined but never used  @typescript-eslint/no-unused-vars
+  164:105  warning  'certificates' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  296:9    warning  'session' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+f:\CB-szjfp\src\app\resume\[id]\page.tsx
+  257:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  311:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 32 problems (0 errors, 32 warnings)
+

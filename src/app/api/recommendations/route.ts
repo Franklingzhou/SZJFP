@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { getDataVisibilitySync } from '@/lib/data-permissions';
 
 // GET /api/recommendations — 获取推荐列表
 export async function GET(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'recommendations:read');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'recommendations:read');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {
@@ -61,12 +58,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/recommendations — 创建推荐
 export async function POST(request: NextRequest) {
-  const result = await checkPermissionDetailed(request, 'recommendations:write');
-  if (!result.ok) {
-    if (result.reason === 'unauthorized') return unauthorizedResponse();
-    return forbiddenResponse('无操作权限');
-  }
-  const session = result.session;
+  const session = await requirePermission(request, 'recommendations:write');
+
+  if (session instanceof NextResponse) return session;
 
   const supabase = getSupabaseClient();
   try {

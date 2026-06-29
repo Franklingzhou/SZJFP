@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse, forbiddenResponse } from '@/lib/auth-middleware';
+import { forbiddenResponse, requirePermission } from '@/lib/auth-middleware';
 
 // POST /api/workers/[id]/approve — 管理员审核通过pending worker
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'workers:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'workers:write');
+
+  if (session instanceof NextResponse) return session;
   if (session.role !== 'admin') return forbiddenResponse('仅管理员可审核简历');
 
   try {

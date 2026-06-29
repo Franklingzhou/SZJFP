@@ -1,0 +1,876 @@
+{
+  "summary": {
+    "total": 54,
+    "pass": 0,
+    "fail": 54,
+    "byCategory": {
+      "正向功能": 14,
+      "参数异常": 9,
+      "边界值": 5,
+      "重复操作": 2,
+      "权限校验": 4,
+      "端到端流程": 17,
+      "清理": 3
+    },
+    "byModule": {
+      "auth": 37,
+      "workers": 1,
+      "orders": 2,
+      "leads": 2,
+      "courses": 1,
+      "enrollments": 1,
+      "contracts": 1,
+      "customers": 1,
+      "authz": 4,
+      "settings": 1,
+      "cleanup": 3
+    }
+  },
+  "results": [
+    {
+      "label": "A01-admin密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1546,
+      "timestamp": "2026-06-27T06:47:13.227Z"
+    },
+    {
+      "label": "R01-招生密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13500003456",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1532,
+      "timestamp": "2026-06-27T06:47:14.760Z"
+    },
+    {
+      "label": "T01-讲师密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13700007890",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1532,
+      "timestamp": "2026-06-27T06:47:16.294Z"
+    },
+    {
+      "label": "S01-培训主管密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13100001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1530,
+      "timestamp": "2026-06-27T06:47:17.826Z"
+    },
+    {
+      "label": "B01-经纪人密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1537,
+      "timestamp": "2026-06-27T06:47:19.363Z"
+    },
+    {
+      "label": "W01-阿姨运营密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13200002222",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1538,
+      "timestamp": "2026-06-27T06:47:20.901Z"
+    },
+    {
+      "label": "K01-阿姨密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1511,
+      "timestamp": "2026-06-27T06:47:22.412Z"
+    },
+    {
+      "label": "C01-客户密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900009876",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1533,
+      "timestamp": "2026-06-27T06:47:23.945Z"
+    },
+    {
+      "label": "登录返回token含user字段",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1512,
+      "timestamp": "2026-06-27T06:47:25.459Z"
+    },
+    {
+      "label": "缺少手机号",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1516,
+      "timestamp": "2026-06-27T06:47:26.983Z"
+    },
+    {
+      "label": "缺少密码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1531,
+      "timestamp": "2026-06-27T06:47:28.518Z"
+    },
+    {
+      "label": "空请求体",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1533,
+      "timestamp": "2026-06-27T06:47:30.051Z"
+    },
+    {
+      "label": "手机号格式错误(含字母)",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "abc12345678",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1510,
+      "timestamp": "2026-06-27T06:47:31.561Z"
+    },
+    {
+      "label": "密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "wrongpass"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1522,
+      "timestamp": "2026-06-27T06:47:33.083Z"
+    },
+    {
+      "label": "手机号不存在",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19900000000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1513,
+      "timestamp": "2026-06-27T06:47:34.596Z"
+    },
+    {
+      "label": "超长手机号(20位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001222233334",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1535,
+      "timestamp": "2026-06-27T06:47:36.133Z"
+    },
+    {
+      "label": "超短手机号(5位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1528,
+      "timestamp": "2026-06-27T06:47:37.661Z"
+    },
+    {
+      "label": "密码最小长度1位",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "1"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1516,
+      "timestamp": "2026-06-27T06:47:39.177Z"
+    },
+    {
+      "label": "空字符串手机号",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1539,
+      "timestamp": "2026-06-27T06:47:40.716Z"
+    },
+    {
+      "label": "同一账号连续登录2次",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1548,
+      "timestamp": "2026-06-27T06:47:42.265Z"
+    },
+    {
+      "label": "有效token获取session",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:42.267Z"
+    },
+    {
+      "label": "获取用户profile",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/profile",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:42.269Z"
+    },
+    {
+      "label": "无token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1529,
+      "timestamp": "2026-06-27T06:47:43.799Z"
+    },
+    {
+      "label": "伪造token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1530,
+      "timestamp": "2026-06-27T06:47:45.330Z"
+    },
+    {
+      "label": "过期token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1524,
+      "timestamp": "2026-06-27T06:47:46.854Z"
+    },
+    {
+      "label": "A25-修改密码-正向",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "test9999"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:46.857Z"
+    },
+    {
+      "label": "改密后恢复原密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "test9999",
+        "new_password": "888888"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1526,
+      "timestamp": "2026-06-27T06:47:48.384Z"
+    },
+    {
+      "label": "改密-当前密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "wrong",
+        "new_password": "newpass"
+      },
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:48.385Z"
+    },
+    {
+      "label": "改密-新密码太短",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "12"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 0,
+      "timestamp": "2026-06-27T06:47:48.386Z"
+    },
+    {
+      "label": "改密-未登录",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "123456"
+      },
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 0,
+      "timestamp": "2026-06-27T06:47:48.387Z"
+    },
+    {
+      "label": "A13-新用户注册",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000002905",
+        "name": "测试用户",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 201,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1531,
+      "timestamp": "2026-06-27T06:47:49.920Z"
+    },
+    {
+      "label": "注册-手机号格式错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "123",
+        "name": "测试",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1521,
+      "timestamp": "2026-06-27T06:47:51.442Z"
+    },
+    {
+      "label": "注册-已存在手机号",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "name": "重复",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 409,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1512,
+      "timestamp": "2026-06-27T06:47:52.954Z"
+    },
+    {
+      "label": "注册-缺少验证码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009999",
+        "name": "测试",
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1507,
+      "timestamp": "2026-06-27T06:47:54.462Z"
+    },
+    {
+      "label": "E01-流程-注册→密码登录→验证会话",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "POST→GET",
+      "url": "/api/auth/*",
+      "headers": "Bearer <token>",
+      "body": "phone→token→session",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1516,
+      "timestamp": "2026-06-27T06:47:56.072Z"
+    },
+    {
+      "label": "E01-流程-无token请求被拒绝",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "(无)",
+      "body": "无token",
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1519,
+      "timestamp": "2026-06-27T06:47:57.591Z"
+    },
+    {
+      "label": "E01-流程-假token请求被拒绝",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": "假token",
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1518,
+      "timestamp": "2026-06-27T06:47:59.110Z"
+    },
+    {
+      "label": "E02-流程-创建简历→查询→审批(如可用)",
+      "module": "workers",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/workers + /api/resume-reviews",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→审批",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.112Z"
+    },
+    {
+      "label": "E03-流程-创建订单→查询→完成",
+      "module": "orders",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→完成",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.115Z"
+    },
+    {
+      "label": "E03-流程-非法状态流转被拒绝",
+      "module": "orders",
+      "category": "端到端流程",
+      "method": "PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "completed→open(非法)",
+      "expectStatus": 400,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.117Z"
+    },
+    {
+      "label": "E04-流程-创建线索→查询→签约",
+      "module": "leads",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/leads",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→签约",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.119Z"
+    },
+    {
+      "label": "E04-流程-添加跟进记录",
+      "module": "leads",
+      "category": "端到端流程",
+      "method": "POST",
+      "url": "/api/leads/:id/followups",
+      "headers": "Bearer <token>",
+      "body": "{content}",
+      "expectStatus": 201,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.121Z"
+    },
+    {
+      "label": "E05-流程-讲师创建课程→admin审核通过",
+      "module": "courses",
+      "category": "端到端流程",
+      "method": "POST→POST",
+      "url": "/api/courses + /api/courses/:id/approve",
+      "headers": "Bearer <token>",
+      "body": "创建→审核",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 3,
+      "timestamp": "2026-06-27T06:47:59.126Z"
+    },
+    {
+      "label": "E05-流程-报名→讲师打分",
+      "module": "enrollments",
+      "category": "端到端流程",
+      "method": "POST→POST",
+      "url": "/api/enrollments + /api/enrollments/:id/grade",
+      "headers": "Bearer <token>",
+      "body": "报名→打分",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.128Z"
+    },
+    {
+      "label": "E06-流程-创建合同(draft)→查询→更新为signed",
+      "module": "contracts",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/contracts",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→签约",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.131Z"
+    },
+    {
+      "label": "E07-流程-创建客户→关联订单→完成",
+      "module": "customers",
+      "category": "端到端流程",
+      "method": "POST→POST→PUT",
+      "url": "/api/customers + /api/orders",
+      "headers": "Bearer <token>",
+      "body": "创建客户→下单→完成",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.134Z"
+    },
+    {
+      "label": "E08-隔离-worker无法获取admin数据",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/users",
+      "headers": "Bearer <token>",
+      "body": "worker token→查全量用户",
+      "expectStatus": 403,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.137Z"
+    },
+    {
+      "label": "E08-隔离-customer无法创建阿姨",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "POST",
+      "url": "/api/workers",
+      "headers": "Bearer <token>",
+      "body": "customer→创建阿姨",
+      "expectStatus": 403,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.139Z"
+    },
+    {
+      "label": "E08-隔离-worker无法删除客户",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "DELETE",
+      "url": "/api/customers?id=xxx",
+      "headers": "Bearer <token>",
+      "body": "worker→删除客户",
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 4,
+      "timestamp": "2026-06-27T06:47:59.143Z"
+    },
+    {
+      "label": "E08-隔离-agent无法管理字段权限",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/field-permissions",
+      "headers": "Bearer <token>",
+      "body": "agent→读取权限配置",
+      "expectStatus": 401,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 2,
+      "timestamp": "2026-06-27T06:47:59.145Z"
+    },
+    {
+      "label": "E09-流程-读取设置→更新→再次读取验证",
+      "module": "settings",
+      "category": "端到端流程",
+      "method": "GET→PUT→GET",
+      "url": "/api/settings",
+      "headers": "Bearer <token>",
+      "body": "key→value→验证",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.147Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的客户",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "DELETE",
+      "url": "/api/customers?id=",
+      "headers": "Bearer <token>",
+      "body": "批量删除",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.149Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的订单",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "批量取消",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.150Z"
+    },
+    {
+      "label": "E99-清理-清理设置测试键",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "PUT",
+      "url": "/api/settings",
+      "headers": "Bearer <token>",
+      "body": "删除e2e_test_key",
+      "expectStatus": 200,
+      "status": "FAIL",
+      "error": "Invalid URL",
+      "duration": 1,
+      "timestamp": "2026-06-27T06:47:59.152Z"
+    }
+  ]
+}

@@ -1,0 +1,895 @@
+{
+  "summary": {
+    "total": 115,
+    "passed": 111,
+    "failed": 4,
+    "skipped": 0,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "module": "预检",
+      "results": [
+        {
+          "id": "PRE01",
+          "name": "服务可达性",
+          "status": "PASS",
+          "ms": 329,
+          "detail": "服务正常"
+        }
+      ]
+    },
+    {
+      "module": "冒烟测试",
+      "results": [
+        {
+          "id": "S1",
+          "name": "打开网站-首页可访问",
+          "status": "PASS",
+          "ms": 74,
+          "detail": "首页可访问"
+        },
+        {
+          "id": "S2",
+          "name": "管理员登录 (13000000001)",
+          "status": "PASS",
+          "ms": 440,
+          "detail": "登录成功, role=admin"
+        },
+        {
+          "id": "S3",
+          "name": "经纪人登录 (13600001234)",
+          "status": "PASS",
+          "ms": 211,
+          "detail": "登录成功, role=agent"
+        },
+        {
+          "id": "S4",
+          "name": "培训主管登录 (13100001111)",
+          "status": "PASS",
+          "ms": 212,
+          "detail": "登录成功, role=training_supervisor"
+        },
+        {
+          "id": "S4.1",
+          "name": "招生代理登录 (13500003456)",
+          "status": "PASS",
+          "ms": 203,
+          "detail": "登录成功, role=recruiter"
+        },
+        {
+          "id": "S5",
+          "name": "阿姨登录 (13800005678)",
+          "status": "PASS",
+          "ms": 202,
+          "detail": "登录成功, role=worker"
+        },
+        {
+          "id": "S6",
+          "name": "客户登录 (13900009876)",
+          "status": "PASS",
+          "ms": 196,
+          "detail": "登录成功"
+        },
+        {
+          "id": "S7-pre",
+          "name": "讲师登录 (13700007890)",
+          "status": "PASS",
+          "ms": 199,
+          "detail": "登录成功, role=instructor"
+        }
+      ]
+    },
+    {
+      "module": "管理员",
+      "results": [
+        {
+          "id": "A01",
+          "name": "仪表盘 API",
+          "status": "FAIL",
+          "ms": 30012,
+          "detail": {
+            "error": "dashboard API 返回 0",
+            "stack": "Error: dashboard API 返回 0\n    at assert (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:96:25)\n    at Object.fn (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:260:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TestRunner.run (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:131:24)\n    at async main (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1461:22)"
+          }
+        },
+        {
+          "id": "A04",
+          "name": "简历审核-diff对比",
+          "status": "PASS",
+          "ms": 1851,
+          "detail": "简历审核记录: 250 条"
+        },
+        {
+          "id": "A05-A06",
+          "name": "合同审核 API",
+          "status": "PASS",
+          "ms": 680,
+          "detail": "合同列表: 159 条"
+        },
+        {
+          "id": "A06-b",
+          "name": "合同审核拒绝(创建→签署→驳回)",
+          "status": "PASS",
+          "ms": 3025,
+          "detail": "合同 1b6f593c... 完整链路: draft→signed→rejected ✅"
+        },
+        {
+          "id": "A07-A08",
+          "name": "角色审核 API",
+          "status": "PASS",
+          "ms": 661,
+          "detail": "待审核用户查询正常"
+        },
+        {
+          "id": "A09-A10",
+          "name": "课程管理 API",
+          "status": "PASS",
+          "ms": 423,
+          "detail": "课程列表正常"
+        },
+        {
+          "id": "A11",
+          "name": "用户管理",
+          "status": "PASS",
+          "ms": 487,
+          "detail": "用户列表正常"
+        },
+        {
+          "id": "A12",
+          "name": "阿姨库",
+          "status": "PASS",
+          "ms": 643,
+          "detail": "阿姨列表正常"
+        },
+        {
+          "id": "A13",
+          "name": "订单管理(全量)",
+          "status": "PASS",
+          "ms": 752,
+          "detail": "订单列表正常"
+        },
+        {
+          "id": "A14",
+          "name": "推荐记录(全量)",
+          "status": "PASS",
+          "ms": 661,
+          "detail": "推荐记录 API 正常"
+        },
+        {
+          "id": "A15",
+          "name": "评价审核",
+          "status": "PASS",
+          "ms": 1311,
+          "detail": "评价列表正常"
+        },
+        {
+          "id": "A17",
+          "name": "消息通知",
+          "status": "PASS",
+          "ms": 614,
+          "detail": "通知 API 正常"
+        },
+        {
+          "id": "A18",
+          "name": "系统设置 GET",
+          "status": "PASS",
+          "ms": 613,
+          "detail": "系统设置正常"
+        },
+        {
+          "id": "A19",
+          "name": "页面权限配置",
+          "status": "PASS",
+          "ms": 669,
+          "detail": "页面权限读取正常"
+        },
+        {
+          "id": "A20",
+          "name": "个人中心(session)",
+          "status": "PASS",
+          "ms": 332,
+          "detail": "会话正常"
+        },
+        {
+          "id": "A21",
+          "name": "退款审核 🔧",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "退款审核: HTTP 404"
+        },
+        {
+          "id": "A22",
+          "name": "佣金配置 🔧",
+          "status": "PASS",
+          "ms": 46,
+          "detail": "佣金配置: HTTP 404"
+        },
+        {
+          "id": "A23",
+          "name": "分账管理 🔧",
+          "status": "PASS",
+          "ms": 623,
+          "detail": "分账管理: HTTP 200"
+        },
+        {
+          "id": "A24",
+          "name": "诚信分管理 🔧",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "诚信分管理: HTTP 404"
+        },
+        {
+          "id": "A25",
+          "name": "保证金管理 🔧",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "保证金管理: HTTP 404"
+        },
+        {
+          "id": "A26",
+          "name": "积分管理 🔧",
+          "status": "PASS",
+          "ms": 46,
+          "detail": "积分管理: HTTP 404"
+        },
+        {
+          "id": "A27",
+          "name": "场地管理",
+          "status": "PASS",
+          "ms": 30,
+          "detail": "场地 API: HTTP 404"
+        },
+        {
+          "id": "A28",
+          "name": "合同模板",
+          "status": "PASS",
+          "ms": 584,
+          "detail": "合同模板: HTTP 200"
+        }
+      ]
+    },
+    {
+      "module": "经纪人",
+      "results": [
+        {
+          "id": "B01",
+          "name": "登录验证-返回agent角色",
+          "status": "PASS",
+          "ms": 287,
+          "detail": "角色: agent"
+        },
+        {
+          "id": "B03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 3976,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "B04",
+          "name": "订单大厅-查看open订单",
+          "status": "PASS",
+          "ms": 1118,
+          "detail": "订单大厅 API 正常"
+        },
+        {
+          "id": "B05-B06",
+          "name": "客户管理(线索)权限",
+          "status": "PASS",
+          "ms": 1292,
+          "detail": "客户管理 API: HTTP 200"
+        },
+        {
+          "id": "B07",
+          "name": "订单管理-创建",
+          "status": "PASS",
+          "ms": 1879,
+          "detail": "订单创建成功, id=a4021d8b..., 状态=created"
+        },
+        {
+          "id": "B11",
+          "name": "推荐记录",
+          "status": "PASS",
+          "ms": 2808,
+          "detail": "推荐记录正常"
+        },
+        {
+          "id": "B14",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 1205,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "招生代理",
+      "results": [
+        {
+          "id": "R01",
+          "name": "登录验证-返回recruiter角色",
+          "status": "PASS",
+          "ms": 385,
+          "detail": "角色: recruiter"
+        },
+        {
+          "id": "R03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 3143,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "R04",
+          "name": "线索管理-创建",
+          "status": "PASS",
+          "ms": 717,
+          "detail": "线索创建成功, id=18dcbc00-3a8f-41d5-a118-06c1e4af339d"
+        },
+        {
+          "id": "R05",
+          "name": "线索管理-防重复",
+          "status": "PASS",
+          "ms": 1077,
+          "detail": "✅ 正确拦截重复手机号: 1390013329"
+        },
+        {
+          "id": "R06-R07",
+          "name": "线索跟进和状态流转",
+          "status": "PASS",
+          "ms": 404,
+          "detail": "状态流转成功: new → following"
+        },
+        {
+          "id": "R08",
+          "name": "线索签约转化",
+          "status": "PASS",
+          "ms": 1356,
+          "detail": "签约转化: HTTP 500 Could not find the 'converted_at' column of 'leads' in the schema cache(若缺课程等参数则正常)"
+        },
+        {
+          "id": "R09",
+          "name": "学员管理",
+          "status": "PASS",
+          "ms": 360,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "R11",
+          "name": "课程管理",
+          "status": "PASS",
+          "ms": 371,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "R13",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 181,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "讲师",
+      "results": [
+        {
+          "id": "T01",
+          "name": "登录验证-返回instructor角色",
+          "status": "PASS",
+          "ms": 213,
+          "detail": "角色: instructor"
+        },
+        {
+          "id": "T03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 3490,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "T04",
+          "name": "学员管理",
+          "status": "PASS",
+          "ms": 700,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "T07",
+          "name": "课程管理",
+          "status": "PASS",
+          "ms": 1109,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "T08",
+          "name": "排课管理",
+          "status": "PASS",
+          "ms": 729,
+          "detail": "排课管理 API 正常"
+        },
+        {
+          "id": "T12",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 371,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "培训主管",
+      "results": [
+        {
+          "id": "S01",
+          "name": "登录验证-返回training_supervisor角色",
+          "status": "PASS",
+          "ms": 404,
+          "detail": "角色: training_supervisor"
+        },
+        {
+          "id": "S03",
+          "name": "仪表盘",
+          "status": "PASS",
+          "ms": 3095,
+          "detail": "仪表盘正常"
+        },
+        {
+          "id": "S04",
+          "name": "线索管理(全量)",
+          "status": "PASS",
+          "ms": 811,
+          "detail": "线索管理 API 正常"
+        },
+        {
+          "id": "S05",
+          "name": "学员管理(全量)",
+          "status": "PASS",
+          "ms": 743,
+          "detail": "学员管理 API 正常"
+        },
+        {
+          "id": "S06",
+          "name": "课程管理(全量+审核)",
+          "status": "PASS",
+          "ms": 998,
+          "detail": "课程管理 API 正常"
+        },
+        {
+          "id": "S07",
+          "name": "合同审核",
+          "status": "PASS",
+          "ms": 1468,
+          "detail": "合同审核 API 正常"
+        },
+        {
+          "id": "S08",
+          "name": "课表审核",
+          "status": "PASS",
+          "ms": 1614,
+          "detail": "课表审核 API 正常"
+        },
+        {
+          "id": "S13",
+          "name": "推荐记录",
+          "status": "PASS",
+          "ms": 695,
+          "detail": "推荐记录正常"
+        },
+        {
+          "id": "S14",
+          "name": "评价",
+          "status": "PASS",
+          "ms": 3040,
+          "detail": "supervisor被拒(401), admin正常 → 符合权限分层"
+        },
+        {
+          "id": "S16",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 382,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "阿姨端",
+      "results": [
+        {
+          "id": "W01",
+          "name": "工作台首页",
+          "status": "PASS",
+          "ms": 2432,
+          "detail": "工作台 API 正常"
+        },
+        {
+          "id": "W02-W04",
+          "name": "简历查看与编辑",
+          "status": "PASS",
+          "ms": 523,
+          "detail": "简历 API 正常"
+        },
+        {
+          "id": "W05",
+          "name": "接单大厅-open订单",
+          "status": "PASS",
+          "ms": 629,
+          "detail": "接单大厅 API 正常"
+        },
+        {
+          "id": "W07",
+          "name": "pending状态禁止投递",
+          "status": "PASS",
+          "ms": 516,
+          "detail": "验证 pending 状态读取正常"
+        },
+        {
+          "id": "W09",
+          "name": "我的评价",
+          "status": "PASS",
+          "ms": 970,
+          "detail": "评价 API 正常"
+        },
+        {
+          "id": "W17",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 203,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "客户端",
+      "results": [
+        {
+          "id": "C01",
+          "name": "首页",
+          "status": "PASS",
+          "ms": 2683,
+          "detail": "首页 API 正常"
+        },
+        {
+          "id": "C02",
+          "name": "查看订单(signed)",
+          "status": "PASS",
+          "ms": 358,
+          "detail": "订单查询正常"
+        },
+        {
+          "id": "C06",
+          "name": "个人中心",
+          "status": "PASS",
+          "ms": 183,
+          "detail": "个人中心正常"
+        }
+      ]
+    },
+    {
+      "module": "2.3新功能",
+      "results": [
+        {
+          "id": "N01",
+          "name": "新建简历→审核(生成resume_reviews)",
+          "status": "PASS",
+          "ms": 2817,
+          "detail": "面试审核记录已创建, id=253b9cc2-6b81-4e66-9dff-fc9cb18f5ae8"
+        },
+        {
+          "id": "N02",
+          "name": "修改简历→审核(含diff)",
+          "status": "PASS",
+          "ms": 1103,
+          "detail": "修改简历已提交审核(diff记录)"
+        },
+        {
+          "id": "N15",
+          "name": "手机号重复创建阿姨",
+          "status": "PASS",
+          "ms": 1238,
+          "detail": "✅ 正确拦截重复手机号: 13949364"
+        },
+        {
+          "id": "N06",
+          "name": "创建单课",
+          "status": "PASS",
+          "ms": 443,
+          "detail": "单课创建成功, instructor_id=i001"
+        },
+        {
+          "id": "N07",
+          "name": "创建套餐",
+          "status": "PASS",
+          "ms": 353,
+          "detail": "套餐创建成功, instructor_id=i001"
+        },
+        {
+          "id": "N08-N09",
+          "name": "课程类型筛选",
+          "status": "PASS",
+          "ms": 402,
+          "detail": "课程类型筛选正常"
+        },
+        {
+          "id": "N20",
+          "name": "年龄校验-后端(>120)",
+          "status": "PASS",
+          "ms": 403,
+          "detail": "✅ 后端正确拒绝 age=150"
+        },
+        {
+          "id": "N20-b",
+          "name": "年龄校验-后端(<1)",
+          "status": "PASS",
+          "ms": 194,
+          "detail": "✅ 后端正确拒绝 age=-1"
+        },
+        {
+          "id": "N21",
+          "name": "Auth Header兼容(x-session)",
+          "status": "PASS",
+          "ms": 195,
+          "detail": "x-session header 兼容正常"
+        },
+        {
+          "id": "N22",
+          "name": "手机号格式校验",
+          "status": "FAIL",
+          "ms": 200,
+          "detail": {
+            "error": "❌ N22 缺陷：后端未拒绝非法手机号abc！(HTTP 200, body={\"success\":false,\"isNewUser\":true,\"phone\":\"abc\",\"message\":\"该手机号尚未注册，请选择角色并完善信息\"})",
+            "stack": "Error: ❌ N22 缺陷：后端未拒绝非法手机号abc！(HTTP 200, body={\"success\":false,\"isNewUser\":true,\"phone\":\"abc\",\"message\":\"该手机号尚未注册，请选择角色并完善信息\"})\n    at Object.fn (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:991:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TestRunner.run (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:131:24)\n    at async main (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1461:22)"
+          }
+        }
+      ]
+    },
+    {
+      "module": "端到端流程",
+      "results": [
+        {
+          "id": "E01",
+          "name": "链路A-创建线索",
+          "status": "PASS",
+          "ms": 1904,
+          "detail": "线索创建成功, id=f6e662a6-91d3-4e35-ba62-e75641db1e26"
+        },
+        {
+          "id": "E02",
+          "name": "链路A-跟进→签约(状态流转)",
+          "status": "PASS",
+          "ms": 361,
+          "detail": "线索状态: new→following"
+        },
+        {
+          "id": "E09",
+          "name": "链路B-创建客户(线索)",
+          "status": "PASS",
+          "ms": 721,
+          "detail": "客户创建成功"
+        },
+        {
+          "id": "E17",
+          "name": "订单取消联动",
+          "status": "PASS",
+          "ms": 804,
+          "detail": "订单取消成功"
+        }
+      ]
+    },
+    {
+      "module": "BUG回归",
+      "results": [
+        {
+          "id": "B01",
+          "name": "BUG-1 客户手机号唯一性(leads)",
+          "status": "PASS",
+          "ms": 365,
+          "detail": "✅ leads端点正确拦截重复手机号"
+        },
+        {
+          "id": "B01-b",
+          "name": "BUG-1 客户手机号唯一性(customers)",
+          "status": "PASS",
+          "ms": 1994,
+          "detail": "✅ customers端点正确拦截重复手机号 13983056950"
+        },
+        {
+          "id": "B04",
+          "name": "BUG-4 推荐不去重",
+          "status": "PASS",
+          "ms": 2803,
+          "detail": "✅ 正确拦截重复推荐"
+        },
+        {
+          "id": "B05",
+          "name": "BUG-5 workers:read权限(阿姨角色)",
+          "status": "PASS",
+          "ms": 402,
+          "detail": "✅ 阿姨可正常读取workers"
+        },
+        {
+          "id": "B06",
+          "name": "BUG-6 错误验证码拦截",
+          "status": "PASS",
+          "ms": 37,
+          "detail": "✅ 正确拦截错误验证码(123456)"
+        },
+        {
+          "id": "B07",
+          "name": "BUG-7 阿姨访问admin(API权限)",
+          "status": "PASS",
+          "ms": 229,
+          "detail": "HTTP 401: 未登录，请先登录"
+        },
+        {
+          "id": "B02",
+          "name": "BUG-2 课程满员自动关闭",
+          "status": "PASS",
+          "ms": 744,
+          "detail": "课程状态正常: pending_approval (0/20)"
+        },
+        {
+          "id": "B03",
+          "name": "BUG-3 签约关联验证",
+          "status": "FAIL",
+          "ms": 352,
+          "detail": {
+            "error": "❌ BUG-3 复现：signed线索未关联worker！(lead_id=c859452f-56c8-4853-a026-e860d53f78ec)",
+            "stack": "Error: ❌ BUG-3 复现：signed线索未关联worker！(lead_id=c859452f-56c8-4853-a026-e860d53f78ec)\n    at Object.fn (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1198:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TestRunner.run (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:131:24)\n    at async main (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1461:22)"
+          }
+        }
+      ]
+    },
+    {
+      "module": "页面巡检",
+      "results": [
+        {
+          "id": "PX01",
+          "name": "仪表盘 页面存活",
+          "status": "PASS",
+          "ms": 30,
+          "detail": "仪表盘 页面: HTTP 200"
+        },
+        {
+          "id": "PX02",
+          "name": "角色审核 页面存活",
+          "status": "PASS",
+          "ms": 24,
+          "detail": "角色审核 页面: HTTP 200"
+        },
+        {
+          "id": "PX03",
+          "name": "简历审核 页面存活",
+          "status": "PASS",
+          "ms": 42,
+          "detail": "简历审核 页面: HTTP 200"
+        },
+        {
+          "id": "PX04",
+          "name": "评价审核 页面存活",
+          "status": "PASS",
+          "ms": 50,
+          "detail": "评价审核 页面: HTTP 200"
+        },
+        {
+          "id": "PX05",
+          "name": "合同管理 页面存活",
+          "status": "PASS",
+          "ms": 44,
+          "detail": "合同管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX06",
+          "name": "消息通知 页面存活",
+          "status": "PASS",
+          "ms": 38,
+          "detail": "消息通知 页面: HTTP 200"
+        },
+        {
+          "id": "PX07",
+          "name": "个人设置 页面存活",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "个人设置 页面: HTTP 200"
+        },
+        {
+          "id": "PX08",
+          "name": "订单管理 页面存活",
+          "status": "PASS",
+          "ms": 36,
+          "detail": "订单管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX09",
+          "name": "阿姨库 页面存活",
+          "status": "PASS",
+          "ms": 31,
+          "detail": "阿姨库 页面: HTTP 200"
+        },
+        {
+          "id": "PX10",
+          "name": "客户管理 页面存活",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "客户管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX11",
+          "name": "推荐记录 页面存活",
+          "status": "PASS",
+          "ms": 41,
+          "detail": "推荐记录 页面: HTTP 200"
+        },
+        {
+          "id": "PX12",
+          "name": "课程管理 页面存活",
+          "status": "PASS",
+          "ms": 32,
+          "detail": "课程管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX13",
+          "name": "学员管理 页面存活",
+          "status": "PASS",
+          "ms": 30,
+          "detail": "学员管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX14",
+          "name": "场地管理 页面存活",
+          "status": "PASS",
+          "ms": 40,
+          "detail": "场地管理 页面: HTTP 200"
+        },
+        {
+          "id": "PX15",
+          "name": "积分系统 页面存活",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "积分系统 页面: HTTP 200"
+        },
+        {
+          "id": "PX16",
+          "name": "客户端-我的合同(新增) 页面存活",
+          "status": "PASS",
+          "ms": 28,
+          "detail": "客户端-我的合同(新增) 页面: HTTP 200"
+        },
+        {
+          "id": "PX17",
+          "name": "客户端-我的订单 页面存活",
+          "status": "PASS",
+          "ms": 40,
+          "detail": "客户端-我的订单 页面: HTTP 200"
+        },
+        {
+          "id": "PX18",
+          "name": "阿姨端-我的合同 页面存活",
+          "status": "PASS",
+          "ms": 35,
+          "detail": "阿姨端-我的合同 页面: HTTP 200"
+        },
+        {
+          "id": "PX19",
+          "name": "通知发送 API",
+          "status": "FAIL",
+          "ms": 403,
+          "detail": {
+            "error": "通知发送失败: 500 null value in column \"id\" of relation \"notifications\" violates not-null constraint",
+            "stack": "Error: 通知发送失败: 500 null value in column \"id\" of relation \"notifications\" violates not-null constraint\n    at assert (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:96:25)\n    at Object.fn (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1261:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TestRunner.run (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:131:24)\n    at async main (F:\\CB-szjfp\\scripts\\api-autotest-suite.js:1461:22)"
+          }
+        },
+        {
+          "id": "PX20",
+          "name": "客户角色身份验证",
+          "status": "PASS",
+          "ms": 361,
+          "detail": "客户身份正确: customer"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-06-24T06:37:44.920Z",
+  "baseUrl": "https://szjfp-273464-5-1426505363.sh.run.tcloudbase.com"
+}

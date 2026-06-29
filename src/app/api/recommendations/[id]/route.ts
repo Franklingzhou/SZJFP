@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse, forbiddenResponse } from '@/lib/auth-middleware';
+import { forbiddenResponse, requirePermission } from '@/lib/auth-middleware';
 
 // PATCH /api/recommendations/[id] — 审核推荐记录（仅admin）
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'recommendations:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'recommendations:write');
+
+  if (session instanceof NextResponse) return session;
 
   if (session.role !== 'admin') {
     return forbiddenResponse('仅管理员可审核推荐记录');

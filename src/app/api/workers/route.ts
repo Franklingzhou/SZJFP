@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('workers')
-      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, status, available_date, creator_id, creator_role, maintainer_id, credit_score, deposit, points, resume_review_status, photo, created_at')
+      .select('id, user_id, name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, certificates, expected_salary_min, expected_salary_max, status, available_date, creator_id, creator_role, maintainer_id, credit_score, deposit, points, resume_review_status, photo, created_at')
       .order('created_at', { ascending: false });
 
     if (status) query = query.eq('status', status);
@@ -161,10 +161,11 @@ export async function POST(request: NextRequest) {
   const session = result.session;
   try {
     const body = await request.json();
-    const { name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, expected_salary_min, expected_salary_max, idcard, intro } = body as {
+    const { name, phone, age, gender, origin, job_types, experience_years, specialties, certifications, certificates, expected_salary_min, expected_salary_max, idcard, intro } = body as {
       name: string; phone?: string; age?: number; gender?: string; origin?: string;
       job_types?: string[] | string; experience_years?: number; specialties?: string[];
-      certifications?: string[]; expected_salary_min?: number; expected_salary_max?: number;
+      certifications?: string[]; certificates?: Array<{name:string; authority?:string; issue_date?:string; expiry_date?:string; image_url?:string}>;
+      expected_salary_min?: number; expected_salary_max?: number;
       idcard?: string; intro?: string;
     };
 
@@ -316,7 +317,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // 显式白名单：只允许更新以下字段
-    const allowedFields = ['name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'expected_salary_min', 'expected_salary_max', 'status', 'available_date', 'credit_score', 'deposit', 'points', 'resume_review_status', 'photo', 'remark', 'id_card', 'lead_id'];
+    const allowedFields = ['name', 'phone', 'age', 'gender', 'origin', 'job_types', 'experience_years', 'specialties', 'certifications', 'certificates', 'expected_salary_min', 'expected_salary_max', 'status', 'available_date', 'credit_score', 'deposit', 'points', 'resume_review_status', 'photo', 'remark', 'id_card', 'lead_id'];
     const proposedUpdates: Record<string, unknown> = {};
     const changedFields: string[] = [];
     for (const key of allowedFields) {

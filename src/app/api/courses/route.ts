@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getDataVisibilitySync } from '@/lib/data-permissions';
 
 // GET /api/courses — 获取课程列表
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:read');
+
+  if (session instanceof NextResponse) return session;
   try {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
@@ -54,8 +55,9 @@ export async function GET(request: NextRequest) {
 // PUT /api/courses — 更新课程（审批等）
 // v9: 加显式字段白名单，禁止{...updates}直接写入
 export async function PUT(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const { id } = body as { id: string; [key: string]: unknown };
@@ -114,8 +116,9 @@ export async function PUT(request: NextRequest) {
 
 // POST /api/courses — 新建课程（讲师/培训主管）
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'courses:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'courses:write');
+
+  if (session instanceof NextResponse) return session;
   try {
     const body = await request.json();
     const raw = body as Record<string, unknown>;

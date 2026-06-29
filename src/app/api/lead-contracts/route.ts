@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // GET /api/lead-contracts — 查询签约记录
 export async function GET(request: NextRequest) {
-  const session = await checkPermission(request, 'order-signings:read');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'order-signings:read');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { searchParams } = new URL(request.url);
@@ -34,8 +35,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/lead-contracts — 创建签约记录
 export async function POST(request: NextRequest) {
-  const session = await checkPermission(request, 'order-signings:create');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'order-signings:create');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const body = await request.json();

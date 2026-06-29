@@ -1,0 +1,18 @@
+=== v035 ONLINE TEST ===
+OK GET /
+FAIL GET /api/settings -- status=401
+FAIL GET /api/workers -- status=403 count=?
+FAIL GET /api/users -- status=403
+FAIL GET /api/reviews -- status=403
+FAIL GET /api/leads -- status=403
+FAIL GET /api/orders -- status=403
+FAIL GET /api/courses -- status=401
+FAIL GET /api/enrollments -- status=403
+FAIL GET /api/contracts -- status=403
+OK POST /api/auth/phone-login
+OK POST /api/auth/phone-register 409
+OK PUT /api/workers no-auth 401/403
+FAIL POST /api/notifications -- status=403
+FAIL PUT /api/settings -- status=401
+
+=== RESULT: 4/15 passed ===

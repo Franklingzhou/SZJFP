@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Eye, Send, CheckCircle, FileText, Link2, AlertTriangle, Clock } from 'lucide-react';
+import { Search, Plus, Eye, Send, CheckCircle, FileText, Link2, AlertTriangle, Clock, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 
 type ContractType = 'platform_agent' | 'platform_recruiter' | 'platform_instructor' | 'recruiter_student';
-type ContractStatus = 'draft' | 'sent' | 'signed' | 'expired' | 'active' | 'pending_review';
+type ContractStatus = 'draft' | 'sent' | 'signed' | 'expired' | 'active' | 'pending_review' | 'closed';
 type ExpiryTab = 'all' | 'active' | 'expiring' | 'expired';
 
 const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
@@ -27,6 +27,7 @@ const CONTRACT_STATUS_LABELS: Record<string, string> = {
   expired: '已过期',
   active: '生效中',
   pending_review: '待确认',
+  closed: '已关闭',
 };
 
 const CONTRACT_STATUS_COLORS: Record<string, string> = {
@@ -36,6 +37,7 @@ const CONTRACT_STATUS_COLORS: Record<string, string> = {
   expired: 'bg-red-50 text-red-600',
   active: 'bg-green-50 text-green-700',
   pending_review: 'bg-yellow-50 text-yellow-700',
+  closed: 'bg-slate-200 text-slate-500',
 };
 
 const EXPIRY_TABS: { key: ExpiryTab; label: string }[] = [
@@ -64,7 +66,7 @@ function getDaysRemaining(endDate: string | null): number | null {
 }
 
 function getExpiryHighlight(daysRemaining: number | null, status: string): string {
-  if (status === 'expired' || status === 'pending_review') return 'border-l-4 border-l-red-400 bg-red-50/30';
+  if (status === 'expired' || status === 'pending_review' || status === 'closed') return 'border-l-4 border-l-red-400 bg-red-50/30';
   if (daysRemaining !== null && daysRemaining <= 7 && daysRemaining > 0) return 'border-l-4 border-l-amber-400 bg-amber-50/30';
   if (daysRemaining !== null && daysRemaining <= 14 && daysRemaining > 7) return 'border-l-4 border-l-yellow-300 bg-yellow-50/20';
   return '';
@@ -159,13 +161,13 @@ export default function ContractsPage() {
     if (filterType && c.type !== filterType) return false;
 
     const daysRemaining = getDaysRemaining(c.end_date);
-    const isExpired = c.status === 'expired' || c.status === 'pending_review' || (daysRemaining !== null && daysRemaining <= 0);
-    const isExpiring = !isExpired && daysRemaining !== null && daysRemaining <= 7;
-    const isActive = !isExpired && !isExpiring && (c.status === 'active' || c.status === 'signed');
+    const isTerminated = c.status === 'expired' || c.status === 'pending_review' || c.status === 'closed' || (daysRemaining !== null && daysRemaining <= 0);
+    const isExpiring = !isTerminated && daysRemaining !== null && daysRemaining <= 7;
+    const isActive = !isTerminated && !isExpiring && (c.status === 'active' || c.status === 'signed');
 
     if (expiryTab === 'active' && !isActive) return false;
     if (expiryTab === 'expiring' && !isExpiring) return false;
-    if (expiryTab === 'expired' && !isExpired) return false;
+    if (expiryTab === 'expired' && !isTerminated) return false;
 
     if (search) {
       const s = search.toLowerCase();
@@ -180,15 +182,15 @@ export default function ContractsPage() {
     all: contracts.length,
     active: contracts.filter(c => {
       const d = getDaysRemaining(c.end_date);
-      return !(c.status === 'expired' || c.status === 'pending_review' || (d !== null && d <= 0)) && !(d !== null && d <= 7 && d > 0) && (c.status === 'active' || c.status === 'signed');
+      return !(c.status === 'expired' || c.status === 'pending_review' || c.status === 'closed' || (d !== null && d <= 0)) && !(d !== null && d <= 7 && d > 0) && (c.status === 'active' || c.status === 'signed');
     }).length,
     expiring: contracts.filter(c => {
       const d = getDaysRemaining(c.end_date);
-      return !(c.status === 'expired' || c.status === 'pending_review' || (d !== null && d <= 0)) && d !== null && d <= 7;
+      return !(c.status === 'expired' || c.status === 'pending_review' || c.status === 'closed' || (d !== null && d <= 0)) && d !== null && d <= 7;
     }).length,
     expired: contracts.filter(c => {
       const d = getDaysRemaining(c.end_date);
-      return c.status === 'expired' || c.status === 'pending_review' || (d !== null && d <= 0);
+      return c.status === 'expired' || c.status === 'pending_review' || c.status === 'closed' || (d !== null && d <= 0);
     }).length,
   };
 
@@ -252,6 +254,21 @@ export default function ContractsPage() {
       setShowDetail(null);
       loadData();
     } catch (err) { console.error('模拟签署失败:', err); alert('操作失败，请重试'); }
+  }
+
+  async function handleClose(id: string) {
+    if (!confirm('确认关闭此合同？关闭后关联的待支付平台费将标记为逾期。')) return;
+    try {
+      const res = await fetch('/api/contracts', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ id, status: 'closed' }),
+      });
+      const result = await res.json();
+      if (!result.success) { alert('操作失败：' + (result.error || '请重试')); return; }
+      setShowDetail(null);
+      loadData();
+    } catch (err) { console.error('关闭合同失败:', err); alert('操作失败，请重试'); }
   }
 
   const handleRefund = async () => {
@@ -369,6 +386,9 @@ export default function ContractsPage() {
                       {c.status === 'draft' && (
                         <button onClick={() => handleSend(c.id)} className="text-xs text-amber-600 flex items-center gap-1"><Send className="h-3.5 w-3.5" /> 发送</button>
                       )}
+                      {c.status === 'active' && (
+                        <button onClick={() => handleClose(c.id)} className="text-xs text-red-500 flex items-center gap-1"><XCircle className="h-3.5 w-3.5" /> 关闭</button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -466,9 +486,10 @@ export default function ContractsPage() {
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowDetail(null)}>关闭</Button>
+                  <Button variant="outline" onClick={() => setShowDetail(null)}>关闭弹窗</Button>
                   {c.status === 'draft' && <Button onClick={() => { handleSend(c.id); setShowDetail(null); }} className="gap-1 bg-amber-500 hover:bg-amber-600"><Send className="h-4 w-4" /> 发送给乙方</Button>}
                   {c.status === 'sent' && <Button onClick={() => handleSimulateSign(c.id)} className="gap-1 bg-green-600 hover:bg-green-700"><CheckCircle className="h-4 w-4" /> 模拟签署完成</Button>}
+                  {c.status === 'active' && <Button onClick={() => handleClose(c.id)} className="gap-1 bg-red-500 hover:bg-red-600"><XCircle className="h-4 w-4" /> 手动关闭合同</Button>}
                 </div>
               </div>
             );

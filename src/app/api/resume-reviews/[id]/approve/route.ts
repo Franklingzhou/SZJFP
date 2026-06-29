@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermission, unauthorizedResponse } from '@/lib/auth-middleware';
+import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 // POST /api/resume-reviews/[id]/approve — 简历审核通过（实际更新 workers 表）
@@ -7,8 +7,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await checkPermission(request, 'resume-reviews:write');
-  if (!session) return unauthorizedResponse();
+  const session = await requirePermission(request, 'resume-reviews:write');
+
+  if (session instanceof NextResponse) return session;
 
   try {
     const { id } = await params;
