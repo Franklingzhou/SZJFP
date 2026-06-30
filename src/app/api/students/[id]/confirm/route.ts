@@ -34,8 +34,6 @@ export async function POST(
       .from('enrollments')
       .update({
         status: 'confirmed',
-        confirmed_by: session.userId,
-        confirmed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

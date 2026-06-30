@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseClient();
     const { searchParams } = request.nextUrl;
     const role = searchParams.get('role');
-    const module = searchParams.get('module');
+    const moduleName = searchParams.get('module');
 
     let query = supabase
       .from('field_permissions')
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       .order('module', { ascending: true });
 
     if (role) query = query.eq('role', role);
-    if (module) query = query.eq('module', module);
+    if (moduleName) query = query.eq('module', moduleName);
 
     const { data, error } = await query;
 

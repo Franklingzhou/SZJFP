@@ -19,8 +19,6 @@ export default function WorkerCoursesPage() {
   const [tab, setTab] = useState<'enrolled' | 'available'>('enrolled');
   const [enrolling, setEnrolling] = useState<string | null>(null);
 
-  useEffect(() => { loadCourses(); }, [tab]);
-
   const loadCourses = async () => {
     try {
       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
@@ -53,6 +51,8 @@ export default function WorkerCoursesPage() {
       }
     } catch (e) { console.error(e); }
   };
+
+  useEffect(() => { loadCourses(); }, [tab]);
 
   const handleEnroll = async (courseId: string) => {
     const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';

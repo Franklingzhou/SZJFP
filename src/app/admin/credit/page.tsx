@@ -103,7 +103,7 @@ export default function CreditPage() {
   const loadRecords = useCallback(async () => {
     setLoading(true);
     try {
-      let url = '/api/credit-records?limit=500';
+      const url = '/api/credit-records?limit=500';
       if (roleFilter !== 'all') {
         // 按角色筛选：先获取该角色所有用户ID，再查记录
         // 简化处理：前端过滤

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification } from '@/lib/notification-helper';
 
 // POST /api/courses/[id]/approve — 管理员审核课程
 export async function POST(
@@ -38,6 +39,19 @@ export async function POST(
 
     if (!data) {
       return NextResponse.json({ ok: false, error: '课程不存在' }, { status: 404 });
+    }
+
+    // 通知讲师课程审核结果
+    const courseData = data as Record<string, unknown>;
+    if (courseData.instructor_id) {
+      sendNotification({
+        user_id: courseData.instructor_id as string,
+        title: approved ? '课程审核通过' : '课程审核未通过',
+        content: approved
+          ? `你的课程 "${courseData.name || id}" 已审核通过`
+          : `你的课程 "${courseData.name || id}" 审核未通过，原因：${reason || '无'}`,
+        type: approved ? 'course_approved' : 'course_rejected',
+      });
     }
 
     return NextResponse.json({ success: true, ok: true, data });

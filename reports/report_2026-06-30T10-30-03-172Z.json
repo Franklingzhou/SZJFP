@@ -1,0 +1,249 @@
+{
+  "summary": {
+    "total": 14,
+    "pass": 14,
+    "fail": 0,
+    "duration": 57640,
+    "byCategory": {
+      "正向功能": {
+        "total": 8,
+        "pass": 8,
+        "fail": 0
+      },
+      "参数异常": {
+        "total": 3,
+        "pass": 3,
+        "fail": 0
+      },
+      "权限校验": {
+        "total": 2,
+        "pass": 2,
+        "fail": 0
+      },
+      "重复操作": {
+        "total": 1,
+        "pass": 1,
+        "fail": 0
+      }
+    },
+    "byModule": {
+      "resume-reviews": {
+        "total": 14,
+        "pass": 14,
+        "fail": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "N04-1-正向-审核通过(审核记录)",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/resume-reviews/{id}/approve",
+      "headers": "Bearer <token>",
+      "body": "{comment}",
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 6825,
+      "timestamp": "2026-06-30T10:29:12.163Z"
+    },
+    {
+      "label": "N04-2-验证-workers数据已更新",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/{id}",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 3161,
+      "timestamp": "2026-06-30T10:29:15.327Z"
+    },
+    {
+      "label": "N04-3-验证-审核状态变为approved",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/resume-reviews",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 967,
+      "timestamp": "2026-06-30T10:29:16.295Z"
+    },
+    {
+      "label": "N05-1-正向-拒绝(有理由)",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/resume-reviews/{id}/reject",
+      "headers": "Bearer <token>",
+      "body": "{reason}",
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 16900,
+      "timestamp": "2026-06-30T10:29:33.195Z"
+    },
+    {
+      "label": "N05-2-参数-拒绝缺reason",
+      "module": "resume-reviews",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/resume-reviews/{id}/reject",
+      "headers": "Bearer <token>",
+      "body": "{}",
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 9639,
+      "timestamp": "2026-06-30T10:29:42.835Z"
+    },
+    {
+      "label": "N05-3-验证-拒绝后resume_review状态rejected",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/resume-reviews",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 2799,
+      "timestamp": "2026-06-30T10:29:45.635Z"
+    },
+    {
+      "label": "N06-1-正向-获取审核记录详情",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/resume-reviews/{id}",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 4242,
+      "timestamp": "2026-06-30T10:29:49.878Z"
+    },
+    {
+      "label": "N06-2-异常-获取不存在的ID",
+      "module": "resume-reviews",
+      "category": "参数异常",
+      "method": "GET",
+      "url": "/api/resume-reviews/non-existent",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 456,
+      "timestamp": "2026-06-30T10:29:50.335Z"
+    },
+    {
+      "label": "N06-3-权限-未登录访问被拒",
+      "module": "resume-reviews",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/resume-reviews/{id}",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 2249,
+      "timestamp": "2026-06-30T10:29:52.585Z"
+    },
+    {
+      "label": "N04-E1-权限-经纪人审核",
+      "module": "resume-reviews",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/resume-reviews/{id}/approve",
+      "headers": "Bearer <token>",
+      "body": "{}",
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 3703,
+      "timestamp": "2026-06-30T10:29:56.288Z"
+    },
+    {
+      "label": "N04-E2-异常-审批不存在的记录",
+      "module": "resume-reviews",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/resume-reviews/non-existent/approve",
+      "headers": "Bearer <token>",
+      "body": "{}",
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 358,
+      "timestamp": "2026-06-30T10:29:56.646Z"
+    },
+    {
+      "label": "N04-E3-边界-重复审批已approved记录",
+      "module": "resume-reviews",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/resume-reviews/{id}/approve",
+      "headers": "Bearer <token>",
+      "body": "{}",
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 2263,
+      "timestamp": "2026-06-30T10:29:58.909Z"
+    },
+    {
+      "label": "N01-正向-新建简历生成审核记录",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/resume-reviews",
+      "headers": "Bearer <token>",
+      "body": "{worker_id,type:\"create\"}",
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 3323,
+      "timestamp": "2026-06-30T10:30:02.414Z"
+    },
+    {
+      "label": "N02-正向-修改简历生成审核记录",
+      "module": "resume-reviews",
+      "category": "正向功能",
+      "method": "PUT",
+      "url": "/api/workers",
+      "headers": "Bearer <token>",
+      "body": "{id,age:36,remark}",
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 755,
+      "timestamp": "2026-06-30T10:30:03.169Z"
+    }
+  ]
+}

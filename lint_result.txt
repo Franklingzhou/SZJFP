@@ -1,0 +1,542 @@
+
+> szjfp@0.1.0 lint:build F:\CB-szjfp
+> eslint . --quiet
+
+
+F:\CB-szjfp\src\app\admin\course-grading\page.tsx
+   29:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  177:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\course-schedules\page.tsx
+   36:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   37:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  229:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  283:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\courses\page.tsx
+   42:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  303:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  311:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  385:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  413:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  500:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  692:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  692:81  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  703:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\lead-contracts\page.tsx
+   33:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   34:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   53:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  197:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  297:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\leads\page.tsx
+  112:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  741:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\order-signings\page.tsx
+  34:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\orders\page.tsx
+    62:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    65:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    74:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    80:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    98:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   108:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   113:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   114:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   193:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   371:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   390:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   651:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1117:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\roles\page.tsx
+  330:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  332:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\settlement\page.tsx
+  29:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\students\page.tsx
+   31:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  224:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  307:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\team\page.tsx
+   14:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   34:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   58:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\admin\workers\page.tsx
+    58:43   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+    58:58   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   724:62   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   728:46   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   730:42   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1012:39   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1014:103  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1016:45   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1016:81   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1026:39   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1028:103  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1030:45   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1030:81   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1054:36   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  1082:46   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\api\cron\fee-overdue\route.ts
+  11:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  69:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  78:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\api\leads\route.ts
+  39:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\api\training-leads\route.ts
+  48:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\client\notifications\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadNotifications` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\client\notifications\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadNotifications(); }, []);
+     |                     ^^^^^^^^^^^^^^^^^ `loadNotifications` accessed before it is declared
+  22 |
+  23 |   const loadNotifications = async () => {
+  24 |     try {
+
+F:\CB-szjfp\src\app\client\notifications\page.tsx:23:3
+  21 |   useEffect(() => { loadNotifications(); }, []);
+  22 |
+> 23 |   const loadNotifications = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/notifications', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setNotifications(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadNotifications` is declared here
+  31 |
+  32 |   const markAsRead = async (id: string) => {
+  33 |     try {  react-hooks/immutability
+
+F:\CB-szjfp\src\app\client\orders\page.tsx
+  22:21  error  Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\client\orders\page.tsx:22:21
+  20 |   const [activeTab, setActiveTab] = useState('all');
+  21 |
+> 22 |   useEffect(() => { loadOrders(); }, []);
+     |                     ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  23 |
+  24 |   const loadOrders = async () => {
+  25 |     try {
+
+F:\CB-szjfp\src\app\client\orders\page.tsx:24:3
+  22 |   useEffect(() => { loadOrders(); }, []);
+  23 |
+> 24 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     try {
+     | ^^^^^^^^^
+> 26 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 27 |       const res = await fetch(`/api/orders?customer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 28 |       const data = await res.json();
+     | ^^^^^^^^^
+> 29 |       if (data.data) setOrders(data.data || []);
+     | ^^^^^^^^^
+> 30 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 31 |     setLoading(false);
+     | ^^^^^^^^^
+> 32 |   };
+     | ^^^^^ `loadOrders` is declared here
+  33 |
+  34 |   const filtered = activeTab === 'all' ? orders : orders.filter(o => o.status === activeTab);
+  35 |  react-hooks/immutability
+
+F:\CB-szjfp\src\app\client\reviews\page.tsx
+  26:21  error  Error: Cannot access variable before it is declared
+
+`loadReviews` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\client\reviews\page.tsx:26:21
+  24 |   const [orders, setOrders] = useState<Order[]>([]);
+  25 |
+> 26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+     |                     ^^^^^^^^^^^ `loadReviews` accessed before it is declared
+  27 |
+  28 |   const loadReviews = async () => {
+  29 |     try {
+
+F:\CB-szjfp\src\app\client\reviews\page.tsx:28:3
+  26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+  27 |
+> 28 |   const loadReviews = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |     try {
+     | ^^^^^^^^^
+> 30 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 31 |       const res = await fetch(`/api/reviews?reviewer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 32 |       const data = await res.json();
+     | ^^^^^^^^^
+> 33 |       if (data.data) setReviews(data.data || []);
+     | ^^^^^^^^^
+> 34 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 35 |   };
+     | ^^^^^ `loadReviews` is declared here
+  36 |
+  37 |   const loadOrders = async () => {
+  38 |     try {                                                                                                                                                                                                                         react-hooks/immutability
+  26:36  error  Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\client\reviews\page.tsx:26:36
+  24 |   const [orders, setOrders] = useState<Order[]>([]);
+  25 |
+> 26 |   useEffect(() => { loadReviews(); loadOrders(); }, []);
+     |                                    ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  27 |
+  28 |   const loadReviews = async () => {
+  29 |     try {
+
+F:\CB-szjfp\src\app\client\reviews\page.tsx:37:3
+  35 |   };
+  36 |
+> 37 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 |     try {
+     | ^^^^^^^^^
+> 39 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     | ^^^^^^^^^
+> 40 |       const res = await fetch(`/api/orders?customer_id=${userId}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 41 |       const data = await res.json();
+     | ^^^^^^^^^
+> 42 |       if (data.data) setOrders((data.data || []).map((o: Record<string, unknown>) => ({ id: o.id as string, title: o.title as string, worker_id: (o.worker_id as string) || '' })));
+     | ^^^^^^^^^
+> 43 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 44 |     setLoading(false);
+     | ^^^^^^^^^
+> 45 |   };
+     | ^^^^^ `loadOrders` is declared here
+  46 |
+  47 |   const handleSubmitReview = async () => {
+  48 |     if (!createForm.content || !createForm.order_id) return alert('请选择订单并填写评价内容');  react-hooks/immutability
+
+F:\CB-szjfp\src\app\m\agent\orders\page.tsx
+   19:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   35:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:77  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  272:91  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  273:95  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:95  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  330:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\customer\orders\page.tsx
+   16:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   36:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:90  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:96  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:96  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:97  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:97  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\training_supervisor\approval\courses\page.tsx
+  14:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\customers\page.tsx
+  7:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\jobs\page.tsx
+   18:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:80  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:90  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:97  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  186:97  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\onboard\page.tsx
+  7:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\orders\page.tsx
+  15:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\recommendations\page.tsx
+  14:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\m\worker\training\page.tsx
+  7:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\app\worker\applications\page.tsx
+  24:21  error  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\worker\applications\page.tsx:24:21
+  22 |   const [loading, setLoading] = useState(true);
+  23 |
+> 24 |   useEffect(() => { loadData(); }, []);
+     |                     ^^^^^^^^ `loadData` accessed before it is declared
+  25 |
+  26 |   const loadData = async () => {
+  27 |     try {
+
+F:\CB-szjfp\src\app\worker\applications\page.tsx:26:3
+  24 |   useEffect(() => { loadData(); }, []);
+  25 |
+> 26 |   const loadData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     try {
+     | ^^^^^^^^^
+> 28 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     …
+     | ^^^^^^^^^
+> 38 |     setLoading(false);
+     | ^^^^^^^^^
+> 39 |   };
+     | ^^^^^ `loadData` is declared here
+  40 |
+  41 |   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  42 |     pending: { label: '待处理', color: 'text-amber-600 bg-amber-50', icon: <Clock className="w-3.5 h-3.5" /> },  react-hooks/immutability
+
+F:\CB-szjfp\src\app\worker\contracts\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadContracts` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\worker\contracts\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadContracts(); }, []);
+     |                     ^^^^^^^^^^^^^ `loadContracts` accessed before it is declared
+  22 |
+  23 |   const loadContracts = async () => {
+  24 |     try {
+
+F:\CB-szjfp\src\app\worker\contracts\page.tsx:23:3
+  21 |   useEffect(() => { loadContracts(); }, []);
+  22 |
+> 23 |   const loadContracts = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/contracts', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setContracts(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadContracts` is declared here
+  31 |
+  32 |   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  33 |     draft: { label: '草稿', color: 'text-slate-500 bg-slate-100', icon: <FileText className="w-3.5 h-3.5" /> },  react-hooks/immutability
+
+F:\CB-szjfp\src\app\worker\courses\page.tsx
+  22:21  error  Error: Cannot access variable before it is declared
+
+`loadCourses` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\worker\courses\page.tsx:22:21
+  20 |   const [enrolling, setEnrolling] = useState<string | null>(null);
+  21 |
+> 22 |   useEffect(() => { loadCourses(); }, [tab]);
+     |                     ^^^^^^^^^^^ `loadCourses` accessed before it is declared
+  23 |
+  24 |   const loadCourses = async () => {
+  25 |     try {
+
+F:\CB-szjfp\src\app\worker\courses\page.tsx:24:3
+  22 |   useEffect(() => { loadCourses(); }, [tab]);
+  23 |
+> 24 |   const loadCourses = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     try {
+     | ^^^^^^^^^
+> 26 |       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
+     …
+     | ^^^^^^^^^
+> 54 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 55 |   };
+     | ^^^^^ `loadCourses` is declared here
+  56 |
+  57 |   const handleEnroll = async (courseId: string) => {
+  58 |     const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';  react-hooks/immutability
+
+F:\CB-szjfp\src\app\worker\notifications\page.tsx
+  21:21  error  Error: Cannot access variable before it is declared
+
+`loadNotifications` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\worker\notifications\page.tsx:21:21
+  19 |   const [loading, setLoading] = useState(true);
+  20 |
+> 21 |   useEffect(() => { loadNotifications(); }, []);
+     |                     ^^^^^^^^^^^^^^^^^ `loadNotifications` accessed before it is declared
+  22 |
+  23 |   const loadNotifications = async () => {
+  24 |     try {
+
+F:\CB-szjfp\src\app\worker\notifications\page.tsx:23:3
+  21 |   useEffect(() => { loadNotifications(); }, []);
+  22 |
+> 23 |   const loadNotifications = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     try {
+     | ^^^^^^^^^
+> 25 |       const res = await fetch('/api/notifications', { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 26 |       const data = await res.json();
+     | ^^^^^^^^^
+> 27 |       if (data.success) setNotifications(data.data || []);
+     | ^^^^^^^^^
+> 28 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 29 |     setLoading(false);
+     | ^^^^^^^^^
+> 30 |   };
+     | ^^^^^ `loadNotifications` is declared here
+  31 |
+  32 |   const markRead = async (id: string) => {
+  33 |     try {  react-hooks/immutability
+
+F:\CB-szjfp\src\app\worker\orders\page.tsx
+  25:21  error  Error: Cannot access variable before it is declared
+
+`loadOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+F:\CB-szjfp\src\app\worker\orders\page.tsx:25:21
+  23 |   const [message, setMessage] = useState('');
+  24 |
+> 25 |   useEffect(() => { loadOrders(); }, [jobFilter]);
+     |                     ^^^^^^^^^^ `loadOrders` accessed before it is declared
+  26 |
+  27 |   const loadOrders = async () => {
+  28 |     try {
+
+F:\CB-szjfp\src\app\worker\orders\page.tsx:27:3
+  25 |   useEffect(() => { loadOrders(); }, [jobFilter]);
+  26 |
+> 27 |   const loadOrders = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |     try {
+     | ^^^^^^^^^
+> 29 |       const params = new URLSearchParams({ status: 'created' });
+     | ^^^^^^^^^
+> 30 |       if (jobFilter !== '全部') params.set('job_type', jobFilter);
+     | ^^^^^^^^^
+> 31 |       const res = await fetch(`/api/orders?${params}`, { headers: getAuthHeaders(false) });
+     | ^^^^^^^^^
+> 32 |       const data = await res.json();
+     | ^^^^^^^^^
+> 33 |       if (data.success) setOrders(data.data || []);
+     | ^^^^^^^^^
+> 34 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^
+> 35 |   };
+     | ^^^^^ `loadOrders` is declared here
+  36 |
+  37 |   const handleApply = async (orderId: string) => {
+  38 |     try {  react-hooks/immutability
+
+F:\CB-szjfp\src\components\miniapp\hall.tsx
+   40:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\components\miniapp\reviews.tsx
+  16:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\src\lib\schema.ts
+  413:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+F:\CB-szjfp\wechat-miniprogram\pages\logs\logs.js
+  2:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+✖ 160 problems (160 errors, 0 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.

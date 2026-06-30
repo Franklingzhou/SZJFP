@@ -87,7 +87,7 @@ export default function AdminRecommendationsPage() {
           setCurrentUserRole(payload.role || '');
         }
       }
-    } catch {}
+    } catch (e) { console.error('JWT解析失败:', e); }
     loadData();
   }, []);
 

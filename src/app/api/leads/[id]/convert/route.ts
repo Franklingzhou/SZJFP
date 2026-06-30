@@ -55,7 +55,7 @@ export async function POST(
       const workerId = `wk_${Date.now()}`;
       const workerData: Record<string, unknown> = {
         id: workerId,
-        user_id: null,  // 预注册：签约时不创建users，用户首次登录后自动认领绑定
+        user_id: session.userId,  // 签约人即为负责人
         name: leadInfo.name || '',
         phone: leadInfo.phone || '',
         age: leadInfo.age || null,
@@ -80,8 +80,8 @@ export async function POST(
         .single();
 
       if (workerErr) {
-        console.error('[convert] create worker error:', workerErr);
-        return NextResponse.json({ error: '创建阿姨记录失败', detail: String(workerErr) }, { status: 500 });
+        console.error('[convert] create worker error:', JSON.stringify(workerErr));
+        return NextResponse.json({ error: '创建阿姨记录失败', detail: workerErr.message || JSON.stringify(workerErr) }, { status: 500 });
       }
 
       worker = newWorker;

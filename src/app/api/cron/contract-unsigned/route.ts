@@ -32,12 +32,13 @@ export async function GET(_request: NextRequest) {
 
     const threshold = new Date(Date.now() - thresholdHours * 60 * 60 * 1000).toISOString();
 
-    // 查询未确认的合同（draft + pending_confirm）
+    // 查询未确认的合同（draft + pending_confirm），限制5条防止超时
     const { data: unsignedContracts, error } = await supabase
       .from('contracts')
       .select('id, title, type, party_a_id, party_b_id, party_b_name, status, created_at')
       .in('status', ['draft', 'pending_confirm'])
-      .lt('created_at', threshold);
+      .lt('created_at', threshold)
+      .limit(5);
 
     if (error) {
       console.error('[contract-unsigned] query error:', error.message);

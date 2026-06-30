@@ -71,6 +71,7 @@ except Exception as e:
 // 用户自己的Supabase（anon key是公开的，硬编码安全）
 const CUSTOM_SUPABASE_URL = 'https://mozamdshnaydbycpbifd.supabase.co';
 const CUSTOM_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vemFtZHNobmF5ZGJ5Y3BiaWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1Mjg3MjYsImV4cCI6MjA5NzEwNDcyNn0.vj-Ope8a_-0gFHMC9Mx_2B8T27DX8T8xdwk6W75O57o';
+const CUSTOM_SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vemFtZHNobmF5ZGJ5Y3BiaWZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTUyODcyNiwiZXhwIjoyMDk3MTA0NzI2fQ.vzBJcL7282ed11YRR8r1ercwg-gcsrz_Nyn9BrC6J-4';
 
 function getSupabaseCredentials(): SupabaseCredentials {
   // 直接使用自定义Supabase（平台的COZE_SUPABASE_URL指向旧库，数据不对）
@@ -90,6 +91,7 @@ function getSupabaseClient(token?: string): SupabaseClient {
   // coze SDK is optional - silently skip if not available
   let cozeMod: { getReportBuffer?: () => unknown; createWrappedFetch?: (...args: unknown[]) => unknown } = {};
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     cozeMod = require('coze-coding-dev-sdk');
   } catch {
     // coze-coding-dev-sdk not available in this runtime
@@ -117,4 +119,26 @@ function getSupabaseClient(token?: string): SupabaseClient {
   });
 }
 
-export { loadEnv, getSupabaseCredentials, getSupabaseClient };
+/**
+ * 获取使用 service_role key 的 Supabase 客户端（绕过 RLS，仅用于服务端关键查询）
+ * 用于 verifyToken 等需要读取全量用户数据的场景
+ */
+function getSupabaseServiceClient(): SupabaseClient {
+  const url = CUSTOM_SUPABASE_URL;
+  const serviceKey = CUSTOM_SUPABASE_SERVICE_KEY;
+
+  const globalOptions: Record<string, unknown> = {
+    headers: { Authorization: `Bearer ${serviceKey}` },
+  };
+
+  return createClient(url, serviceKey, {
+    global: globalOptions,
+    db: { timeout: 60000 },
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+export { loadEnv, getSupabaseCredentials, getSupabaseClient, getSupabaseServiceClient };

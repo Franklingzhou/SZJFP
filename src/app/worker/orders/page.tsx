@@ -22,8 +22,6 @@ export default function WorkerOrdersPage() {
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
 
-  useEffect(() => { loadOrders(); }, [jobFilter]);
-
   const loadOrders = async () => {
     try {
       const params = new URLSearchParams({ status: 'created' });
@@ -33,6 +31,8 @@ export default function WorkerOrdersPage() {
       if (data.success) setOrders(data.data || []);
     } catch (e) { console.error(e); }
   };
+
+  useEffect(() => { loadOrders(); }, [jobFilter]);
 
   const handleApply = async (orderId: string) => {
     try {

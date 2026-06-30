@@ -26,6 +26,14 @@ const SUITE_MAP = {
   delete:    { name: '删除类接口',      file: 'delete.test.js',  export: 'deleteSuite' },
   e2e:       { name: '端到端流程',      file: 'e2e.test.js',     export: 'e2eSuite' },
   n_series:  { name: 'N系列-简历审核',   file: 'n-series.test.js', export: 'default' },
+  gap_auth:{ name: '缺口-认证🆕', file: 'gap-auth.test.js', export: 'default' },
+  gap_workers:{ name: '缺口-阿姨子🆕', file: 'gap-workers.test.js', export: 'default' },
+  gap_orders:{ name: '缺口-订单子🆕', file: 'gap-orders.test.js', export: 'default' },
+  gap_biz:{ name: '缺口-业务杂🆕', file: 'gap-biz.test.js', export: 'default' },
+  gap_cron:{ name: '缺口-定时任务🆕', file: 'gap-cron.test.js', export: 'default' },
+  deepen:{ name: '深度强化🆕', file: 'deepen.test.js', export: 'default' },
+  supplement:{ name: '补充-考勤/转班/定时/健康检查', file: 'supplement.test.js', export: 'default' },
+  gap_write:{ name: '缺口-写操作🆕', file: 'gap-write.test.js', export: 'default' },
 };
 
 // BUG编号 → 套件映射

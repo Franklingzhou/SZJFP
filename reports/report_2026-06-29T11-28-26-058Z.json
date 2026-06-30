@@ -1,0 +1,692 @@
+{
+  "summary": {
+    "total": 37,
+    "pass": 26,
+    "fail": 11,
+    "duration": 5214,
+    "byCategory": {
+      "正向功能": {
+        "total": 12,
+        "pass": 7,
+        "fail": 5
+      },
+      "参数异常": {
+        "total": 11,
+        "pass": 11,
+        "fail": 0
+      },
+      "边界值": {
+        "total": 8,
+        "pass": 8,
+        "fail": 0
+      },
+      "权限校验": {
+        "total": 6,
+        "pass": 0,
+        "fail": 6
+      }
+    },
+    "byModule": {
+      "auth": {
+        "total": 37,
+        "pass": 26,
+        "fail": 11
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "A01-正向-发送验证码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/sms-send",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19980178574"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 217,
+      "timestamp": "2026-06-29T11:28:20.591Z"
+    },
+    {
+      "label": "A01-参数-缺phone→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/sms-send",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 44,
+      "timestamp": "2026-06-29T11:28:20.636Z"
+    },
+    {
+      "label": "A01-参数-无效phone→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/sms-send",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "12345"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 20,
+      "timestamp": "2026-06-29T11:28:20.656Z"
+    },
+    {
+      "label": "A01-边界-空phone→400",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/sms-send",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": ""
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 14,
+      "timestamp": "2026-06-29T11:28:20.671Z"
+    },
+    {
+      "label": "A02-正向-手机号验证码登录(已存在)",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "code": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 421,
+      "timestamp": "2026-06-29T11:28:21.093Z"
+    },
+    {
+      "label": "A02-正向-新用户登录(isNewUser)",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19980178574",
+        "code": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 571,
+      "timestamp": "2026-06-29T11:28:21.664Z"
+    },
+    {
+      "label": "A02-参数-缺phone→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 28,
+      "timestamp": "2026-06-29T11:28:21.692Z"
+    },
+    {
+      "label": "A02-参数-缺code→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:21.704Z"
+    },
+    {
+      "label": "A02-边界-无效phone→400",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "000",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 19,
+      "timestamp": "2026-06-29T11:28:21.724Z"
+    },
+    {
+      "label": "A02-边界-错误code→401",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/phone-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "code": "000000"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 13,
+      "timestamp": "2026-06-29T11:28:21.737Z"
+    },
+    {
+      "label": "A03-正向-注册新worker",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19165358947",
+        "role": "worker",
+        "name": "测试阿姨"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 548,
+      "timestamp": "2026-06-29T11:28:22.285Z"
+    },
+    {
+      "label": "A03-参数-缺phone→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:22.297Z"
+    },
+    {
+      "label": "A03-参数-缺role→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19251424649"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:22.309Z"
+    },
+    {
+      "label": "A03-边界-已注册phone→409",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "role": "worker",
+        "name": "重复"
+      },
+      "expectStatus": 409,
+      "actualStatus": 409,
+      "status": "PASS",
+      "error": null,
+      "duration": 187,
+      "timestamp": "2026-06-29T11:28:22.496Z"
+    },
+    {
+      "label": "A03-边界-无效role→400",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19356304813",
+        "role": "superman"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 15,
+      "timestamp": "2026-06-29T11:28:22.512Z"
+    },
+    {
+      "label": "A03-边界-空name(不传name)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/phone-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19459464188",
+        "role": "worker"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 565,
+      "timestamp": "2026-06-29T11:28:23.077Z"
+    },
+    {
+      "label": "A04-正向-微信code登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/wechat-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "code": "test_wx_code_001"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 197,
+      "timestamp": "2026-06-29T11:28:23.275Z"
+    },
+    {
+      "label": "A04-参数-缺code→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/wechat-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 26,
+      "timestamp": "2026-06-29T11:28:23.301Z"
+    },
+    {
+      "label": "A04-边界-空code→400",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/wechat-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "code": ""
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:23.313Z"
+    },
+    {
+      "label": "A05-正向-微信注册新用户",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/wechat-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "openid": "test_wx_openid_001",
+        "role": "worker",
+        "name": "微信阿姨"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 292,
+      "timestamp": "2026-06-29T11:28:23.605Z"
+    },
+    {
+      "label": "A05-参数-缺openid→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/wechat-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 49,
+      "timestamp": "2026-06-29T11:28:23.654Z"
+    },
+    {
+      "label": "A05-参数-缺role→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/wechat-register",
+      "headers": "Bearer <token>",
+      "body": {
+        "openid": "test_openid_002"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 16,
+      "timestamp": "2026-06-29T11:28:23.670Z"
+    },
+    {
+      "label": "A06-权限-无token→401",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/reset-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "code": "888888",
+        "newPassword": "new123456"
+      },
+      "expectStatus": 401,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 401，实际 400 | 响应: {\"error\":\"请先获取验证码\"}",
+      "duration": 269,
+      "timestamp": "2026-06-29T11:28:24.193Z"
+    },
+    {
+      "label": "A06-权限-worker→403",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/reset-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "code": "888888",
+        "newPassword": "new123456"
+      },
+      "expectStatus": 403,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 403，实际 400 | 响应: {\"error\":\"请先获取验证码\"}",
+      "duration": 195,
+      "timestamp": "2026-06-29T11:28:24.388Z"
+    },
+    {
+      "label": "A06-正向-admin重置密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/reset-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "code": "888888",
+        "newPassword": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 400 | 响应: {\"error\":\"请先获取验证码\"}",
+      "duration": 180,
+      "timestamp": "2026-06-29T11:28:24.568Z"
+    },
+    {
+      "label": "A06-参数-缺phone→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/reset-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "new_password": "123456"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 43,
+      "timestamp": "2026-06-29T11:28:24.612Z"
+    },
+    {
+      "label": "A07-权限-无token→401",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "PUT",
+      "url": "/api/auth/update-profile",
+      "headers": "Bearer <token>",
+      "body": {
+        "name": "新名字"
+      },
+      "expectStatus": 401,
+      "actualStatus": 405,
+      "status": "FAIL",
+      "error": "期望状态码 401，实际 405",
+      "duration": 22,
+      "timestamp": "2026-06-29T11:28:24.634Z"
+    },
+    {
+      "label": "A07-正向-work更新自己资料",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "PUT",
+      "url": "/api/auth/update-profile",
+      "headers": "Bearer <token>",
+      "body": {
+        "name": "测试更新名"
+      },
+      "expectStatus": 200,
+      "actualStatus": 405,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 405",
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:24.647Z"
+    },
+    {
+      "label": "A07-正向-admin更新自己资料",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/update-profile",
+      "headers": "Bearer <token>",
+      "body": {
+        "name": "管理员新名"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 367,
+      "timestamp": "2026-06-29T11:28:25.014Z"
+    },
+    {
+      "label": "A08-权限-无token→401",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "target_role": "agent",
+        "reason": "想转经纪人"
+      },
+      "expectStatus": 401,
+      "actualStatus": 200,
+      "status": "FAIL",
+      "error": "期望状态码 401，实际 200 | 响应: {\"success\":true,\"message\":\"转岗申请已提交（家政阿姨 → 经纪人），请等待管理员审核\"}",
+      "duration": 383,
+      "timestamp": "2026-06-29T11:28:25.600Z"
+    },
+    {
+      "label": "A08-正向-worker申请转经纪人",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "target_role": "agent",
+        "reason": "想转经纪人"
+      },
+      "expectStatus": 200,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 400 | 响应: {\"error\":\"您已有一个转岗申请（申请转为经纪人），请等待管理员审核\"}",
+      "duration": 196,
+      "timestamp": "2026-06-29T11:28:25.797Z"
+    },
+    {
+      "label": "A08-正向-customer申请转worker",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900009876",
+        "target_role": "worker",
+        "reason": "应聘做阿姨"
+      },
+      "expectStatus": 200,
+      "actualStatus": 404,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 404 | 响应: {\"error\":\"未找到该手机号对应的用户\"}",
+      "duration": 190,
+      "timestamp": "2026-06-29T11:28:25.988Z"
+    },
+    {
+      "label": "A08-参数-缺target_role→400",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 19,
+      "timestamp": "2026-06-29T11:28:26.008Z"
+    },
+    {
+      "label": "A08-边界-无效role→400",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_role": "ceo",
+        "reason": "测试"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 12,
+      "timestamp": "2026-06-29T11:28:26.020Z"
+    },
+    {
+      "label": "A09-权限-无token→401",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "approve": true
+      },
+      "expectStatus": 401,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 401，实际 400 | 响应: {\"error\":\"缺少必要参数\"}",
+      "duration": 11,
+      "timestamp": "2026-06-29T11:28:26.032Z"
+    },
+    {
+      "label": "A09-权限-worker→403",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "approve": true
+      },
+      "expectStatus": 403,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 403，实际 400 | 响应: {\"error\":\"缺少必要参数\"}",
+      "duration": 14,
+      "timestamp": "2026-06-29T11:28:26.046Z"
+    },
+    {
+      "label": "A09-正向-admin审批通过",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/role-transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "approve": true
+      },
+      "expectStatus": 200,
+      "actualStatus": 400,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 400 | 响应: {\"error\":\"缺少必要参数\"}",
+      "duration": 11,
+      "timestamp": "2026-06-29T11:28:26.057Z"
+    }
+  ]
+}

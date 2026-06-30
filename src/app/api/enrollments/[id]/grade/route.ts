@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { getWorkerUserId } from '@/lib/notification-helper';
 
 // POST /api/enrollments/[id]/grade — 讲师考核打分
 export async function POST(
@@ -69,14 +70,17 @@ export async function POST(
             .maybeSingle();
           const courseName = (courseData as Record<string, unknown> | null)?.name || '培训课程';
           
-          await supabase.from('notifications').insert({
-            user_id: workerId,
-            type: 'training_result',
-            title: `考核结果：${gradeStatus}`,
-            content: `您在课程"${courseName}"中以${score}分获得${gradeStatus}评价。`,
-            is_read: false,
-            created_at: new Date().toISOString(),
-          });
+          const realUserId = await getWorkerUserId(workerId);
+          if (realUserId) {
+            await supabase.from('notifications').insert({
+              user_id: realUserId,
+              type: 'training_result',
+              title: `考核结果：${gradeStatus}`,
+              content: `您在课程"${courseName}"中以${score}分获得${gradeStatus}评价。`,
+              is_read: false,
+              created_at: new Date().toISOString(),
+            });
+          }
         } catch { /* 通知非关键 */ }
       }
     }

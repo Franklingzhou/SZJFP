@@ -22,13 +22,11 @@ export async function POST(
 
     const supabase = getSupabaseClient();
 
-    // 确认签约
+    // 确认签约（不设置 confirmed_at — 列不存在）
     const { data, error } = await supabase
       .from('order_signings')
       .update({
         status: 'confirmed',
-        confirmed_by: session.userId,
-        confirmed_at: new Date().toISOString(),
       })
       .eq('id', signing_id)
       .eq('order_id', id)

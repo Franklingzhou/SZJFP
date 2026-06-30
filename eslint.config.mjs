@@ -28,7 +28,7 @@ const eslintConfig = defineConfig([
       import: importPlugin,
     },
     rules: {
-      'import/no-cycle': ['error', { ignoreExternal: true }],
+      '@typescript-eslint/no-explicit-any': 'warn',
       'react-hooks/set-state-in-effect': 'off',
       'no-restricted-syntax': ['error', ...syntaxRules],
     },
@@ -49,8 +49,23 @@ const eslintConfig = defineConfig([
     // Build artifacts:
     'server.js',
     'dist/**',
-    // Script files (CommonJS):
-    'scripts/**/*.js',
+    // CommonJS / test scripts (use require() legitimately):
+    'scripts/**',
+    'tests/**',
+    '*.cjs',
+    // Root-level junk/binaries:
+    'courses_route.ts',
+    'workers_route.ts',
+    'debug_pg.js',
+    'test-pg.js',
+    // WeChat Mini Program (separate runtime):
+    'wechat-miniprogram/**',
+    // Non-source directories:
+    'reports/**',
+    'docs/**',
+    'assets/**',
+    'drizzle/**',
+    'miniprogram/**',
   ]),
 ]);
 

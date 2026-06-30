@@ -21,8 +21,6 @@ export default function WorkerApplicationsPage() {
   const [signings, setSignings] = useState<Signing[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadData(); }, []);
-
   const loadData = async () => {
     try {
       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
@@ -37,6 +35,8 @@ export default function WorkerApplicationsPage() {
     } catch (e) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => { loadData(); }, []);
 
   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
     pending: { label: '待处理', color: 'text-amber-600 bg-amber-50', icon: <Clock className="w-3.5 h-3.5" /> },

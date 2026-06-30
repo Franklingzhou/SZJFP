@@ -1,0 +1,440 @@
+{
+  "summary": {
+    "total": 23,
+    "pass": 23,
+    "fail": 0,
+    "duration": 20099,
+    "byCategory": {
+      "权限校验": {
+        "total": 7,
+        "pass": 7,
+        "fail": 0
+      },
+      "正向功能": {
+        "total": 8,
+        "pass": 8,
+        "fail": 0
+      },
+      "参数异常": {
+        "total": 3,
+        "pass": 3,
+        "fail": 0
+      },
+      "已知缺口": {
+        "total": 1,
+        "pass": 1,
+        "fail": 0
+      },
+      "边界值": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      }
+    },
+    "byModule": {
+      "attendance": {
+        "total": 7,
+        "pass": 7,
+        "fail": 0
+      },
+      "transfer": {
+        "total": 7,
+        "pass": 7,
+        "fail": 0
+      },
+      "cron": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      },
+      "ping": {
+        "total": 1,
+        "pass": 1,
+        "fail": 0
+      },
+      "attendance_records": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "S01-权限-无token→401",
+      "module": "attendance",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c",
+        "status": "present"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 1964,
+      "timestamp": "2026-06-30T02:38:17.283Z"
+    },
+    {
+      "label": "S01-worker可打卡→200",
+      "module": "attendance",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c",
+        "status": "present"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 456,
+      "timestamp": "2026-06-30T02:38:17.741Z"
+    },
+    {
+      "label": "S01-权限-customer→403",
+      "module": "attendance",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c",
+        "status": "present"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 205,
+      "timestamp": "2026-06-30T02:38:17.946Z"
+    },
+    {
+      "label": "S01-正向-admin考勤打卡",
+      "module": "attendance",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c",
+        "status": "present"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 394,
+      "timestamp": "2026-06-30T02:38:18.341Z"
+    },
+    {
+      "label": "S01-参数-缺schedule_id→400",
+      "module": "attendance",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "status": "present"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 240,
+      "timestamp": "2026-06-30T02:38:18.581Z"
+    },
+    {
+      "label": "S01-参数-缺status→400",
+      "module": "attendance",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 213,
+      "timestamp": "2026-06-30T02:38:18.794Z"
+    },
+    {
+      "label": "S01-边界-不存在的enrollment→200(路由未校验)",
+      "module": "attendance",
+      "category": "已知缺口",
+      "method": "POST",
+      "url": "/api/enrollments/nonexist-999/attendance",
+      "headers": "Bearer <token>",
+      "body": {
+        "schedule_id": "ba46230f-9ca1-4293-883b-9444bb10ad8c",
+        "status": "present"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 390,
+      "timestamp": "2026-06-30T02:38:19.184Z"
+    },
+    {
+      "label": "S02-权限-无token→401",
+      "module": "transfer",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "35662226-d696-429c-b267-cb4761f683c9"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 2966,
+      "timestamp": "2026-06-30T02:38:22.151Z"
+    },
+    {
+      "label": "S02-权限-worker→403",
+      "module": "transfer",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "35662226-d696-429c-b267-cb4761f683c9"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 231,
+      "timestamp": "2026-06-30T02:38:22.382Z"
+    },
+    {
+      "label": "S02-权限-customer→403",
+      "module": "transfer",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "35662226-d696-429c-b267-cb4761f683c9"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 217,
+      "timestamp": "2026-06-30T02:38:22.599Z"
+    },
+    {
+      "label": "S02-正向-admin转班",
+      "module": "transfer",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "35662226-d696-429c-b267-cb4761f683c9"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 994,
+      "timestamp": "2026-06-30T02:38:23.593Z"
+    },
+    {
+      "label": "S02-参数-缺target_course_id→400",
+      "module": "transfer",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 1216,
+      "timestamp": "2026-06-30T02:38:24.809Z"
+    },
+    {
+      "label": "S02-边界-不存在的enrollment→404",
+      "module": "transfer",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/enrollments/nonexist-999/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "35662226-d696-429c-b267-cb4761f683c9"
+      },
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 993,
+      "timestamp": "2026-06-30T02:38:25.802Z"
+    },
+    {
+      "label": "S02-边界-不存在的目标课程→404",
+      "module": "transfer",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/enrollments/ffd0e289-8108-4a04-9b35-697a0da97cb0/transfer",
+      "headers": "Bearer <token>",
+      "body": {
+        "target_course_id": "nonexist-course-99"
+      },
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 741,
+      "timestamp": "2026-06-30T02:38:26.543Z"
+    },
+    {
+      "label": "S03-正向-GET未排课检查",
+      "module": "cron",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/cron/enrollment-unscheduled",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 1601,
+      "timestamp": "2026-06-30T02:38:28.145Z"
+    },
+    {
+      "label": "S03-边界-无token也可访问",
+      "module": "cron",
+      "category": "边界值",
+      "method": "GET",
+      "url": "/api/cron/enrollment-unscheduled",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 406,
+      "timestamp": "2026-06-30T02:38:28.551Z"
+    },
+    {
+      "label": "S04-正向-GET报名提醒检查",
+      "module": "cron",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/cron/enrollment-reminder",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 3300,
+      "timestamp": "2026-06-30T02:38:31.851Z"
+    },
+    {
+      "label": "S04-边界-无token也可访问",
+      "module": "cron",
+      "category": "边界值",
+      "method": "GET",
+      "url": "/api/cron/enrollment-reminder",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 2391,
+      "timestamp": "2026-06-30T02:38:34.242Z"
+    },
+    {
+      "label": "S05-正向-无token查ping",
+      "module": "ping",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/ping",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 210,
+      "timestamp": "2026-06-30T02:38:34.453Z"
+    },
+    {
+      "label": "S06-正向-admin查考勤记录",
+      "module": "attendance_records",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/attendance_records",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 386,
+      "timestamp": "2026-06-30T02:38:34.839Z"
+    },
+    {
+      "label": "S06-权限-无token→401",
+      "module": "attendance_records",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/attendance_records",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 21,
+      "timestamp": "2026-06-30T02:38:34.861Z"
+    },
+    {
+      "label": "S06-权限-customer→403",
+      "module": "attendance_records",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/attendance_records",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 202,
+      "timestamp": "2026-06-30T02:38:35.063Z"
+    },
+    {
+      "label": "S06-正向-worker查考勤记录",
+      "module": "attendance_records",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/attendance_records",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 362,
+      "timestamp": "2026-06-30T02:38:35.425Z"
+    }
+  ]
+}

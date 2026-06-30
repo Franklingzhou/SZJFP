@@ -47,7 +47,7 @@ function parseCurrentUser(): { userId: string; role: string } {
         return { userId: payload.userId || payload.user_id || '', role: payload.role || '' };
       }
     }
-  } catch {}
+  } catch (e) { console.error('JWT解析失败:', e); }
   return { userId: '', role: '' };
 }
 

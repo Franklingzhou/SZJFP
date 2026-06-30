@@ -1,0 +1,452 @@
+{
+  "timestamp": "2026-06-30T14:55:49.748Z",
+  "target": "http://localhost:3000",
+  "summary": {
+    "pass": 110,
+    "fail": 0,
+    "total": 110,
+    "rate": "100.0"
+  },
+  "results": [
+    {
+      "label": "S1 首页可访问",
+      "pass": true
+    },
+    {
+      "label": "S2 管理员(13000000001) 登录",
+      "pass": true
+    },
+    {
+      "label": "S3 经纪人(13600001234) 登录",
+      "pass": true
+    },
+    {
+      "label": "S4 培训主管(13100001111) 登录",
+      "pass": true
+    },
+    {
+      "label": "S5 阿姨(13800005678) 登录",
+      "pass": true
+    },
+    {
+      "label": "S6 客户(13900009876) 登录",
+      "pass": true
+    },
+    {
+      "label": "A01 仪表盘 /admin/dashboard 页面",
+      "pass": true
+    },
+    {
+      "label": "A02 简历审核列表 /admin/audits 页面",
+      "pass": true
+    },
+    {
+      "label": "A07 角色审核 /admin/roles 页面",
+      "pass": true
+    },
+    {
+      "label": "A11 用户管理 /admin/users 页面",
+      "pass": true
+    },
+    {
+      "label": "A12 阿姨库 /admin/workers 页面",
+      "pass": true
+    },
+    {
+      "label": "A13 订单管理 /admin/orders 页面",
+      "pass": true
+    },
+    {
+      "label": "A09 课程管理 /admin/courses 页面",
+      "pass": true
+    },
+    {
+      "label": "A14 推荐记录 /admin/recommendations 页面",
+      "pass": true
+    },
+    {
+      "label": "A15 评价管理 /admin/reviews 页面",
+      "pass": true
+    },
+    {
+      "label": "A17 消息通知 /admin/notifications 页面",
+      "pass": true
+    },
+    {
+      "label": "A18 系统设置 /admin/settings 页面",
+      "pass": true
+    },
+    {
+      "label": "A22 佣金配置 /admin/commission 页面",
+      "pass": true
+    },
+    {
+      "label": "A23 分账管理 /admin/settlement 页面",
+      "pass": true
+    },
+    {
+      "label": "A24 诚信分 /admin/credit 页面",
+      "pass": true
+    },
+    {
+      "label": "A25 保证金 /admin/deposit 页面",
+      "pass": true
+    },
+    {
+      "label": "A26 积分管理 /admin/points 页面",
+      "pass": true
+    },
+    {
+      "label": "A27 场地管理 /admin/venues 页面",
+      "pass": true
+    },
+    {
+      "label": "A05 合同管理 /admin/contracts 页面",
+      "pass": true
+    },
+    {
+      "label": "A28 合同模板 /admin/contract-templates 页面",
+      "pass": true
+    },
+    {
+      "label": "管理员 侧边栏菜单 (实测43项, 预期约42项)",
+      "pass": true
+    },
+    {
+      "label": "B03 经纪人-仪表盘 /admin/dashboard 可达",
+      "pass": true
+    },
+    {
+      "label": "B04 经纪人-订单大厅 /admin/orders 可达",
+      "pass": true
+    },
+    {
+      "label": "B05 经纪人-客户管理 /admin/customers 可达",
+      "pass": true
+    },
+    {
+      "label": "B11 经纪人-阿姨简历库 /admin/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "B07 经纪人-订单管理 /admin/orders 可达",
+      "pass": true
+    },
+    {
+      "label": "B13 经纪人-评价 /admin/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "B14 经纪人-个人中心 /admin/profile-settings 可达",
+      "pass": true
+    },
+    {
+      "label": "经纪人 侧边栏菜单 (实测14项, 预期约14项)",
+      "pass": true
+    },
+    {
+      "label": "B02 经纪人有客户管理",
+      "pass": true
+    },
+    {
+      "label": "N29 经纪人无线索管理",
+      "pass": true
+    },
+    {
+      "label": "R03 招生-仪表盘 /admin/dashboard 可达",
+      "pass": true
+    },
+    {
+      "label": "R04 招生-线索管理 /admin/leads 可达",
+      "pass": true
+    },
+    {
+      "label": "R09 招生-学员管理 /admin/students 可达",
+      "pass": true
+    },
+    {
+      "label": "R10 招生-阿姨简历库 /admin/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "R11 招生-课程管理 /admin/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "R13 招生-个人中心 /admin/profile-settings 可达",
+      "pass": true
+    },
+    {
+      "label": "招生 侧边栏菜单 (实测14项, 预期约13项)",
+      "pass": true
+    },
+    {
+      "label": "N23 招生无客户管理",
+      "pass": true
+    },
+    {
+      "label": "R04 招生有线索管理",
+      "pass": true
+    },
+    {
+      "label": "T03 讲师-仪表盘 /admin/dashboard 可达",
+      "pass": true
+    },
+    {
+      "label": "T04 讲师-学员管理 /admin/students 可达",
+      "pass": true
+    },
+    {
+      "label": "T07 讲师-课程管理 /admin/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "T08 讲师-排课管理 /admin/course-schedules 可达",
+      "pass": true
+    },
+    {
+      "label": "T09 讲师-考核打分 /admin/course-grading 可达",
+      "pass": true
+    },
+    {
+      "label": "T10 讲师-证书管理 /admin/certificates 可达",
+      "pass": true
+    },
+    {
+      "label": "T12 讲师-个人中心 /admin/profile-settings 可达",
+      "pass": true
+    },
+    {
+      "label": "讲师 侧边栏菜单 (实测14项, 预期约13项)",
+      "pass": true
+    },
+    {
+      "label": "N25 讲师无客户管理",
+      "pass": true
+    },
+    {
+      "label": "S03 主管-仪表盘 /admin/dashboard 可达",
+      "pass": true
+    },
+    {
+      "label": "S04 主管-线索管理(全量) /admin/leads 可达",
+      "pass": true
+    },
+    {
+      "label": "S05 主管-学员管理(全量) /admin/students 可达",
+      "pass": true
+    },
+    {
+      "label": "S06 主管-课程管理 /admin/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "S07 主管-合同审核 /admin/contracts 可达",
+      "pass": true
+    },
+    {
+      "label": "S08 主管-排课管理 /admin/course-schedules 可达",
+      "pass": true
+    },
+    {
+      "label": "S09 主管-培训合同 /admin/training-contracts 可达",
+      "pass": true
+    },
+    {
+      "label": "S10 主管-阿姨简历库 /admin/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "S11 主管-证书管理 /admin/certificates 可达",
+      "pass": true
+    },
+    {
+      "label": "S12 主管-等级体系 /admin/levels 可达",
+      "pass": true
+    },
+    {
+      "label": "S13 主管-推荐记录 /admin/recommendations 可达",
+      "pass": true
+    },
+    {
+      "label": "S14 主管-评价 /admin/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "S16 主管-个人中心 /admin/profile-settings 可达",
+      "pass": true
+    },
+    {
+      "label": "主管 侧边栏菜单 (实测21项, 预期约18项)",
+      "pass": true
+    },
+    {
+      "label": "N26 主管无客户管理",
+      "pass": true
+    },
+    {
+      "label": "W01 阿姨端-首页工作台 /m/worker 可达",
+      "pass": true
+    },
+    {
+      "label": "W02 阿姨端-查看简历 /m/worker/profile 可达",
+      "pass": true
+    },
+    {
+      "label": "W05 阿姨端-接单大厅 /m/worker 可达",
+      "pass": true
+    },
+    {
+      "label": "W07 阿姨端-我的订单(通过jobs) /m/worker/jobs 可达",
+      "pass": true
+    },
+    {
+      "label": "W09 阿姨端-我的评价 /m/worker/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "W14 阿姨端-我的合同 /m/worker/jobs 可达",
+      "pass": true
+    },
+    {
+      "label": "W17 阿姨端-个人中心 /m/worker 可达",
+      "pass": true
+    },
+    {
+      "label": "C01 客户端-首页 /m/customer 可达",
+      "pass": true
+    },
+    {
+      "label": "C02 客户端-我的订单 /m/customer/orders 可达",
+      "pass": true
+    },
+    {
+      "label": "C04 客户端-我的合同 /m/customer/orders 可达",
+      "pass": true
+    },
+    {
+      "label": "C06 客户端-个人中心 /m/customer/profile 可达",
+      "pass": true
+    },
+    {
+      "label": "I01 讲师移动端-讲师首页 /m/instructor 可达",
+      "pass": true
+    },
+    {
+      "label": "I02 讲师移动端-课程管理 /m/instructor/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "I03 讲师移动端-学员管理 /m/instructor/students 可达",
+      "pass": true
+    },
+    {
+      "label": "I04 讲师移动端-合单大厅 /m/instructor/hall 可达",
+      "pass": true
+    },
+    {
+      "label": "I05 讲师移动端-阿姨库 /m/instructor/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "I06 讲师移动端-跟进记录 /m/instructor/follow 可达",
+      "pass": true
+    },
+    {
+      "label": "I07 讲师移动端-评价 /m/instructor/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "I08 讲师移动端-个人中心 /m/instructor/profile 可达",
+      "pass": true
+    },
+    {
+      "label": "RM01 招生移动端-招生首页 /m/recruiter 可达",
+      "pass": true
+    },
+    {
+      "label": "RM02 招生移动端-阿姨库 /m/recruiter/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "RM03 招生移动端-合单大厅 /m/recruiter/hall 可达",
+      "pass": true
+    },
+    {
+      "label": "RM04 招生移动端-培训推荐 /m/recruiter/training 可达",
+      "pass": true
+    },
+    {
+      "label": "RM05 招生移动端-跟进记录 /m/recruiter/follow 可达",
+      "pass": true
+    },
+    {
+      "label": "RM06 招生移动端-评价 /m/recruiter/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "RM07 招生移动端-个人中心 /m/recruiter/profile 可达",
+      "pass": true
+    },
+    {
+      "label": "SM01 主管移动端-主管首页 /m/training_supervisor 可达",
+      "pass": true
+    },
+    {
+      "label": "SM02 主管移动端-课程管理 /m/training_supervisor/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "SM03 主管移动端-学员管理 /m/training_supervisor/students 可达",
+      "pass": true
+    },
+    {
+      "label": "SM04 主管移动端-线索管理 /m/training_supervisor/leads 可达",
+      "pass": true
+    },
+    {
+      "label": "SM05 主管移动端-合单大厅 /m/training_supervisor/hall 可达",
+      "pass": true
+    },
+    {
+      "label": "SM06 主管移动端-课程审核 /m/training_supervisor/approval/courses 可达",
+      "pass": true
+    },
+    {
+      "label": "SM07 主管移动端-合同审核 /m/training_supervisor/approval/contracts 可达",
+      "pass": true
+    },
+    {
+      "label": "SM08 主管移动端-课表审核(v049新增) /m/training_supervisor/approval/course-schedules 可达",
+      "pass": true
+    },
+    {
+      "label": "SM09 主管移动端-评价/个人 /m/training_supervisor/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "WO01 运营移动端-运营首页 /m/worker_operator 可达",
+      "pass": true
+    },
+    {
+      "label": "WO02 运营移动端-阿姨管理 /m/worker_operator/workers 可达",
+      "pass": true
+    },
+    {
+      "label": "WO03 运营移动端-合单大厅 /m/worker_operator/hall 可达",
+      "pass": true
+    },
+    {
+      "label": "WO04 运营移动端-评价 /m/worker_operator/reviews 可达",
+      "pass": true
+    },
+    {
+      "label": "WO05 运营移动端-个人中心 /m/worker_operator/profile 可达",
+      "pass": true
+    },
+    {
+      "label": "B07 阿姨访问/admin被拦截(跳转)",
+      "pass": true
+    }
+  ]
+}

@@ -149,11 +149,12 @@ export async function GET(
 
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('id, title, job_type, salary_min, salary_max, salary_type, location, description, work_duration, contact_name, contact_phone, status, amount, service_fee, agent_id, worker_id, signed_worker_id, customer_id, reviewed, created_at, updated_at')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
+      console.error('[orders detail] Error:', error.message);
       return NextResponse.json({ error: '查询失败' }, { status: 500 });
     }
 

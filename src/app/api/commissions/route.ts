@@ -1,20 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { handleGetCommission, handlePutCommission } from '@/app/api/_shared/commission-handlers';
 
-// 重定向到 /api/commission
+// /api/commissions → /api/commission 的别名路由
+// 通过共享 handler 避免 307 重定向暴露内部 pod 地址
 export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  url.pathname = '/api/commission';
-  return NextResponse.redirect(url);
+  return handleGetCommission(request);
 }
 
 export async function POST(request: NextRequest) {
-  const url = new URL(request.url);
-  url.pathname = '/api/commission';
-  
-  const body = await request.text();
-  return fetch(url.toString(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body,
-  });
+  return handlePutCommission(request);
 }

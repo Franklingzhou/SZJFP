@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification } from '@/lib/notification-helper';
 
 // POST /api/platform-fees/[id]/confirm — 确认平台费用到账
 export async function POST(
@@ -44,6 +45,17 @@ export async function POST(
     if (error) {
       console.error('[platform-fees confirm] Error:', error.message);
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    // 通知相关人员平台费用已确认
+    const feeData = data as Record<string, unknown> | null;
+    if (feeData?.user_id) {
+      sendNotification({
+        user_id: feeData.user_id as string,
+        title: '平台费用已到账',
+        content: `你的平台费用 #${id} 已确认到账`,
+        type: 'fee_confirmed',
+      });
     }
 
     return NextResponse.json({ success: true, ok: true, data });

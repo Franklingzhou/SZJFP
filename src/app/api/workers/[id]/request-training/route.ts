@@ -63,10 +63,8 @@ export async function POST(
           phone: worker.phone || '',
           status: 'following',
           source: 'retraining_request',
-          source_type: 'worker_self',
           recruiter_id: session.userId,
-          created_by: session.userId,
-          remark: `阿姨${worker.name}自主申请再培训`,
+          note: `阿姨${worker.name}自主申请再培训`,
         });
 
       if (leadErr) {

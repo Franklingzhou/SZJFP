@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
-const BASE = 'https://szjfp-274552-8-1444411996.sh.run.tcloudbase.com';
+const BASE = 'http://localhost:3000';
 const results = [];
 
 async function test(label, check) {
@@ -60,11 +60,13 @@ async function loginAs(page, phone, isMobile = false) {
 
 (async () => {
   console.log('\n╔══════════════════════════════════════════════╗');
-  console.log('║  测试手册2.3 — Playwright全量浏览器测试       ║');
+  console.log('║  测试手册2.4 — Playwright全量浏览器测试(v049) ║');
   console.log('║  目标: ' + BASE.substring(0, 40) + ' ║');
+  console.log('║  新增: 移动端4角色(instructor/recruiter/    ║');
+  console.log('║        supervisor/operator) 页面可达性验证  ║');
   console.log('╚══════════════════════════════════════════════╝\n');
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, channel: 'chrome' });
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
   const page = await context.newPage();
   await page.setViewportSize({ width: 1920, height: 1080 });
@@ -77,7 +79,7 @@ async function loginAs(page, phone, isMobile = false) {
     const homeResp = await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 15000 });
     await test('S1 首页可访问', async () => {
       const content = await page.content();
-      return content.includes('管理后台') || content.includes('PC端') || content.includes('小程序');
+      return content.includes('管理后台') || content.includes('PC端') || content.includes('小程序') || content.includes('阿姨端') || content.includes('客户端');
     });
 
     // S2-S6: 登录
@@ -103,7 +105,7 @@ async function loginAs(page, phone, isMobile = false) {
     const adminPages = [
       ['A01', '仪表盘', '/admin/dashboard'],
       ['A02', '简历审核列表', '/admin/audits'],
-      ['A07', '角色审核', '/admin/role-reviews'],
+      ['A07', '角色审核', '/admin/roles'],
       ['A11', '用户管理', '/admin/users'],
       ['A12', '阿姨库', '/admin/workers'],
       ['A13', '订单管理', '/admin/orders'],
@@ -118,8 +120,8 @@ async function loginAs(page, phone, isMobile = false) {
       ['A25', '保证金', '/admin/deposit'],
       ['A26', '积分管理', '/admin/points'],
       ['A27', '场地管理', '/admin/venues'],
-      ['A28', '合同模板', '/admin/contracts'],
-      ['A05', '合同管理', '/admin/contract-manage'],
+      ['A05', '合同管理', '/admin/contracts'],
+      ['A28', '合同模板', '/admin/contract-templates'],
     ];
 
     for (const [id, name, url] of adminPages) {
@@ -168,7 +170,7 @@ async function loginAs(page, phone, isMobile = false) {
       ['B11', '阿姨简历库', '/admin/workers'],
       ['B07', '订单管理', '/admin/orders'],
       ['B13', '评价', '/admin/reviews'],
-      ['B14', '个人中心', '/admin/profile'],
+      ['B14', '个人中心', '/admin/profile-settings'],
     ];
 
     for (const [id, name, url] of agentPages) {
@@ -203,10 +205,10 @@ async function loginAs(page, phone, isMobile = false) {
     const recPages = [
       ['R03', '仪表盘', '/admin/dashboard'],
       ['R04', '线索管理', '/admin/leads'],
-      ['R09', '学员管理', '/admin/enrollments'],
+      ['R09', '学员管理', '/admin/students'],
       ['R10', '阿姨简历库', '/admin/workers'],
       ['R11', '课程管理', '/admin/courses'],
-      ['R13', '个人中心', '/admin/profile'],
+      ['R13', '个人中心', '/admin/profile-settings'],
     ];
 
     for (const [id, name, url] of recPages) {
@@ -238,12 +240,12 @@ async function loginAs(page, phone, isMobile = false) {
 
     const insPages = [
       ['T03', '仪表盘', '/admin/dashboard'],
-      ['T04', '学员管理', '/admin/enrollments'],
+      ['T04', '学员管理', '/admin/students'],
       ['T07', '课程管理', '/admin/courses'],
       ['T08', '排课管理', '/admin/course-schedules'],
-      ['T09', '考核打分', '/admin/enrollments'],
+      ['T09', '考核打分', '/admin/course-grading'],
       ['T10', '证书管理', '/admin/certificates'],
-      ['T12', '个人中心', '/admin/profile'],
+      ['T12', '个人中心', '/admin/profile-settings'],
     ];
 
     for (const [id, name, url] of insPages) {
@@ -274,17 +276,17 @@ async function loginAs(page, phone, isMobile = false) {
     const supPages = [
       ['S03', '仪表盘', '/admin/dashboard'],
       ['S04', '线索管理(全量)', '/admin/leads'],
-      ['S05', '学员管理(全量)', '/admin/enrollments'],
+      ['S05', '学员管理(全量)', '/admin/students'],
       ['S06', '课程管理', '/admin/courses'],
-      ['S07', '合同审核', '/admin/contract-manage'],
+      ['S07', '合同审核', '/admin/contracts'],
       ['S08', '排课管理', '/admin/course-schedules'],
       ['S09', '培训合同', '/admin/training-contracts'],
       ['S10', '阿姨简历库', '/admin/workers'],
       ['S11', '证书管理', '/admin/certificates'],
-      ['S12', '等级体系', '/admin/grades'],
+      ['S12', '等级体系', '/admin/levels'],
       ['S13', '推荐记录', '/admin/recommendations'],
       ['S14', '评价', '/admin/reviews'],
-      ['S16', '个人中心', '/admin/profile'],
+      ['S16', '个人中心', '/admin/profile-settings'],
     ];
 
     for (const [id, name, url] of supPages) {
@@ -354,8 +356,94 @@ async function loginAs(page, phone, isMobile = false) {
       }
     }
 
-    // ===== 第十步：BUG回归 浏览器版 =====
-    console.log('\n\x1b[34m━━━ 第十步：BUG回归 浏览器验证 ━━━\x1b[0m');
+    // ===== 第十步：移动端 讲师（v3遗漏的角色）=====
+    console.log('\n\x1b[34m━━━ 第十步：移动端讲师页面 (I01-I08) ━━━\x1b[0m');
+    await loginAs(page, '13700007890', true);
+    await page.setViewportSize({ width: 375, height: 812 });
+
+    const insMobilePages = [
+      ['I01', '讲师首页', '/m/instructor'],
+      ['I02', '课程管理', '/m/instructor/courses'],
+      ['I03', '学员管理', '/m/instructor/students'],
+      ['I04', '合单大厅', '/m/instructor/hall'],
+      ['I05', '阿姨库', '/m/instructor/workers'],
+      ['I06', '跟进记录', '/m/instructor/follow'],
+      ['I07', '评价', '/m/instructor/reviews'],
+      ['I08', '个人中心', '/m/instructor/profile'],
+    ];
+    for (const [id, name, url] of insMobilePages) {
+      try {
+        const resp = await page.goto(BASE + url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await test(`${id} 讲师移动端-${name} ${url} 可达`, async () => resp && resp.status() < 400);
+        await page.waitForTimeout(300);
+      } catch (e) { await test(`${id} 讲师移动端-${name} ${url} 可达`, async () => false); }
+    }
+
+    // ===== 第十一步：移动端 招生代理 =====
+    console.log('\n\x1b[34m━━━ 第十一步：移动端招生代理页面 (R01-R07) ━━━\x1b[0m');
+    await loginAs(page, '13500003456', true);
+
+    const recMobilePages = [
+      ['RM01', '招生首页', '/m/recruiter'],
+      ['RM02', '阿姨库', '/m/recruiter/workers'],
+      ['RM03', '合单大厅', '/m/recruiter/hall'],
+      ['RM04', '培训推荐', '/m/recruiter/training'],
+      ['RM05', '跟进记录', '/m/recruiter/follow'],
+      ['RM06', '评价', '/m/recruiter/reviews'],
+      ['RM07', '个人中心', '/m/recruiter/profile'],
+    ];
+    for (const [id, name, url] of recMobilePages) {
+      try {
+        const resp = await page.goto(BASE + url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await test(`${id} 招生移动端-${name} ${url} 可达`, async () => resp && resp.status() < 400);
+        await page.waitForTimeout(300);
+      } catch (e) { await test(`${id} 招生移动端-${name} ${url} 可达`, async () => false); }
+    }
+
+    // ===== 第十二步：移动端 培训主管 =====
+    console.log('\n\x1b[34m━━━ 第十二步：移动端培训主管页面 (SM01-SM09) ━━━\x1b[0m');
+    await loginAs(page, '13100001111', true);
+
+    const supMobilePages = [
+      ['SM01', '主管首页', '/m/training_supervisor'],
+      ['SM02', '课程管理', '/m/training_supervisor/courses'],
+      ['SM03', '学员管理', '/m/training_supervisor/students'],
+      ['SM04', '线索管理', '/m/training_supervisor/leads'],
+      ['SM05', '合单大厅', '/m/training_supervisor/hall'],
+      ['SM06', '课程审核', '/m/training_supervisor/approval/courses'],
+      ['SM07', '合同审核', '/m/training_supervisor/approval/contracts'],
+      ['SM08', '课表审核(v049新增)', '/m/training_supervisor/approval/course-schedules'],
+      ['SM09', '评价/个人', '/m/training_supervisor/reviews'],
+    ];
+    for (const [id, name, url] of supMobilePages) {
+      try {
+        const resp = await page.goto(BASE + url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await test(`${id} 主管移动端-${name} ${url} 可达`, async () => resp && resp.status() < 400);
+        await page.waitForTimeout(300);
+      } catch (e) { await test(`${id} 主管移动端-${name} ${url} 可达`, async () => false); }
+    }
+
+    // ===== 第十三步：移动端 阿姨运营 =====
+    console.log('\n\x1b[34m━━━ 第十三步：移动端阿姨运营页面 (WO01-WO05) ━━━\x1b[0m');
+    await loginAs(page, '13200005678', true);
+
+    const opMobilePages = [
+      ['WO01', '运营首页', '/m/worker_operator'],
+      ['WO02', '阿姨管理', '/m/worker_operator/workers'],
+      ['WO03', '合单大厅', '/m/worker_operator/hall'],
+      ['WO04', '评价', '/m/worker_operator/reviews'],
+      ['WO05', '个人中心', '/m/worker_operator/profile'],
+    ];
+    for (const [id, name, url] of opMobilePages) {
+      try {
+        const resp = await page.goto(BASE + url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await test(`${id} 运营移动端-${name} ${url} 可达`, async () => resp && resp.status() < 400);
+        await page.waitForTimeout(300);
+      } catch (e) { await test(`${id} 运营移动端-${name} ${url} 可达`, async () => false); }
+    }
+
+    // ===== 第十四步：BUG回归 浏览器版 =====
+    console.log('\n\x1b[34m━━━ 第十四步：BUG回归 浏览器验证 ━━━\x1b[0m');
 
     await loginAs(page, '13000000001', false);
     await page.setViewportSize({ width: 1920, height: 1080 });
@@ -386,7 +474,7 @@ async function loginAs(page, phone, isMobile = false) {
 
   // ===== 汇总 =====
   console.log('\x1b[36m\n╔══════════════════════════════════════════════╗\x1b[0m');
-  console.log('\x1b[36m║  浏览器UI全量测试完成                         ║\x1b[0m');
+  console.log('\x1b[36m║  浏览器UI全量测试完成(v049 14步 移动端全覆盖) ║\x1b[0m');
   console.log('\x1b[36m╠══════════════════════════════════════════════╣\x1b[0m');
   const pass = results.filter(r => r.pass).length;
   const fail = results.filter(r => !r.pass).length;

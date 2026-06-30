@@ -12,9 +12,9 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 # BUST_CACHE — 改值即强制重建所有源文件层
-ARG BUST_CACHE=v043-20260629
+ARG BUST_CACHE=v044-20260629
 RUN echo "Build cache bust: ${BUST_CACHE}"
-ENV DEPLOY_TAG=v043-20260629
+ENV DEPLOY_TAG=v044-20260629
 COPY . .
 RUN pnpm run build
 

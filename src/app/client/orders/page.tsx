@@ -19,8 +19,6 @@ export default function ClientOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
 
-  useEffect(() => { loadOrders(); }, []);
-
   const loadOrders = async () => {
     try {
       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
@@ -30,6 +28,8 @@ export default function ClientOrdersPage() {
     } catch (e) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => { loadOrders(); }, []);
 
   const filtered = activeTab === 'all' ? orders : orders.filter(o => o.status === activeTab);
 

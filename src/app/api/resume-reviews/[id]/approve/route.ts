@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification, getWorkerUserId } from '@/lib/notification-helper';
 
 // POST /api/resume-reviews/[id]/approve — 简历审核通过（实际更新 workers 表）
 export async function POST(
@@ -153,6 +154,17 @@ export async function POST(
       if (workerUpdateError) {
         console.error('[resume-reviews approve] update worker error:', workerUpdateError);
       }
+    }
+
+    // 通知阿姨审核结果
+    const workerUserId = await getWorkerUserId(workerId);
+    if (workerUserId) {
+      sendNotification({
+        user_id: workerUserId,
+        title: '简历审核通过',
+        content: `你的简历审核已通过（${comment || '无备注'}）`,
+        type: 'review_approved',
+      });
     }
 
     return NextResponse.json({ success: true, ok: true, data });

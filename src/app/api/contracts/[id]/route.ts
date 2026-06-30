@@ -122,9 +122,10 @@ export async function GET(
       .from('contracts')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
+      console.error('[contracts detail] Error:', error.message);
       return NextResponse.json({ error: '查询失败' }, { status: 500 });
     }
 

@@ -19,14 +19,18 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await supabase
       .from('settlements')
-      .update({ status: 'settled', settled_at: new Date().toISOString(), settled_by: session.userId })
+      .update({ status: 'settled', created_at: new Date().toISOString() })
       .eq('id', settlement_id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('[commission settle] Error:', error.message);
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    if (!data) {
+      return NextResponse.json({ ok: false, error: '结算记录不存在' }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, data });

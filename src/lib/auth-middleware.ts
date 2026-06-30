@@ -230,27 +230,46 @@ async function verifyToken(token: string): Promise<AuthSession | null> {
   if (!userId) return null;
   
   try {
-    // 使用 anon key 查询 users 表（RLS 已配置允许读取）
-    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
-    const supabase = getSupabaseClient();
+    // 使用 service_role key 查询 users 表（绕过 RLS，anon key 可能因 RLS 策略导致查询失败）
+    const { getSupabaseServiceClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseServiceClient();
     
+    // 先尝试完整字段查询（含 review_status / is_active）
     const { data, error } = await supabase
       .from('users')
       .select('id, name, phone, role, review_status, is_active')
       .eq('id', userId)
       .single();
     
-    if (error || !data) return null;
+    if (!error && data) {
+      // 离职/禁用账号
+      if (data.review_status === 'resigned' || data.review_status === 'rejected') return null;
+      if (data.is_active === false) return null;
+      
+      return {
+        userId: data.id,
+        role: data.role,
+        name: data.name,
+        phone: data.phone || '',
+        reviewStatus: data.review_status || 'approved',
+      };
+    }
     
-    // 离职/禁用账号
-    if (data.review_status === 'resigned' || !data.is_active) return null;
+    // 降级：字段不匹配时用最少字段重试（兼容旧 schema 无 review_status/is_active）
+    const { data: data2, error: error2 } = await supabase
+      .from('users')
+      .select('id, name, phone, role')
+      .eq('id', userId)
+      .single();
+    
+    if (error2 || !data2) return null;
     
     return {
-      userId: data.id,
-      role: data.role,
-      name: data.name,
-      phone: data.phone || '',
-      reviewStatus: data.review_status,
+      userId: data2.id,
+      role: data2.role,
+      name: data2.name,
+      phone: data2.phone || '',
+      reviewStatus: 'approved',  // 旧 schema 默认为已审核
     };
   } catch {
     return null;

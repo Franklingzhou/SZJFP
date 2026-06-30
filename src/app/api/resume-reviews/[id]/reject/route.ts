@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification, getWorkerUserId } from '@/lib/notification-helper';
 
 // POST /api/resume-reviews/[id]/reject — 简历审核拒绝
 export async function POST(
@@ -80,6 +81,20 @@ export async function POST(
 
     if (!data) {
       return NextResponse.json({ ok: false, error: '审核记录不存在' }, { status: 404 });
+    }
+
+    // 通知阿姨审核被拒
+    const workerId = (data as Record<string, unknown>).worker_id as string;
+    if (workerId) {
+      const workerUserId = await getWorkerUserId(workerId);
+      if (workerUserId) {
+        sendNotification({
+          user_id: workerUserId,
+          title: '简历审核未通过',
+          content: `你的简历审核未通过，原因：${reason}`,
+          type: 'review_rejected',
+        });
+      }
     }
 
     return NextResponse.json({ success: true, ok: true, data });

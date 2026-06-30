@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { forbiddenResponse, requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification } from '@/lib/notification-helper';
 
 // POST /api/recommendations/[id]/accept — 阿姨接受推荐
 export async function POST(
@@ -61,6 +62,16 @@ export async function POST(
 
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    // 通知推荐人阿姨已接受
+    if (recData.recommender_id) {
+      sendNotification({
+        user_id: recData.recommender_id as string,
+        title: '推荐已被接受',
+        content: `你对阿姨的推荐 #${id} 已被接受`,
+        type: 'recommendation_accepted',
+      });
     }
 
     return NextResponse.json({ ok: true, success: true, data });

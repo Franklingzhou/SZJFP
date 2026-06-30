@@ -42,13 +42,13 @@ export async function PUT(request: NextRequest) {
       .update({
         name, level, min_orders, min_rating, min_reorder_rate,
         hourly_premium, priority, deposit_reduction, badge_color,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    if (!data) return NextResponse.json({ ok: false, error: '等级不存在' }, { status: 404 });
 
     return NextResponse.json({ ok: true, success: true, data });
   } catch (e) {

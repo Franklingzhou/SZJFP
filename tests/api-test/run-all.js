@@ -39,6 +39,13 @@ const SUITE_MAP = {
   training:{ name: '培训模块',    file: 'training.test.js',export: 'trainingSuite' },
   misc:   { name: '杂项模块',    file: 'misc.test.js',    export: 'miscSuite' },
   supplement:{ name: '补充覆盖🆕', file: 'supplement.test.js', export: 'supplementSuite' },
+  gap_auth:{ name: '缺口-认证🆕', file: 'gap-auth.test.js', export: 'default' },
+  gap_workers:{ name: '缺口-阿姨子🆕', file: 'gap-workers.test.js', export: 'default' },
+  gap_orders:{ name: '缺口-订单子🆕', file: 'gap-orders.test.js', export: 'default' },
+  gap_biz:{ name: '缺口-业务杂🆕', file: 'gap-biz.test.js', export: 'default' },
+  gap_cron:{ name: '缺口-定时任务🆕', file: 'gap-cron.test.js', export: 'default' },
+  deepen:{ name: '深度强化🆕', file: 'deepen.test.js', export: 'default' },
+  gap_write:{ name: '缺口-写操作🆕', file: 'gap-write.test.js', export: 'default' },
 };
 
 async function main() {

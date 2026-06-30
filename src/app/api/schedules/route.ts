@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
     if (dateTo) query = query.lte('date', dateTo);
 
     // 如果联接查询失败（表可能没有外键），回退到基础查询
+    // eslint-disable-next-line prefer-const -- data 在 fallback 路径中被重新赋值
     let { data, error } = await query.order('date', { ascending: true }).order('start_time', { ascending: true });
 
     if (error) {

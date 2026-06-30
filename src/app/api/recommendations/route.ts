@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { getDataVisibilitySync } from '@/lib/data-permissions';
+import { sendNotification, getWorkerUserId } from '@/lib/notification-helper';
 
 // GET /api/recommendations — 获取推荐列表
 export async function GET(request: NextRequest) {
@@ -178,6 +179,19 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('[recommendations POST] Error:', error.message);
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+
+    // 通知阿姨被推荐
+    const recWorkerUserId = await getWorkerUserId(finalWorkerId);
+    if (recWorkerUserId) {
+      sendNotification({
+        user_id: recWorkerUserId,
+        title: autoAccepted ? '自动匹配成功' : '新订单推荐',
+        content: autoAccepted
+          ? `你已被自动匹配到订单 #${finalOrderId || '(无订单)'}`
+          : `你收到了一个订单推荐 #${finalOrderId || '(无订单)'}，请查看`,
+        type: autoAccepted ? 'auto_matched' : 'new_recommendation',
+      });
     }
 
     return NextResponse.json({ ok: true, success: true, data, auto_accepted: autoAccepted });

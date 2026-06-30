@@ -23,8 +23,6 @@ export default function ClientReviewsPage() {
   const [createForm, setCreateForm] = useState({ rating: 5, content: '', order_id: '', target_user_id: '' });
   const [orders, setOrders] = useState<Order[]>([]);
 
-  useEffect(() => { loadReviews(); loadOrders(); }, []);
-
   const loadReviews = async () => {
     try {
       const userId = localStorage.getItem('auth_userid') || localStorage.getItem('miniapp_userid') || '';
@@ -43,6 +41,8 @@ export default function ClientReviewsPage() {
     } catch (e) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => { loadReviews(); loadOrders(); }, []);
 
   const handleSubmitReview = async () => {
     if (!createForm.content || !createForm.order_id) return alert('请选择订单并填写评价内容');

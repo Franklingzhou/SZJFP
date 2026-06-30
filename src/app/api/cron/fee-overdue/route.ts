@@ -8,18 +8,25 @@ export async function GET(_request: NextRequest) {
     const supabase = getSupabaseClient();
     const now = new Date().toISOString();
 
-    // 查询逾期未支付的平台费用
-    const { data: overdueFees, error } = await supabase
-      .from('platform_fees')
-      .select('*')
-      .eq('status', 'pending')
-      .lt('due_date', now);
-
-    if (error) {
-      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
-    }
-
+    let overdueFees: any[] = [];
     let notifiedCount = 0;
+
+    // due_date 列可能不存在 → 安全查询
+    try {
+      const { data, error } = await supabase
+        .from('platform_fees')
+        .select('*')
+        .eq('status', 'pending')
+        .lt('due_date', now);
+
+      if (error) {
+        console.warn('[cron/fee-overdue] due_date column may not exist:', error.message);
+      } else {
+        overdueFees = data || [];
+      }
+    } catch (e: any) {
+      console.warn('[cron/fee-overdue] due_date query failed:', e.message);
+    }
 
     // 自动标记逾期 + 发送催缴通知
     if (overdueFees && overdueFees.length > 0) {
@@ -59,12 +66,18 @@ export async function GET(_request: NextRequest) {
 
     // 查询3天内即将逾期的费用，发送预警通知
     const in3Days = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
-    const { data: soonDueFees } = await supabase
-      .from('platform_fees')
-      .select('*')
-      .eq('status', 'pending')
-      .lte('due_date', in3Days)
-      .gt('due_date', now);
+    let soonDueFees: any[] = [];
+    try {
+      const { data } = await supabase
+        .from('platform_fees')
+        .select('*')
+        .eq('status', 'pending')
+        .lte('due_date', in3Days)
+        .gt('due_date', now);
+      soonDueFees = data || [];
+    } catch (e: any) {
+      console.warn('[cron/fee-overdue] soon-due query failed:', e.message);
+    }
 
     if (soonDueFees && soonDueFees.length > 0) {
       for (const fee of soonDueFees) {

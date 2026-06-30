@@ -1,5 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+import { checkPermissionDetailed, requirePermission, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
+
+// GET /api/reviews/[id] — 获取单个评价详情
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await requirePermission(request, 'reviews:read');
+  if (session instanceof NextResponse) return session;
+
+  try {
+    const { id } = await params;
+    if (!id) {
+      return NextResponse.json({ error: '缺少评价ID' }, { status: 400 });
+    }
+
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('[reviews detail] Error:', error.message);
+      return NextResponse.json({ error: '查询失败' }, { status: 500 });
+    }
+
+    if (!data) {
+      return NextResponse.json({ error: '评价不存在' }, { status: 404 });
+    }
+
+    return NextResponse.json({ data });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '查询失败';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
 // PATCH /api/reviews/[id] — 管理员评价审核
 // action=approve → hidden=false, status='approved'（审核通过上线）

@@ -1,0 +1,72 @@
+=== FAILURES (70/70) ===
+FAIL W01-权限-无token→401: expected undefined got undefined
+FAIL W01-权限-agent→403: expected undefined got undefined
+FAIL W01-正向-admin保存佣金规则: expected undefined got undefined
+FAIL W01-参数-缺id→400: expected undefined got undefined
+FAIL W02-权限-无token→401: expected undefined got undefined
+FAIL W02-权限-worker→403: expected undefined got undefined
+FAIL W02-正向-admin创建保证金记录: expected undefined got undefined
+FAIL W03-权限-无token→401: expected undefined got undefined
+FAIL W03-权限-worker→403: expected undefined got undefined
+FAIL W03-参数-缺id→400: expected undefined got undefined
+FAIL W04-权限-无token→401: expected undefined got undefined
+FAIL W04-权限-agent→403: expected undefined got undefined
+FAIL W04-正向-admin设置规则: expected undefined got undefined
+FAIL W05-权限-无token→401: expected undefined got undefined
+FAIL W05-权限-worker→403: expected undefined got undefined
+FAIL W06-权限-无token→401: expected undefined got undefined
+FAIL W06-权限-worker→403: expected undefined got undefined
+FAIL W06-正向-讲师更新课程详情: expected undefined got undefined
+FAIL W06-边界-不存在的课程→500(BUG-缺404): expected undefined got undefined
+FAIL W07-PUT-无token→401: expected undefined got undefined
+FAIL W07-PUT-worker→403: expected undefined got undefined
+FAIL W07-PUT-正向-经纪人更新合同: expected undefined got undefined
+FAIL W08-PATCH-无token→401: expected undefined got undefined
+FAIL W08-PATCH-worker→403: expected undefined got undefined
+FAIL W08-PATCH-正向-经纪人变更合同状态: expected undefined got undefined
+FAIL W09-PUT-无token→401: expected undefined got undefined
+FAIL W09-PUT-customer→403: expected undefined got undefined
+FAIL W09-PUT-正向-经纪人更新订单: expected undefined got undefined
+FAIL W10-PATCH-无token→401: expected undefined got undefined
+FAIL W10-PATCH-customer→403: expected undefined got undefined
+FAIL W10-PATCH-正向-经纪人变更订单状态: expected undefined got undefined
+FAIL W11-PUT-无token→401: expected undefined got undefined
+FAIL W11-PUT-customer→403: expected undefined got undefined
+FAIL W11-PUT-正向-经纪人更新阿姨详情: expected undefined got undefined
+FAIL W12-PATCH-无token→401: expected undefined got undefined
+FAIL W12-PATCH-customer→403: expected undefined got undefined
+FAIL W12-PATCH-正向-经纪人变更阿姨状态: expected undefined got undefined
+FAIL W13-权限-无token→401: expected undefined got undefined
+FAIL W13-权限-worker改他人→403: expected undefined got undefined
+FAIL W13-正向-admin更新用户信息: expected undefined got undefined
+FAIL W14-PUT-无token→401: expected undefined got undefined
+FAIL W14-PUT-worker→403: expected undefined got undefined
+FAIL W15-PATCH-无token→401: expected undefined got undefined
+FAIL W15-PATCH-worker→403: expected undefined got undefined
+FAIL W16-权限-无token→401: expected undefined got undefined
+FAIL W16-权限-customer→403: expected undefined got undefined
+FAIL W16-正向-admin变更报名状态: expected undefined got undefined
+FAIL W17-权限-无token→401: expected undefined got undefined
+FAIL W17-权限-customer→403: expected undefined got undefined
+FAIL W18-权限-无token→401: expected undefined got undefined
+FAIL W18-权限-customer→403: expected undefined got undefined
+FAIL W19-权限-无token→401: expected undefined got undefined
+FAIL W19-权限-customer→403: expected undefined got undefined
+FAIL W20-PUT-无token→401: expected undefined got undefined
+FAIL W20-PUT-customer→403: expected undefined got undefined
+FAIL W21-DELETE-无token→401: expected undefined got undefined
+FAIL W21-DELETE-customer→403: expected undefined got undefined
+FAIL W22-DELETE-无token→401: expected undefined got undefined
+FAIL W22-DELETE-worker→403: expected undefined got undefined
+FAIL W23-PUT-无token→401: expected undefined got undefined
+FAIL W23-PUT-worker→403: expected undefined got undefined
+FAIL W24-权限-无token→401: expected undefined got undefined
+FAIL W24-权限-agent→403: expected undefined got undefined
+FAIL W24-参数-缺id→400: expected undefined got undefined
+FAIL W25-权限-无token→401: expected undefined got undefined
+FAIL W25-权限-worker→403: expected undefined got undefined
+FAIL W25-参数-缺id→400: expected undefined got undefined
+FAIL W26-权限-无token→401: expected undefined got undefined
+FAIL W26-权限-agent→403: expected undefined got undefined
+FAIL W26-正向-admin设置等级: expected undefined got undefined
+PASS RATE: 0.0%

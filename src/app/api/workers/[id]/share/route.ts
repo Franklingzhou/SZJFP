@@ -15,12 +15,12 @@ export async function GET(
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 查询阿姨信息 + 关联用户信息
+    // 查询阿姨信息
     const { data: worker, error: wError } = await supabase
       .from('workers')
-      .select('id, name, age, origin, education, experience, skills, certifications, specialty, status, phone, user_id')
+      .select('id, name, age, origin, job_types, experience_years, specialties, certifications, status, phone, user_id')
       .eq('id', workerId)
-      .single();
+      .maybeSingle();
 
     if (wError || !worker) {
       return NextResponse.json({ error: '未找到该阿姨' }, { status: 404 });
@@ -36,22 +36,17 @@ export async function GET(
       .maybeSingle();
 
     // 生成分享文本
-    const skillsText = Array.isArray(worker.skills)
-      ? worker.skills.join('、')
-      : (worker.skills || '无');
-    const certText = Array.isArray(worker.certifications)
-      ? worker.certifications.join('、')
-      : (worker.certifications || '无');
+    const skillsText = worker.specialties || '无';
+    const certText = worker.certifications || '无';
 
     const shareText = [
       `【${worker.name || '阿姨'}】`,
       worker.age ? `年龄：${worker.age}岁` : '',
       worker.origin ? `籍贯：${worker.origin}` : '',
-      worker.education ? `学历：${worker.education}` : '',
-      worker.experience ? `经验：${worker.experience}年` : '',
+      worker.experience_years ? `经验：${worker.experience_years}年` : '',
       `技能：${skillsText}`,
       certText !== '无' ? `证书：${certText}` : '',
-      worker.specialty ? `特长：${worker.specialty}` : '',
+      worker.job_types ? `工种：${worker.job_types}` : '',
     ].filter(Boolean).join('\n');
 
     return NextResponse.json({

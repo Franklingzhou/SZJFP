@@ -1,0 +1,12 @@
+阿姨 token: got
+#1 /api/workers/me -> 404 {"error":"简历未找到"}
+#2 /api/applications(错名) -> 404
+#2b /api/worker-applications(正确) -> 200 {"ok":true,"data":[{"id":"bbf4d61f-0539-4129-abf3-dc7e78d0e3f4","worker_id":"wk_1782629094952","order_id":null,"notes":"E2E自动化自荐测试","status":"pending","applicant_id":"a001","created_at":"2026-06-28T06:45:02.77+00:00","updated_at":null},{"id":"474aae4f-c2e5-4f70-b568-bd0b3b832d0d","worker_id":"wk_1782626999859","order_id":null,"notes":"E2E自动化自荐测试","status":"pending","applicant_id":"a001","created_a
+#3 cron/contract-expiry -> 200 {"ok":true,"data":{"expiring":[],"expired":[],"urgent":[],"expiredCount":0,"expiringCount":0,"notifiedCount":0}}
+#4 notifications -> 200 {"ok":true,"data":[]}
+W06 POST /api/workers -> 200 {"success":true,"data":{"id":"wk_1782822209929","user_id":"u_1782211020190_z23n3q","name":"测试阿姨1782822209721","age":null,"gender":"女","origin":null,"photo":null,"id_card":null,"id_card_front":null,"id_card_back":null,"job_types":"","experience_years":0,"specialties":"","certifications":"","expected_salary_min":0,"expected_salary_max":0,"status":"pend","work_status":"available","available_date":nul
+#5 reviews(worker_operator) -> 200 {"data":[]}
+#6 refunds -> 200 {"ok":true,"data":[]}
+
+  ok=2 fail=2
+  问题: #1=404, W06=200

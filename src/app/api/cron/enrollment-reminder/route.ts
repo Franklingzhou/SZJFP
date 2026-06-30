@@ -37,12 +37,13 @@ export async function GET(_request: NextRequest) {
 
     const results: Record<string, number> = {};
 
-    // 1. 检查已签约但超过X天未报名的阿姨
+    // 1. 检查已签约但超过X天未报名的阿姨，限制5条防止超时
     const { data: noEnrollWorkers, error: wErr } = await supabase
       .from('workers')
       .select('id, name, phone, creator_id, creator_role, lead_id, created_at')
       .eq('status', 'pending')
-      .lt('created_at', enrollThreshold);
+      .lt('created_at', enrollThreshold)
+      .limit(5);
 
     if (!wErr && noEnrollWorkers && noEnrollWorkers.length > 0) {
       for (const worker of noEnrollWorkers) {
@@ -74,12 +75,13 @@ export async function GET(_request: NextRequest) {
       results.unenrolledWorkers = noEnrollWorkers.length;
     }
 
-    // 2. 检查线索超过14天未转化
+    // 2. 检查线索超过14天未转化，限制5条防止超时
     const { data: staleLeads, error: lErr } = await supabase
       .from('leads')
       .select('id, name, phone, recruiter_id, created_at')
       .eq('status', 'new')
-      .lt('created_at', leadThreshold);
+      .lt('created_at', leadThreshold)
+      .limit(5);
 
     if (!lErr && staleLeads && staleLeads.length > 0) {
       for (const lead of staleLeads) {

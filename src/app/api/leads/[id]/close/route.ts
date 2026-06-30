@@ -22,8 +22,8 @@ export async function POST(
       .from('leads')
       .update({
         status: 'lost',
-        lost_reason: reason || null,
-        closed_at: new Date().toISOString(),
+        note: reason || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()

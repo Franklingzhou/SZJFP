@@ -1,0 +1,211 @@
+[90m  数据库重置中...[0m
+[32m  数据库已重置 (8个用户)
+[0m
+[36m
+╔══════════════════════════════════════════════╗[0m
+[36m║   家政共创平台 API 自动化测试                  ║[0m
+[36m╚══════════════════════════════════════════════╝[0m
+[90m  环境: http://localhost:5000[0m
+[90m  时间: 2026-06-29T11:21:02.243Z
+[0m
+[34m
+▶ 运行套件: 深度强化🆕 (deepen)[0m
+
+════════════════════════════════════════════════════════════
+  D01 👤 阿姨库角色矩阵 (workers)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D01-get-admin [90m([90m504ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D01-get-agent [90m([90m468ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D01-get-recruiter [90m([90m453ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D01-get-worker [90m([90m417ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D01-get-customer [90m([90m183ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D01-detail-admin [90m([33m2409ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D01-detail-agent [90m([90m212ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D01-detail-customer [90m([90m207ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D01-edit-admin [90m([90m435ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D01-edit-agent [90m([90m448ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D01-edit-recruiter [90m([90m389ms[0m)[0m
+  ── 合计: 11 | [32m通过 6[0m | [31m失败 5[0m
+
+  ❌ 失败用例:
+     - D01-get-customer: 期望状态码 200，实际 403 | 响应: {"error":"无操作权限","code":"FORBIDDEN"}
+     - D01-detail-admin: 期望状态码 200，实际 404 | 响应: {"error":"简历未找到"}
+     - D01-detail-agent: 期望状态码 200，实际 404 | 响应: {"error":"简历未找到"}
+     - D01-detail-customer: 期望状态码 200，实际 404 | 响应: {"error":"简历未找到"}
+     - D01-edit-admin: 期望状态码 200，实际 404 | 响应: {"error":"未找到该阿姨"}
+
+════════════════════════════════════════════════════════════
+  D02 📦 订单角色矩阵 (orders)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D02-list-admin [90m([90m587ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D02-list-agent [90m([90m483ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D02-list-worker [90m([90m386ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D02-list-customer [90m([90m424ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D02-detail-agent [90m([33m1423ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D02-detail-customer [90m([90m387ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D02-detail-recruiter [90m([90m365ms[0m)[0m
+  ── 合计: 7 | [32m通过 4[0m | [31m失败 3[0m
+
+  ❌ 失败用例:
+     - D02-detail-agent: 期望状态码 200，实际 500 | 响应: {"error":"查询失败"}
+     - D02-detail-customer: 期望状态码 200，实际 500 | 响应: {"error":"查询失败"}
+     - D02-detail-recruiter: 期望状态码 200，实际 500 | 响应: {"error":"查询失败"}
+
+════════════════════════════════════════════════════════════
+  D03 🎯 线索角色矩阵 (leads)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D03-list-admin [90m([90m500ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D03-list-agent [90m([90m215ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D03-list-recruiter [90m([90m516ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D03-list-worker [90m([90m202ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D03-create-agent [90m([90m618ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D03-create-recruiter [90m([90m771ms[0m)[0m
+  ── 合计: 6 | [32m通过 4[0m | [31m失败 2[0m
+
+  ❌ 失败用例:
+     - D03-list-agent: 期望状态码 200，实际 403 | 响应: {"error":"无操作权限","code":"FORBIDDEN"}
+     - D03-list-worker: 期望状态码 200，实际 403 | 响应: {"error":"无操作权限","code":"FORBIDDEN"}
+
+════════════════════════════════════════════════════════════
+  D04 📚 课程角色矩阵 (courses)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D04-list-instructor [90m([90m551ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D04-list-supervisor [90m([90m468ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D04-list-recruiter [90m([90m377ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D04-detail-instructor [90m([90m58ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D04-detail-supervisor [90m([90m44ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D04-edit-instructor [90m([90m382ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D04-edit-noauth-worker [90m([90m205ms[0m)[0m
+  ── 合计: 7 | [32m通过 5[0m | [31m失败 2[0m
+
+  ❌ 失败用例:
+     - D04-detail-instructor: 期望状态码 200，实际 404 | 响应: "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_ap
+     - D04-detail-supervisor: 期望状态码 200，实际 404 | 响应: "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_ap
+
+════════════════════════════════════════════════════════════
+  D05 ⭐ 评价角色矩阵 (reviews)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D05-list-admin [90m([90m964ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D05-list-agent [90m([90m927ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D05-list-worker [90m([33m1211ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D05-list-customer [90m([90m995ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D05-detail-agent [90m([33m1105ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D05-detail-customer [90m([90m26ms[0m)[0m
+  ── 合计: 6 | [32m通过 4[0m | [31m失败 2[0m
+
+  ❌ 失败用例:
+     - D05-detail-agent: 期望状态码 200，实际 405
+     - D05-detail-customer: 期望状态码 200，实际 405
+
+════════════════════════════════════════════════════════════
+  D06 🔐 敏感API角色矩阵 (users/settings/contracts)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D06-users-admin [90m([90m444ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-users-agent→403 [90m([90m186ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-users-worker→403 [90m([90m204ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-settings-admin [90m([90m759ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-settings-agent→403 [90m([90m224ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-contracts-admin [90m([90m436ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-contracts-agent [90m([90m391ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D06-contracts-supervisor [90m([90m418ms[0m)[0m
+  [31m✗[0m [[31mFAIL[0m] D06-contract-detail-agent [90m([33m1401ms[0m)[0m
+  ── 合计: 9 | [32m通过 8[0m | [31m失败 1[0m
+
+  ❌ 失败用例:
+     - D06-contract-detail-agent: 期望状态码 200，实际 500 | 响应: {"error":"查询失败"}
+
+════════════════════════════════════════════════════════════
+  D07 🧪 边界值-ID非UUID格式
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D07-workers-非UUID [90m([90m204ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-orders-非UUID [90m([90m380ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-leads-非UUID [90m([90m56ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-courses-非UUID [90m([90m59ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-reviews-非UUID [90m([90m30ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-contracts-非UUID [90m([90m406ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-enrollments-非UUID [90m([33m1583ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D07-users-非UUID [90m([33m1135ms[0m)[0m
+  ── 合计: 8 | [32m通过 8[0m | 
+
+════════════════════════════════════════════════════════════
+  D08 🛡️ 边界值-SQL注入/XSS防御
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D08-sqli-workers [90m([90m232ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-sqli-orders [90m([90m452ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-sqli-leads [90m([90m75ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-xss-workers [90m([90m263ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-xss-orders [90m([90m371ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-search-sqli [90m([90m877ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D08-settings-sqli [90m([90m381ms[0m)[0m
+  ── 合计: 7 | [32m通过 7[0m | 
+
+════════════════════════════════════════════════════════════
+  D09 🔠 边界值-超长/特殊字符/空值
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D09-search-long [90m([90m441ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-workers-empty-id [90m([90m550ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-orders-empty-id [90m([90m625ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-special-unicode [90m([90m227ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-workers-neg-page [90m([90m416ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-orders-neg-limit [90m([90m558ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D09-edit-empty-name [90m([90m378ms[0m)[0m
+  ── 合计: 7 | [32m通过 7[0m | 
+
+════════════════════════════════════════════════════════════
+  D10 🔁 幂等性测试
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D10-idem-workers-get1 [90m([90m448ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-workers-get2 [90m([90m400ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-orders-get [90m([90m421ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-leads-get [90m([90m487ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-courses-get [90m([90m507ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-reviews-get [90m([33m1063ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-contracts-get [90m([90m482ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-edit-dup [90m([90m372ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-edit-redup [90m([90m396ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D10-idem-noauth [90m([90m17ms[0m)[0m
+  ── 合计: 10 | [32m通过 10[0m | 
+
+════════════════════════════════════════════════════════════
+  D11 📋 报名/排课角色矩阵 (enrollments/schedules)
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D11-enroll-list-instructor [90m([90m607ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-enroll-list-recruiter [90m([90m417ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-enroll-list-supervisor [90m([90m419ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-enroll-list-worker [90m([90m569ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-enroll-create-instructor [90m([90m200ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-schedule-supervisor [90m([90m407ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D11-schedule-instructor [90m([90m380ms[0m)[0m
+  ── 合计: 7 | [32m通过 7[0m | 
+
+════════════════════════════════════════════════════════════
+  D12 📭 边界值-空body/缺失必填字段
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D12-leads-empty-body [90m([90m197ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D12-orders-empty-body [90m([90m199ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D12-reviews-empty-body [90m([90m201ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D12-leads-bad-json [90m([90m192ms[0m)[0m
+  ── 合计: 4 | [32m通过 4[0m | 
+
+════════════════════════════════════════════════════════════
+  D13 🔒 无token统一401验证
+════════════════════════════════════════════════════════════
+  [32m✓[0m [[32mPASS[0m] D13-noauth-workers [90m([90m11ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-orders [90m([90m11ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-leads [90m([90m13ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-courses [90m([90m10ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-reviews [90m([90m12ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-contracts [90m([90m10ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-enrollments [90m([90m10ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-settings [90m([90m11ms[0m)[0m
+  [32m✓[0m [[32mPASS[0m] D13-noauth-users [90m([90m11ms[0m)[0m
+  ── 合计: 9 | [32m通过 9[0m | 
+[34m  ── 深度强化🆕 完成: 98条 | [32m通过 83[0m | [31m失败 15[0m[0m
+[36m
+╔══════════════════════════════════════╗[0m
+[36m║   📊 测试总汇总                       ║[0m
+[36m╚══════════════════════════════════════╝[0m
+  总计: 98 | [32m✅ 通过 83[0m | [31m❌ 失败 15[0m | [33m⏭ 跳过 0个套件[0m
+  通过率: 84.7%
+
+📋 报告已保存: f:\CB-szjfp\reports\report_2026-06-29T11-21-49-287Z.json

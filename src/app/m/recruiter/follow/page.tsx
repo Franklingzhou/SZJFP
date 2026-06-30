@@ -70,7 +70,7 @@ export default function RecruiterFollowPage() {
         if (res?.data && res.data.length > 0) {
           setLeads(res.data);
         }
-      } catch {}
+      } catch (e) { console.error('加载线索失败:', e); }
     };
     loadLeads();
   }, []);
@@ -181,7 +181,7 @@ export default function RecruiterFollowPage() {
       setLeads(prev => prev.map(l => l.id === showFollowRecord ? { ...l, status: followResult as LeadStatus } : l));
       try {
         await updateRecord('leads', showFollowRecord, { status: followResult } as Record<string, unknown>);
-      } catch {}
+      } catch (e) { console.error('更新线索状态失败:', e); }
     }
     setFollowContent('');
     setFollowResult('');

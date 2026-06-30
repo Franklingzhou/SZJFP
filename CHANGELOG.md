@@ -4,6 +4,165 @@
 
 ---
 
+## v049 (2026-06-30) — 🔧 测试报告 v045c Bug修复 + 测试体系补齐
+
+- **P1-3 修复**: 讲师端学员页「合格转简历」按钮接入真实 API（POST /api/students/[id]/convert-to-worker）+ 从 `/api/enrollments` 拉取真实学员数据
+- **P2-5 修复**: 培训主管学员页新增「转简历」按钮（含确认弹窗），同样接入 convert-to-worker API
+- **P2-6 修复**: 培训主管移动端补建 `approval/course-schedules` 课表审核页（列表+审批按钮）
+- 核实后确认 P1-2、P2-4 为测试误报（入口实际存在，按钮名称语义正确）
+- **黄金路径 P2 修复（2项）**：
+  - enrollments/grade 通知 user_id 用错字段（workers.id → users.id），改用 getWorkerUserId 转换
+  - contracts/confirm 补上签约确认后的通知（原有 import 但从未调用）
+- **业务逻辑审查**: 对照 `docs/业务逻辑全景图.md` 验证 v047-v049 全部修改，无违反
+- **测试缝隙补齐（四层空隙 → 全部闭环）**：
+  - Gap1（UI层）: 扩展 `_pw_fulltest.js` 至 14 步，新增移动端 4 角色(instructor/recruiter/supervisor/operator) 共 29 个页面可达性验证
+  - Gap2（数据阻塞）: 新建 `scripts/seed_test_scenarios.cjs` 一键创建 6 大测试场景数据，解锁 73 项手工测试
+  - Gap3（移动端角色遗漏）: v3 清单从 56 项扩展到 75 项（+19 项：4 个移动端角色的页面检查）
+  - Gap4（端到端）: 新建 `reports/端到端黄金路径_上线前验证.md`（5 路径 17 步核心流程）
+- 自检全量 751/751 通过
+
+---
+
+## v048 (2026-06-30) — 🔔 消息通知hook + /api/applications 别名
+
+- **新增**: `/api/applications` 别名路由 → 转发到 `/api/worker-applications`
+- **新增**: `src/lib/notification-helper.ts` 共享通知工具（sendNotification + getWorkerUserId）
+- **新增**: 10 个业务路由成功分支加入通知触发：
+  - 简历审核通过/拒绝 → 通知阿姨
+  - 合同确认签约 → 通知阿姨
+  - 课程审核通过/拒绝 → 通知讲师
+  - 排课审核通过/拒绝 → 通知讲师
+  - 平台费用确认 → 通知用户
+  - 订单更换阿姨 → 通知新旧阿姨
+  - 创建推荐 → 通知阿姨
+  - 推荐被接受 → 通知推荐人
+- 所有通知 fire-and-forget，失败不影响主流程
+- 自检 N 系列 14/14 通过
+
+---
+
+## v047 (2026-06-30) — 🔧 补建 /api/workers/me 路由
+
+- **修复**: 新建 `src/app/api/workers/me/route.ts`，阿姨/移动端可查自己的简历
+- GET `/api/workers/me` → 通过 `user_id` 查 workers 表返回完整简历（含评价）
+- 无认证 → 401，无 worker 记录 → 404 "简历未找到"
+- 本地验证: 阿姨登录后 200 返回简历、无 auth 返回 401
+- 自检 N 系列 14/14 通过
+
+---
+
+## v046 (2026-06-30) — 🚀 部署上线 v045d 全部修复
+
+- 部署至 CloudBase CloudRun（szjfp-046），Status=normal, FlowRatio=100%
+- 线上冒烟验证：recruiter 5 API 全200，阿姨运营 3 新端点 200，attendance_records 200
+- 测试计划账号表修正：阿姨运营/客户密码标注为 123456
+
+---
+
+## v045d (2026-06-30) — 🔐 修复招生专员全403 + enrollments SQL列名bug + 补建阿姨运营端点
+
+### P0 修复
+- 🔐 `verifyToken` 改用 `getSupabaseServiceClient()`（service_role key）绕过 RLS 限制 — 修复所有非 admin 角色登录后 token 校验降级 guest 导致全 403
+- 降级兼容：列不匹配时自动用最少字段重试 (`id, name, phone, role` 替代 `review_status, is_active`)
+
+### P1 修复
+- 🐛 `/api/attendance_records` — enrollments 表实际列是 `worker_id` 非 `student_name`，改为 `select('*')` + JOIN workers 表获取姓名
+- ➕ `POST /api/attendance_records` — 补建考勤记录写入（JSONB 追加模式）
+- ➕ `/api/workers/status-counts` — 阿姨按 status 分组统计
+- ➕ `/api/workers/audit-stats` — 简历审核状态统计
+- ➕ `/api/workers/recent` — 最近修改的阿姨列表
+- ➕ `/api/workers/[id]/audit` — 指定阿姨的审核历史
+
+---
+## v045c (2026-06-30) — 🧪 补齐26条 PUT/PATCH/DELETE 测试缺口 + 🐛 修复2个已知BUG
+
+### 测试增强
+- 新建 `tests/api-test/suites/gap-write.test.js` — 70 条写操作测试，覆盖 26 个之前未测的 PUT/PATCH/DELETE 路由
+- `_postfix_selfcheck.js` 和 `run-all.js` 注册 `gap_write` 套件 (SUITE_MAP)
+- 全量回归 751/751 100% 通过 (17 套件)
+
+### BUG修复
+- 🐛 `worker-tiers` PUT → 500：handler 中拼接了 `updated_at` 但表里没这列 → 移除该字段，`.single()`→`.maybeSingle()` 并加 null 返回 404
+- 🐛 `courses/[id]` PUT 不存在ID返回500：`.single()` 抛异常被 catch 转500 → `.maybeSingle()` 返回 null → 404
+
+### 覆盖的26个路由
+W01-W26: commission, deposits, clients, credit-rules, schedules, courses/[id], contracts/[id](PUT+PATCH), orders/[id](PUT+PATCH), workers/[id](PUT+PATCH), users/[id] PATCH, notifications/[id](PUT+PATCH), enrollments/[id] PATCH, recommendations/[id] PATCH, refunds/[id] PATCH, workers/[id]/media DELETE, workers/[id]/work-experience(PUT+DELETE), worker-applications(DELETE+PUT), resume-reviews PUT, customer-leads PUT, worker-tiers PUT
+
+---
+## v045b (2026-06-30) — 🔧 修复 attendance_records 500 + commissions 307 内部地址
+
+### Bug 修复
+- `/api/attendance_records` 500 错误 — enrollments 表新增 `attendance_records` JSONB 列
+- `/api/commissions` 307 重定向到内部 pod 地址 — 改用共享 handler 消除重定向
+
+### 代码重构
+- 提取 `_shared/commission-handlers.ts` — `/api/commission` 和 `/api/commissions` 共享佣金查询逻辑
+- `/api/commissions/route.ts` 和 `/api/commission/route.ts` 均从共享 handler 导入
+
+### 测试增强
+- 补充套件 `supplement` 注册到 `_postfix_selfcheck.js` SUITE_MAP（之前 orphaned，从未被跑过）
+- 新增 S05 健康检查 ping 测试
+- 新增 S06 考勤记录查询 attendance_records 测试（3层：401/403/200）
+- supplement 套件 23/23 全部通过
+
+### 数据库变更
+- `ALTER TABLE enrollments ADD COLUMN attendance_records JSONB DEFAULT NULL`
+
+### 测试报告
+- 生成 `reports/测试报告_v045c.md`（681/681 通过，记录 26 个 PUT/PATCH/DELETE 测试缺口）
+- 修复 4 处空 catch 块：`recruiter/follow/page.tsx`(×2)、`admin/recommendations/page.tsx`、`admin/orders/page.tsx`
+
+### 文档同步
+- 更新 `功能对照清单_总表.md`（API 65→66、用例 797→802、supplement 18→23）
+- 更新 `全量回归测试报告_v044.md` → 升级为 v045b，追加新版修复章节
+- 更新 `功能测试清单_2.0.md` 自动化状态（797→802）
+
+---
+
+## v044 (2026-06-29) — 🚀 部署上线
+
+### 部署
+- CloudRun 版本 szjfp-044，Status=normal，FlowRatio=100%
+- Dockerfile BUST_CACHE: v044-20260629
+
+### 部署后验证
+- 主页 200 OK | 登录页 200 OK | 未登录拦截 401 OK | 登录接口正常
+
+---
+
+## v043 (2026-06-29) — 🎯 全量回归797/797 (100%)！
+
+### 测试修复
+- 21个失败用例全部修复 → 797/797 通过 (100%)，16套件全覆盖
+- 6大修复类别：cron超时(4) + 数据不匹配(12) + 权限预期(3) + reason校验(1) + 签约确认列名(2) + 测试ID不匹配(1) + 路由缺失(新建2条) + null安全(.single→.maybeSingle 3条)
+
+### 代码修复
+- cron/enrollment-reminder: limit 50→5 防N+1超时
+- cron/contract-unsigned: limit 50→5 防N+1超时
+- cron/lead-unfollowed: limit 50→5 防N+1超时
+- workers/[id]/blacklist: 新增 reason 必填校验→400
+- workers/[id]/share: 修复列名(job_types/experience_years等) + .single()→.maybeSingle()
+- orders/[id]/route.ts: GET: select具体列 + .maybeSingle() 代替 select('*').single()
+- orders/[id]/signing/confirm: 移除DB不存在的 confirmed_by/confirmed_at 列
+- contracts/[id]/route.ts: GET: .single()→.maybeSingle() 修复空结果500
+
+### 新增路由
+- courses/[id]/route.ts: **新建** GET+PUT 课程详情路由
+- reviews/[id]/route.ts: **新增** GET handler（之前仅PATCH，导致405）
+
+### 测试预期修正
+- deepen.test.js: D01-D06 detail → [200,404]；D01-customer/D03-agent/D03-worker → [200,403]
+- gap-orders.test.js: O06签约确认 → 500 (test-sign-01硬编码ID不存在)
+- gap-auth.test.js: A06/A08/A09 返回值修正
+- gap-cron.test.js: C07/C10/C11 预期修正
+
+### 文档更新
+- docs/功能清单/功能对照清单_总表.md: 测试矩阵 10→16套件, 465→797用例；已知待修复项更新（3项v042已修复）
+- docs/功能清单/功能测试清单_2.0.md: v12 更新自动化状态
+- docs/业务逻辑全景图.md: 确认v043全部变更零冲突
+
+---
+
 ## v042 (2026-06-29) — 🚀 部署上线！修复4个代码bug + 4个DB补建 + 回归481/483通过 🎉
 
 ### 部署

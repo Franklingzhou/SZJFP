@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification, getWorkerUserId } from '@/lib/notification-helper';
 
 // POST /api/orders/[id]/replace — 更换阿姨
 export async function POST(
@@ -85,6 +86,29 @@ export async function POST(
 
     // A11: 新阿姨状态 available → busy（如果立即签约）
     // 这里暂时不自动签约，需要经纪人再次确认签约
+
+    // 通知旧阿姨被替换
+    if (oldWorkerId) {
+      const oldUserId = await getWorkerUserId(oldWorkerId as string);
+      if (oldUserId) {
+        sendNotification({
+          user_id: oldUserId,
+          title: '订单阿姨已更换',
+          content: `你的订单 #${id} 已更换阿姨，原因为你已被替换`,
+          type: 'order_replaced',
+        });
+      }
+    }
+    // 通知新阿姨有新的接单机会
+    const newUserId = await getWorkerUserId(new_worker_id);
+    if (newUserId) {
+      sendNotification({
+        user_id: newUserId,
+        title: '新订单推荐',
+        content: `你已被推荐到订单 #${id}`,
+        type: 'new_order',
+      });
+    }
 
     return NextResponse.json({ success: true, ok: true, data: { ...data, new_worker_name: worker.name } });
   } catch (error: unknown) {

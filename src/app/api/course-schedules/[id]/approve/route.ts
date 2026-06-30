@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkPermissionDetailed, forbiddenResponse, unauthorizedResponse } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification } from '@/lib/notification-helper';
 
 // POST /api/course-schedules/[id]/approve — 主管审核排课
 export async function POST(
@@ -41,6 +42,19 @@ export async function POST(
 
     if (!data) {
       return NextResponse.json({ ok: false, error: '排课记录不存在' }, { status: 404 });
+    }
+
+    // 通知讲师排课审核结果
+    const schedData = data as Record<string, unknown>;
+    if (schedData.instructor_id) {
+      sendNotification({
+        user_id: schedData.instructor_id as string,
+        title: approved ? '排课审核通过' : '排课审核未通过',
+        content: approved
+          ? `你的排课 #${id} 已审核通过`
+          : `你的排课 #${id} 审核未通过，原因：${reason || '无'}`,
+        type: approved ? 'schedule_approved' : 'schedule_rejected',
+      });
     }
 
     return NextResponse.json({ success: true, ok: true, data });

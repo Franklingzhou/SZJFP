@@ -1,0 +1,154 @@
+
+╔══════════════════════════════════════════════╗
+║  测试手册2.4 — Playwright全量浏览器测试(v049) ║
+║  目标: http://localhost:3000 ║
+║  新增: 移动端4角色(instructor/recruiter/    ║
+║        supervisor/operator) 页面可达性验证  ║
+╚══════════════════════════════════════════════╝
+
+[34m━━━ 第一步：冒烟测试 S1-S6 ━━━[0m
+  [32m✓[0m S1 首页可访问
+  [32m✓[0m S2 管理员(13000000001) 登录
+  [32m✓[0m S3 经纪人(13600001234) 登录
+  [32m✓[0m S4 培训主管(13100001111) 登录
+  [32m✓[0m S5 阿姨(13800005678) 登录
+  [32m✓[0m S6 客户(13900009876) 登录
+
+[34m━━━ 第二步：管理员页面可达性 (A01-A28) ━━━[0m
+  [32m✓[0m A01 仪表盘 /admin/dashboard 页面
+  [32m✓[0m A02 简历审核列表 /admin/audits 页面
+  [32m✓[0m A07 角色审核 /admin/roles 页面
+  [32m✓[0m A11 用户管理 /admin/users 页面
+  [32m✓[0m A12 阿姨库 /admin/workers 页面
+  [32m✓[0m A13 订单管理 /admin/orders 页面
+  [32m✓[0m A09 课程管理 /admin/courses 页面
+  [32m✓[0m A14 推荐记录 /admin/recommendations 页面
+  [32m✓[0m A15 评价管理 /admin/reviews 页面
+  [32m✓[0m A17 消息通知 /admin/notifications 页面
+  [32m✓[0m A18 系统设置 /admin/settings 页面
+  [32m✓[0m A22 佣金配置 /admin/commission 页面
+  [32m✓[0m A23 分账管理 /admin/settlement 页面
+  [32m✓[0m A24 诚信分 /admin/credit 页面
+  [32m✓[0m A25 保证金 /admin/deposit 页面
+  [32m✓[0m A26 积分管理 /admin/points 页面
+  [32m✓[0m A27 场地管理 /admin/venues 页面
+  [32m✓[0m A05 合同管理 /admin/contracts 页面
+  [32m✓[0m A28 合同模板 /admin/contract-templates 页面
+
+[34m━━━ 第三步：管理员菜单项验证 ━━━[0m
+  [32m✓[0m 管理员 侧边栏菜单 (实测43项, 预期约42项)
+  [90m菜单项: 家政共创平台, 仪表盘, 订单大厅, 客户管理, 线索管理, 学员管理, 阿姨简历库, 课程管理, 排课管理, 考核打分, 合同审核, 合同模板, 培训合同, 中介合同, 简历审核, 订单管理, 推荐记录, 推荐管理, order-signings, 评价...[0m
+
+[34m━━━ 第四步：经纪人页面可达性 (B01-B14) ━━━[0m
+  [32m✓[0m B03 经纪人-仪表盘 /admin/dashboard 可达
+  [32m✓[0m B04 经纪人-订单大厅 /admin/orders 可达
+  [32m✓[0m B05 经纪人-客户管理 /admin/customers 可达
+  [32m✓[0m B11 经纪人-阿姨简历库 /admin/workers 可达
+  [32m✓[0m B07 经纪人-订单管理 /admin/orders 可达
+  [32m✓[0m B13 经纪人-评价 /admin/reviews 可达
+  [32m✓[0m B14 经纪人-个人中心 /admin/profile-settings 可达
+  [32m✓[0m 经纪人 侧边栏菜单 (实测14项, 预期约14项)
+  [32m✓[0m B02 经纪人有客户管理
+  [32m✓[0m N29 经纪人无线索管理
+
+[34m━━━ 第五步：招生代理页面可达性 (R01-R13) ━━━[0m
+  [32m✓[0m R03 招生-仪表盘 /admin/dashboard 可达
+  [32m✓[0m R04 招生-线索管理 /admin/leads 可达
+  [32m✓[0m R09 招生-学员管理 /admin/students 可达
+  [32m✓[0m R10 招生-阿姨简历库 /admin/workers 可达
+  [32m✓[0m R11 招生-课程管理 /admin/courses 可达
+  [32m✓[0m R13 招生-个人中心 /admin/profile-settings 可达
+  [32m✓[0m 招生 侧边栏菜单 (实测14项, 预期约13项)
+  [32m✓[0m N23 招生无客户管理
+  [32m✓[0m R04 招生有线索管理
+
+[34m━━━ 第六步：讲师页面可达性 (T01-T12) ━━━[0m
+  [32m✓[0m T03 讲师-仪表盘 /admin/dashboard 可达
+  [32m✓[0m T04 讲师-学员管理 /admin/students 可达
+  [32m✓[0m T07 讲师-课程管理 /admin/courses 可达
+  [32m✓[0m T08 讲师-排课管理 /admin/course-schedules 可达
+  [32m✓[0m T09 讲师-考核打分 /admin/course-grading 可达
+  [32m✓[0m T10 讲师-证书管理 /admin/certificates 可达
+  [32m✓[0m T12 讲师-个人中心 /admin/profile-settings 可达
+  [32m✓[0m 讲师 侧边栏菜单 (实测14项, 预期约13项)
+  [32m✓[0m N25 讲师无客户管理
+
+[34m━━━ 第七步：培训主管页面可达性 (S01-S16) ━━━[0m
+  [32m✓[0m S03 主管-仪表盘 /admin/dashboard 可达
+  [32m✓[0m S04 主管-线索管理(全量) /admin/leads 可达
+  [32m✓[0m S05 主管-学员管理(全量) /admin/students 可达
+  [32m✓[0m S06 主管-课程管理 /admin/courses 可达
+  [32m✓[0m S07 主管-合同审核 /admin/contracts 可达
+  [32m✓[0m S08 主管-排课管理 /admin/course-schedules 可达
+  [32m✓[0m S09 主管-培训合同 /admin/training-contracts 可达
+  [32m✓[0m S10 主管-阿姨简历库 /admin/workers 可达
+  [32m✓[0m S11 主管-证书管理 /admin/certificates 可达
+  [32m✓[0m S12 主管-等级体系 /admin/levels 可达
+  [32m✓[0m S13 主管-推荐记录 /admin/recommendations 可达
+  [32m✓[0m S14 主管-评价 /admin/reviews 可达
+  [32m✓[0m S16 主管-个人中心 /admin/profile-settings 可达
+  [32m✓[0m 主管 侧边栏菜单 (实测21项, 预期约18项)
+  [32m✓[0m N26 主管无客户管理
+
+[34m━━━ 第八步：移动端阿姨页面 (W01-W17) ━━━[0m
+  [32m✓[0m W01 阿姨端-首页工作台 /m/worker 可达
+  [32m✓[0m W02 阿姨端-查看简历 /m/worker/profile 可达
+  [32m✓[0m W05 阿姨端-接单大厅 /m/worker 可达
+  [32m✓[0m W07 阿姨端-我的订单(通过jobs) /m/worker/jobs 可达
+  [32m✓[0m W09 阿姨端-我的评价 /m/worker/reviews 可达
+  [32m✓[0m W14 阿姨端-我的合同 /m/worker/jobs 可达
+  [32m✓[0m W17 阿姨端-个人中心 /m/worker 可达
+
+[34m━━━ 第九步：移动端客户页面 (C01-C06) ━━━[0m
+  [32m✓[0m C01 客户端-首页 /m/customer 可达
+  [32m✓[0m C02 客户端-我的订单 /m/customer/orders 可达
+  [32m✓[0m C04 客户端-我的合同 /m/customer/orders 可达
+  [32m✓[0m C06 客户端-个人中心 /m/customer/profile 可达
+
+[34m━━━ 第十步：移动端讲师页面 (I01-I08) ━━━[0m
+  [32m✓[0m I01 讲师移动端-讲师首页 /m/instructor 可达
+  [32m✓[0m I02 讲师移动端-课程管理 /m/instructor/courses 可达
+  [32m✓[0m I03 讲师移动端-学员管理 /m/instructor/students 可达
+  [32m✓[0m I04 讲师移动端-合单大厅 /m/instructor/hall 可达
+  [32m✓[0m I05 讲师移动端-阿姨库 /m/instructor/workers 可达
+  [32m✓[0m I06 讲师移动端-跟进记录 /m/instructor/follow 可达
+  [32m✓[0m I07 讲师移动端-评价 /m/instructor/reviews 可达
+  [32m✓[0m I08 讲师移动端-个人中心 /m/instructor/profile 可达
+
+[34m━━━ 第十一步：移动端招生代理页面 (R01-R07) ━━━[0m
+  [32m✓[0m RM01 招生移动端-招生首页 /m/recruiter 可达
+  [32m✓[0m RM02 招生移动端-阿姨库 /m/recruiter/workers 可达
+  [32m✓[0m RM03 招生移动端-合单大厅 /m/recruiter/hall 可达
+  [32m✓[0m RM04 招生移动端-培训推荐 /m/recruiter/training 可达
+  [32m✓[0m RM05 招生移动端-跟进记录 /m/recruiter/follow 可达
+  [32m✓[0m RM06 招生移动端-评价 /m/recruiter/reviews 可达
+  [32m✓[0m RM07 招生移动端-个人中心 /m/recruiter/profile 可达
+
+[34m━━━ 第十二步：移动端培训主管页面 (SM01-SM09) ━━━[0m
+  [32m✓[0m SM01 主管移动端-主管首页 /m/training_supervisor 可达
+  [32m✓[0m SM02 主管移动端-课程管理 /m/training_supervisor/courses 可达
+  [32m✓[0m SM03 主管移动端-学员管理 /m/training_supervisor/students 可达
+  [32m✓[0m SM04 主管移动端-线索管理 /m/training_supervisor/leads 可达
+  [32m✓[0m SM05 主管移动端-合单大厅 /m/training_supervisor/hall 可达
+  [32m✓[0m SM06 主管移动端-课程审核 /m/training_supervisor/approval/courses 可达
+  [32m✓[0m SM07 主管移动端-合同审核 /m/training_supervisor/approval/contracts 可达
+  [32m✓[0m SM08 主管移动端-课表审核(v049新增) /m/training_supervisor/approval/course-schedules 可达
+  [32m✓[0m SM09 主管移动端-评价/个人 /m/training_supervisor/reviews 可达
+
+[34m━━━ 第十三步：移动端阿姨运营页面 (WO01-WO05) ━━━[0m
+  [32m✓[0m WO01 运营移动端-运营首页 /m/worker_operator 可达
+  [32m✓[0m WO02 运营移动端-阿姨管理 /m/worker_operator/workers 可达
+  [32m✓[0m WO03 运营移动端-合单大厅 /m/worker_operator/hall 可达
+  [32m✓[0m WO04 运营移动端-评价 /m/worker_operator/reviews 可达
+  [32m✓[0m WO05 运营移动端-个人中心 /m/worker_operator/profile 可达
+
+[34m━━━ 第十四步：BUG回归 浏览器验证 ━━━[0m
+  [32m✓[0m B07 阿姨访问/admin被拦截(跳转)
+  [32m✓[0m 管理员仪表盘截图已保存
+[36m
+╔══════════════════════════════════════════════╗[0m
+[36m║  浏览器UI全量测试完成(v049 14步 移动端全覆盖) ║[0m
+[36m╠══════════════════════════════════════════════╣[0m
+[36m║  [32m通过: 110[36m  [31m失败: 0[36m  总计: 110  通过率: 100.0%[36m ║[0m
+[36m╚══════════════════════════════════════════════╝[0m
+

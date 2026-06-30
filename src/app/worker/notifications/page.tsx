@@ -18,8 +18,6 @@ export default function WorkerNotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadNotifications(); }, []);
-
   const loadNotifications = async () => {
     try {
       const res = await fetch('/api/notifications', { headers: getAuthHeaders(false) });
@@ -28,6 +26,8 @@ export default function WorkerNotificationsPage() {
     } catch (e) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => { loadNotifications(); }, []);
 
   const markRead = async (id: string) => {
     try {

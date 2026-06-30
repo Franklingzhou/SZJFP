@@ -1,0 +1,611 @@
+{
+  "summary": {
+    "total": 36,
+    "pass": 31,
+    "fail": 5,
+    "duration": 8975,
+    "byCategory": {
+      "权限校验": {
+        "total": 18,
+        "pass": 18,
+        "fail": 0
+      },
+      "正向功能": {
+        "total": 13,
+        "pass": 9,
+        "fail": 4
+      },
+      "边界值": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      },
+      "参数异常": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      }
+    },
+    "byModule": {
+      "workers": {
+        "total": 36,
+        "pass": 31,
+        "fail": 5
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "W01-权限-无token→401",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 40,
+      "timestamp": "2026-06-29T11:40:36.002Z"
+    },
+    {
+      "label": "W01-权限-agent→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 192,
+      "timestamp": "2026-06-29T11:40:36.195Z"
+    },
+    {
+      "label": "W01-权限-supervisor→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 191,
+      "timestamp": "2026-06-29T11:40:36.386Z"
+    },
+    {
+      "label": "W01-权限-worker→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 228,
+      "timestamp": "2026-06-29T11:40:36.614Z"
+    },
+    {
+      "label": "W01-正向-admin审批通过(非pending→409)",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 409,
+      "actualStatus": 409,
+      "status": "PASS",
+      "error": null,
+      "duration": 371,
+      "timestamp": "2026-06-29T11:40:36.985Z"
+    },
+    {
+      "label": "W01-边界-不存在的worker→404",
+      "module": "workers",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/workers/nonexist-w99/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 365,
+      "timestamp": "2026-06-29T11:40:37.351Z"
+    },
+    {
+      "label": "W01-边界-非UUID→404",
+      "module": "workers",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/workers/nonexistent_worker/approve",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 364,
+      "timestamp": "2026-06-29T11:40:37.715Z"
+    },
+    {
+      "label": "W02-权限-无token→401",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/blacklist",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "诚信分过低"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 26,
+      "timestamp": "2026-06-29T11:40:37.741Z"
+    },
+    {
+      "label": "W02-权限-agent→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/blacklist",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 213,
+      "timestamp": "2026-06-29T11:40:37.954Z"
+    },
+    {
+      "label": "W02-权限-worker→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/blacklist",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 186,
+      "timestamp": "2026-06-29T11:40:38.140Z"
+    },
+    {
+      "label": "W02-正向-admin拉黑阿姨",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/blacklist",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试拉黑"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 364,
+      "timestamp": "2026-06-29T11:40:38.504Z"
+    },
+    {
+      "label": "W02-参数-缺reason→400",
+      "module": "workers",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/blacklist",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 200,
+      "status": "FAIL",
+      "error": "期望状态码 400，实际 200 | 响应: {\"ok\":true,\"data\":{\"id\":\"wk_1782701607606\",\"user_id\":\"r001\",\"name\":\"测试阿姨_N01_1782701609563\",\"age\":35,\"gender\":\"女\",\"origin\":\"湖南\",\"photo\":null,\"id_card\":null,\"id_card_front\":null,\"id_card_back\":null,\"jo",
+      "duration": 396,
+      "timestamp": "2026-06-29T11:40:38.901Z"
+    },
+    {
+      "label": "W03-公开-无token→200",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/media",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 217,
+      "timestamp": "2026-06-29T11:40:39.321Z"
+    },
+    {
+      "label": "W03-正向-admin查看媒体",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/media",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 199,
+      "timestamp": "2026-06-29T11:40:39.520Z"
+    },
+    {
+      "label": "W03-正向-worker查看自己媒体",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/media",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 205,
+      "timestamp": "2026-06-29T11:40:39.725Z"
+    },
+    {
+      "label": "W03-公开-customer→200",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/media",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 198,
+      "timestamp": "2026-06-29T11:40:39.924Z"
+    },
+    {
+      "label": "W04-权限-无token→401",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/reject",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "资料不全"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 33,
+      "timestamp": "2026-06-29T11:40:39.957Z"
+    },
+    {
+      "label": "W04-权限-agent→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/reject",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 209,
+      "timestamp": "2026-06-29T11:40:40.166Z"
+    },
+    {
+      "label": "W04-权限-worker→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/reject",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "测试"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 197,
+      "timestamp": "2026-06-29T11:40:40.363Z"
+    },
+    {
+      "label": "W04-正向-admin审核拒绝(不在pending→409)",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/reject",
+      "headers": "Bearer <token>",
+      "body": {
+        "reason": "资料不全需补"
+      },
+      "expectStatus": 409,
+      "actualStatus": 409,
+      "status": "PASS",
+      "error": null,
+      "duration": 384,
+      "timestamp": "2026-06-29T11:40:40.747Z"
+    },
+    {
+      "label": "W04-参数-缺reason(不在pending→409)",
+      "module": "workers",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/reject",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 409,
+      "actualStatus": 409,
+      "status": "PASS",
+      "error": null,
+      "duration": 377,
+      "timestamp": "2026-06-29T11:40:41.124Z"
+    },
+    {
+      "label": "W05-权限-无token→401",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/request-training",
+      "headers": "Bearer <token>",
+      "body": {
+        "course_type": "月嫂"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 52,
+      "timestamp": "2026-06-29T11:40:41.176Z"
+    },
+    {
+      "label": "W05-正向-worker申请培训(无workers:write→403)",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/request-training",
+      "headers": "Bearer <token>",
+      "body": {
+        "course_type": "月嫂",
+        "reason": "想学新技能"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 213,
+      "timestamp": "2026-06-29T11:40:41.389Z"
+    },
+    {
+      "label": "W05-正向-admin替阿姨申请培训",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/request-training",
+      "headers": "Bearer <token>",
+      "body": {
+        "course_type": "育儿嫂"
+      },
+      "expectStatus": 200,
+      "actualStatus": 500,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 500 | 响应: {\"error\":\"创建线索失败\",\"detail\":\"Could not find the 'remark' column of 'leads' in the schema cache\"}",
+      "duration": 562,
+      "timestamp": "2026-06-29T11:40:41.951Z"
+    },
+    {
+      "label": "W05-权限-customer→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/request-training",
+      "headers": "Bearer <token>",
+      "body": {
+        "course_type": "月嫂"
+      },
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 192,
+      "timestamp": "2026-06-29T11:40:42.143Z"
+    },
+    {
+      "label": "W05-边界-不存在的worker→404",
+      "module": "workers",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/workers/nonexist-w99/request-training",
+      "headers": "Bearer <token>",
+      "body": {
+        "course_type": "月嫂"
+      },
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 374,
+      "timestamp": "2026-06-29T11:40:42.517Z"
+    },
+    {
+      "label": "W06-权限-无token→401",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/share",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 43,
+      "timestamp": "2026-06-29T11:40:42.560Z"
+    },
+    {
+      "label": "W06-正向-admin分享简历",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/share",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 404,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 404 | 响应: {\"error\":\"未找到该阿姨\"}",
+      "duration": 359,
+      "timestamp": "2026-06-29T11:40:42.920Z"
+    },
+    {
+      "label": "W06-正向-agent分享简历",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/share",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 404,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 404 | 响应: {\"error\":\"未找到该阿姨\"}",
+      "duration": 391,
+      "timestamp": "2026-06-29T11:40:43.312Z"
+    },
+    {
+      "label": "W06-正向-worker分享自己",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/share",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 404,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 404 | 响应: {\"error\":\"未找到该阿姨\"}",
+      "duration": 374,
+      "timestamp": "2026-06-29T11:40:43.686Z"
+    },
+    {
+      "label": "W06-权限-customer→403",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/share",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 403,
+      "actualStatus": 403,
+      "status": "PASS",
+      "error": null,
+      "duration": 218,
+      "timestamp": "2026-06-29T11:40:43.904Z"
+    },
+    {
+      "label": "W07-公开-无token→200",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/work-experience",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 251,
+      "timestamp": "2026-06-29T11:40:44.155Z"
+    },
+    {
+      "label": "W07-正向-admin查看经历",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/work-experience",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 195,
+      "timestamp": "2026-06-29T11:40:44.350Z"
+    },
+    {
+      "label": "W07-正向-worker查看自己",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/work-experience",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 198,
+      "timestamp": "2026-06-29T11:40:44.548Z"
+    },
+    {
+      "label": "W07-公开-customer→200",
+      "module": "workers",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/workers/wk_1782701607606/work-experience",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 202,
+      "timestamp": "2026-06-29T11:40:44.751Z"
+    },
+    {
+      "label": "W07-正向-admin添加工作经历",
+      "module": "workers",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/workers/wk_1782701607606/work-experience",
+      "headers": "Bearer <token>",
+      "body": {
+        "period": "2025-01至2025-12",
+        "employer": "测试雇主",
+        "job_type": "月嫂",
+        "description": "测试"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 396,
+      "timestamp": "2026-06-29T11:40:45.148Z"
+    }
+  ]
+}

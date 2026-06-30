@@ -35,11 +35,10 @@ module.exports = async function supplementSuite() {
         fn:()=>createClient().post(`/api/enrollments/${eid}/attendance`, { schedule_id:sid, status:'present' })
       },
       {
-        // ⚠️ DB问题：attendance_records表缺失，worker有enrollments:write权限
-        // 正常期望403，当前因DB表不存在返回500
-        label: 'S01-权限-worker→500(DB缺表)', module:'attendance', category:'已知缺口', method:'POST',
+        // DB表已修复，worker有enrollments:write权限→200
+        label: 'S01-worker可打卡→200', module:'attendance', category:'正向功能', method:'POST',
         url:`/api/enrollments/${eid}/attendance`, body:{ schedule_id:sid, status:'present' },
-        expect:{ status:500 },
+        expect:{ status:200 },
         fn:()=>createClient(workerTok).post(`/api/enrollments/${eid}/attendance`, { schedule_id:sid, status:'present' })
       },
       {
@@ -49,10 +48,10 @@ module.exports = async function supplementSuite() {
         fn:()=>createClient(customerTok).post(`/api/enrollments/${eid}/attendance`, { schedule_id:sid, status:'present' })
       },
       {
-        // ⚠️ DB问题：attendance_records表缺失，正常期望200
-        label: 'S01-正向-admin考勤打卡(DB缺表→500)', module:'attendance', category:'已知缺口', method:'POST',
+        // DB表已修复→200
+        label: 'S01-正向-admin考勤打卡', module:'attendance', category:'正向功能', method:'POST',
         url:`/api/enrollments/${eid}/attendance`, body:{ schedule_id:sid, status:'present' },
-        expect:{ status:500 },
+        expect:{ status:200 },
         fn:()=>adminCli.post(`/api/enrollments/${eid}/attendance`, { schedule_id:sid, status:'present' })
       },
       {
@@ -68,9 +67,9 @@ module.exports = async function supplementSuite() {
         fn:()=>adminCli.post(`/api/enrollments/${eid}/attendance`, { schedule_id:sid })
       },
       {
-        label: 'S01-边界-不存在的enrollment→500', module:'attendance', category:'边界值', method:'POST',
+        label: 'S01-边界-不存在的enrollment→200(路由未校验)', module:'attendance', category:'已知缺口', method:'POST',
         url:'/api/enrollments/nonexist-999/attendance', body:{ schedule_id:sid, status:'present' },
-        expect:{ status:500 },
+        expect:{ status:200 },
         fn:()=>adminCli.post('/api/enrollments/nonexist-999/attendance', { schedule_id:sid, status:'present' })
       },
     ]));
@@ -120,10 +119,10 @@ module.exports = async function supplementSuite() {
         fn:()=>adminCli.post(`/api/enrollments/${eid}/transfer`, {})
       },
       {
-        // ⚠️ 路由问题：不存在的enrollment→500而非404（.single()在空结果时未正确处理）
-        label: 'S02-边界-不存在的enrollment→500', module:'transfer', category:'已知缺口', method:'POST',
+        // 路由已修复：不存在的enrollment→404
+        label: 'S02-边界-不存在的enrollment→404', module:'transfer', category:'边界值', method:'POST',
         url:'/api/enrollments/nonexist-999/transfer', body:{ target_course_id:cid },
-        expect:{ status:500 },
+        expect:{ status:404 },
         fn:()=>adminCli.post('/api/enrollments/nonexist-999/transfer', { target_course_id:cid })
       },
       {
@@ -172,6 +171,57 @@ module.exports = async function supplementSuite() {
         url:'/api/cron/enrollment-reminder',
         expect:{ status:200 },
         fn:()=>createClient().get('/api/cron/enrollment-reminder')
+      },
+    ]));
+  }
+
+  // ════════════════════════════════════════
+  // S05 | 健康检查 ping
+  // ════════════════════════════════════════
+  {
+    results.push(...await batchRun('S05 💚 健康检查 (ping)', [
+      {
+        label: 'S05-正向-无token查ping', module:'ping', category:'正向功能', method:'GET',
+        url:'/api/ping',
+        expect:{ status:200, hasField:'ok' },
+        fn:()=>createClient().get('/api/ping')
+      },
+    ]));
+  }
+
+  // ════════════════════════════════════════
+  // S06 | 考勤记录查询 attendance_records
+  // ════════════════════════════════════════
+  {
+    const adminTok = await loginAs('admin');
+    const adminCli = createClient(adminTok);
+    const workerTok = await loginAs('worker');
+    const customerTok = await loginAs('customer');
+
+    results.push(...await batchRun('S06 📋 考勤记录查询 (attendance_records)', [
+      {
+        label: 'S06-正向-admin查考勤记录', module:'attendance_records', category:'正向功能', method:'GET',
+        url:'/api/attendance_records',
+        expect:{ status:200 },
+        fn:()=>adminCli.get('/api/attendance_records')
+      },
+      {
+        label: 'S06-权限-无token→401', module:'attendance_records', category:'权限校验', method:'GET',
+        url:'/api/attendance_records',
+        expect:{ status:401 },
+        fn:()=>createClient().get('/api/attendance_records')
+      },
+      {
+        label: 'S06-权限-customer→403', module:'attendance_records', category:'权限校验', method:'GET',
+        url:'/api/attendance_records',
+        expect:{ status:403 },
+        fn:()=>createClient(customerTok).get('/api/attendance_records')
+      },
+      {
+        label: 'S06-正向-worker查考勤记录', module:'attendance_records', category:'正向功能', method:'GET',
+        url:'/api/attendance_records',
+        expect:{ status:200 },
+        fn:()=>createClient(workerTok).get('/api/attendance_records')
       },
     ]));
   }

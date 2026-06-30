@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { sendNotification, getWorkerUserId } from '@/lib/notification-helper';
 
 // POST /api/contracts/[id]/confirm — 主管确认签约
 export async function POST(
@@ -47,8 +48,18 @@ export async function POST(
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    // v34: contracts表无lead_id列，签约后自动创建阿姨的功能暂不在此处触发
-    // 如需此功能，应通过单独的手动操作完成（创建worker → 关联到合同）
+    // 通知签约阿姨（fire-and-forget）
+    if (contract.worker_id) {
+      const workerUserId = await getWorkerUserId(contract.worker_id);
+      if (workerUserId) {
+        sendNotification({
+          user_id: workerUserId,
+          type: 'contract_confirmed',
+          title: '合同已确认签约',
+          content: `您的合同已被确认签约，请及时查看合同详情。`,
+        }).catch(() => {});
+      }
+    }
 
     return NextResponse.json({ success: true, ok: true, data });
   } catch (error: unknown) {

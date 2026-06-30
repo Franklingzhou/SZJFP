@@ -16,14 +16,18 @@ export async function POST(
     const body = await request.json();
     const { reason } = body as { reason?: string };
 
+    if (!reason) {
+      return NextResponse.json({ ok: false, error: '拉黑原因为必填项' }, { status: 400 });
+    }
+
     const supabase = getSupabaseClient();
 
     const { data, error } = await supabase
       .from('workers')
       .update({
         status: 'blacklisted',
-        blacklist_reason: reason || null,
-        blacklisted_at: new Date().toISOString(),
+        remark: reason || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()

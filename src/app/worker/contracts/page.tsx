@@ -18,8 +18,6 @@ export default function WorkerContractsPage() {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadContracts(); }, []);
-
   const loadContracts = async () => {
     try {
       const res = await fetch('/api/contracts', { headers: getAuthHeaders(false) });
@@ -28,6 +26,8 @@ export default function WorkerContractsPage() {
     } catch (e) { console.error(e); }
     setLoading(false);
   };
+
+  useEffect(() => { loadContracts(); }, []);
 
   const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
     draft: { label: '草稿', color: 'text-slate-500 bg-slate-100', icon: <FileText className="w-3.5 h-3.5" /> },

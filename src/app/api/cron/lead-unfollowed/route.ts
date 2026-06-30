@@ -31,12 +31,13 @@ export async function GET(_request: NextRequest) {
 
     const threshold = new Date(Date.now() - thresholdHours * 60 * 60 * 1000).toISOString();
 
-    // 查询超时未跟进的线索（new 状态 + 创建超过阈值 + 未发过此类提醒）
+    // 查询超时未跟进的线索，限制5条防止超时
     const { data: staleLeads, error } = await supabase
       .from('leads')
       .select('id, name, phone, recruiter_id, created_at')
       .eq('status', 'new')
-      .lt('created_at', threshold);
+      .lt('created_at', threshold)
+      .limit(5);
 
     if (error) {
       console.error('[lead-unfollowed] query error:', error.message);
