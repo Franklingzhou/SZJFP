@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, CheckCircle, AlertCircle } from 'lucide-react';
+import { createRecord } from '@/lib/data-service';
 
 interface AddCustomerFormProps {
   open: boolean;
@@ -16,11 +17,30 @@ export default function AddCustomerForm({ open, onClose, onSubmitted }: AddCusto
   const [demand, setDemand] = useState('');
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
-  const [step, setStep] = useState<'form' | 'success'>('form');
+  const [step, setStep] = useState<'form' | 'success' | 'error'>('form');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim() || !phone.trim()) return;
-    setStep('success');
+    try {
+      const result = await createRecord('customers', {
+        name: name.trim(),
+        phone: phone.trim(),
+        address: address.trim() || undefined,
+        requirement: demand.trim() || undefined,
+        budget_min: budgetMin ? parseInt(budgetMin) : undefined,
+        budget_max: budgetMax ? parseInt(budgetMax) : undefined,
+      } as Record<string, unknown>);
+      if (result.success) {
+        setStep('success');
+      } else {
+        setErrorMsg(result.error || '创建失败');
+        setStep('error');
+      }
+    } catch {
+      setErrorMsg('网络错误，请重试');
+      setStep('error');
+    }
   };
 
   const handleDone = () => {
@@ -41,7 +61,14 @@ export default function AddCustomerForm({ open, onClose, onSubmitted }: AddCusto
           <button onClick={onClose} className="p-1"><X className="h-5 w-5 text-slate-400" /></button>
         </div>
 
-        {step === 'success' ? (
+        {step === 'error' ? (
+          <div className="px-4 py-10 text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-red-600">录入失败</h3>
+            <p className="text-sm text-slate-500 mt-2">{errorMsg}</p>
+            <button onClick={() => setStep('form')} className="mt-6 px-8 py-2.5 bg-amber-500 text-white rounded-xl font-medium">返回修改</button>
+          </div>
+        ) : step === 'success' ? (
           <div className="px-4 py-10 text-center">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-800">客户录入成功</h3>

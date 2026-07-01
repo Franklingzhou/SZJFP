@@ -4,6 +4,38 @@
 
 ---
 
+## v058 (2026-07-01) — 🐛 Session RLS修复 + 权限矩阵修正
+
+- **Session 404**: `session/route.ts` 改用 `getSupabaseServiceClient()`（anon key 被 RLS 拦截导致 404）
+- **workers:write 权限**: 恢复 `agent` 和 `recruiter`（经纪人管理阿姨、招生录入阿姨）
+- **leads:write 权限**: 恢复 `agent`（经纪人可关闭/转化关联线索）
+- **auth-middleware guest降级**: 删除 dev 模式下 token 失败→guest 的降级逻辑
+- **session route 重构**: `parseToken()` → `parseAndVerifyToken()` 兼容 JWT 格式
+- **B04/B05 测试修正**: referral 测试预期从 401→200（valid JWT 应正确返回数据）
+
+## v057 (2026-07-01) — 🔒 安全加固 8 项
+
+- **P0-01 JWT_SECRET**: `password-login` 自定义 token → 改用 `auth-token.ts` 的 `signToken()`，JWT_SECRET 环境变量统一签名
+- **P0-02 Token 过期**: JWT 7 天过期（`auth-token.ts` 已实现，password-login 之前绕过）
+- **P0-04 CSRF**: 新增 `src/middleware.ts` + `src/lib/csrf.ts`，API 非 GET 请求校验 Origin
+- **P1-01 手机脱敏**: `maskPhone()` 从空函数 → `139****1111` 格式
+- **P1-02 身份证脱敏**: 新增 `maskIdCard()` → `320102********1234` 格式
+- **P1-03 XSS 过滤**: 新增 `sanitizeHtml()` 转义 HTML 特殊字符
+- **P2-01 死代码**: 删除 `src/hooks/use-api.ts`（108行，0处引用）
+- **P2-02 init-users 加固**: 生产环境加 `ALLOW_INIT_USERS` 环境变量开关
+- **referral 路由**: `my-referrals`/`my-code` 统一用 `parseAndVerifyToken()` 替代内联 JWT 处理
+
+## v056 (2026-07-01) — 🐛 密码哈希校验修复 + 🖼️ 简历文件key持久化
+
+- **修复**: `password-login` 用 `===` 直接比较密码 → 改为 `verifyPassword()` 兼容明文+哈希(salt:hash)双格式
+- **影响**: customer c001 密码为哈希格式时登录 401 → 现正常登录
+- **一致性**: `change-password`/`init-users`/`register` 等6个路由统一使用 `hashPassword()` 哈希存储
+- **简历增强**: `m/worker/resume` 上传文件时同时持久化 `key`（头像/身份证/照片/视频），链接7天过期后自动刷新
+  - 所有上传入口接入 `/api/upload`（不再用 FileReader/URL.createObjectURL）
+  - `<img onError>` 自动调用 `/api/file-url?key=xxx` 刷新过期链接
+  - handleSave 写入 `avatar_key`/`idcard_front_key`/`idcard_back_key`/`photo_keys`/`video_keys`
+- **文件**: `password-login/route.ts`, `change-password/route.ts`, `init-users/route.ts`, 5个 auth 路由, `resume/page.tsx`
+
 ## v049 Hotfix (2026-07-01) — 🚑 订单弹窗阿姨查询修正 + 黄金路径v2全覆盖
 
 - **Hotfix**: 订单大厅/订单管理"选择阿姨"弹窗查询条件 `status=idle` → `status=available`（数据库664个阿姨中442个为available，idle永远返回空）

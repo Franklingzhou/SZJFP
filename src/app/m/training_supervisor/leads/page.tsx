@@ -69,17 +69,20 @@ export default function TrainingSupervisorLeadsPage() {
   const [leadIntention, setLeadIntention] = useState('');
   const [leadNote, setLeadNote] = useState('');
   const [assignRecruiter, setAssignRecruiter] = useState('');
+  const [loadingFollows, setLoadingFollows] = useState<Record<string, boolean>>({});
 
   const [showFollowRecord, setShowFollowRecord] = useState<string | null>(null);
   const [followContent, setFollowContent] = useState('');
   const [followResult, setFollowResult] = useState('');
 
   const [showContractForm, setShowContractForm] = useState(false);
+  const [contractFormLeadId, setContractFormLeadId] = useState<string | null>(null);
   const [contractName, setContractName] = useState('');
   const [contractIdCard, setContractIdCard] = useState('');
   const [contractCourse, setContractCourse] = useState('');
   const [contractPrice, setContractPrice] = useState('');
   const [contractIdResult, setContractIdResult] = useState<{ gender: string; birthday: string } | null>(null);
+  const [sendingContract, setSendingContract] = useState(false);
 
   // 初始化加载数据
   useEffect(() => {
@@ -87,6 +90,30 @@ export default function TrainingSupervisorLeadsPage() {
       setLeads([...mockRecruiterLeads]);
     });
   }, []);
+
+  // 选中线索时加载跟进记录
+  useEffect(() => {
+    if (!selectedLead) return;
+    if (loadingFollows[selectedLead]) return;
+    const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['x-session'] = token;
+    setLoadingFollows(prev => ({ ...prev, [selectedLead]: true }));
+    fetch(`/api/leads/${selectedLead}/followups`, { headers })
+      .then(r => r.json())
+      .then(data => {
+        if (data.data && data.data.length > 0) {
+          const records: FollowRecord[] = data.data.map((f: any) => ({
+            date: (f.created_at || '').slice(0, 10),
+            content: f.content || '',
+            result: f.result || '已跟进',
+          }));
+          setFollowRecords(prev => ({ ...prev, [selectedLead]: records }));
+        }
+      })
+      .catch(e => console.error('加载跟进记录失败:', e))
+      .finally(() => setLoadingFollows(prev => ({ ...prev, [selectedLead]: false })));
+  }, [selectedLead]);
 
   // 获取所有招生人员
   const recruiters = mockAgents.filter(a => a.role === 'recruiter' && a.reviewStatus === 'approved');
@@ -155,6 +182,17 @@ export default function TrainingSupervisorLeadsPage() {
       ...prev,
       [showFollowRecord]: [...(prev[showFollowRecord] || []), newRecord],
     }));
+    // 持久化到API
+    try {
+      const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['x-session'] = token;
+      await fetch(`/api/leads/${showFollowRecord}/followups`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ content: followContent, result: followResult || 'following' }),
+      });
+    } catch (e) { console.error('保存跟进记录失败:', e); }
     if (followResult) {
       try {
         const updateResult = await updateRecord('leads', showFollowRecord, {
@@ -171,6 +209,7 @@ export default function TrainingSupervisorLeadsPage() {
     }
     setFollowContent('');
     setFollowResult('');
+    setShowFollowRecord(null);
   };
 
   const handleSignLead = async (leadId: string) => {
@@ -247,20 +286,46 @@ export default function TrainingSupervisorLeadsPage() {
     setContractIdResult({ gender, birthday: `${year}-${month}-${day}` });
   };
 
-  const handleSendContract = () => {
-    if (!contractName || !contractIdCard || !contractCourse || !contractPrice) {
+  const handleSendContract = async () => {
+    if (!contractName || !contractIdCard || !contractCourse || !contractPrice || !contractFormLeadId) {
       alert('请填写完整信息');
       return;
     }
-    alert(`合同已发送给 ${contractName}\n身份证：${contractIdCard}\n课程：${contractCourse}\n价格：¥${contractPrice}\n\n对方将通过微信小程序查看并短信验证签署。`);
-    setShowContractForm(false);
-    setContractName(''); setContractIdCard(''); setContractCourse(''); setContractPrice('');
-    setContractIdResult(null);
+    setSendingContract(true);
+    try {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+      const res = await fetch('/api/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-session': token || '' },
+        body: JSON.stringify({
+          type: 'training',
+          title: `${contractName} - ${contractCourse}`,
+          party_b_name: contractName,
+          party_b_id_card: contractIdCard,
+          price: parseFloat(contractPrice),
+        }),
+      });
+      const result = await res.json();
+      if (res.ok && (result.success || result.data)) {
+        alert(`培训合同已创建：${contractName}\n课程：${contractCourse}\n金额：¥${contractPrice}\n\n合同状态：草稿，待学员签署`);
+        setShowContractForm(false);
+        setContractName(''); setContractIdCard(''); setContractCourse(''); setContractPrice('');
+        setContractFormLeadId(null);
+        setContractIdResult(null);
+      } else {
+        alert('创建合同失败：' + (result.error || '请重试'));
+      }
+    } catch {
+      alert('网络错误，请重试');
+    } finally {
+      setSendingContract(false);
+    }
   };
 
   const openContractForm = (leadId: string) => {
     const lead = leads.find(l => l.id === leadId);
     if (lead) {
+      setContractFormLeadId(leadId);
       setContractName(lead.name);
       setContractIdCard('');
       setContractCourse('');
@@ -362,11 +427,11 @@ export default function TrainingSupervisorLeadsPage() {
                         value={showFollowRecord === l.id ? followContent : ''}
                         onChange={e => { if (showFollowRecord !== l.id) setShowFollowRecord(l.id); setFollowContent(e.target.value); }}
                         onClick={e => e.stopPropagation()}
-                        placeholder="输入本次跟进内容…"
                         className="w-full border border-blue-200 rounded-lg px-2 py-1.5 text-xs bg-white resize-none"
-                        rows={2}
-                      />
-                      <p className="text-xs font-semibold text-blue-700 mb-1.5 mt-1.5">跟进结果</p>
+                      rows={5}
+                      placeholder="输入本次跟进内容（支持多行）…"
+                    />
+                    <p className="text-xs font-semibold text-blue-700 mb-1.5 mt-2">跟进结果</p>
                       <div className="grid grid-cols-2 gap-1.5">
                         {FOLLOW_RESULT_OPTIONS.map(opt => (
                           <button
@@ -550,8 +615,8 @@ export default function TrainingSupervisorLeadsPage() {
                 <input type="number" value={contractPrice} onChange={e => setContractPrice(e.target.value)} placeholder="培训费用" className="w-full border rounded-lg px-3 py-2 text-sm" />
               </div>
             </div>
-            <button onClick={handleSendContract} disabled={!contractName || !contractIdCard || !contractCourse || !contractPrice} className="w-full py-3 bg-amber-500 text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-1">
-              <Mail className="h-4 w-4" /> 发送合同
+            <button onClick={handleSendContract} disabled={!contractName || !contractIdCard || !contractCourse || !contractPrice || sendingContract} className="w-full py-3 bg-amber-500 text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-1">
+              {sendingContract ? '发送中…' : (<><Mail className="h-4 w-4" /> 发送合同</>)}
             </button>
             <button onClick={() => setShowContractForm(false)} className="w-full py-3 bg-slate-100 text-slate-700 rounded-xl font-medium">取消</button>
           </div>

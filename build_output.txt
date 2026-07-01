@@ -1,1 +1,17 @@
-npm warn Unknown project config "node-linker". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> szjfp@0.1.0 dev F:\CB-szjfp
+> next dev -p 3000 "--port" "3000"
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.106:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+✓ Starting...
+✓ Ready in 9.2s
+[?25h
+ ELIFECYCLE  Command failed with exit code 1.
+
+f:\CB-szjfp>

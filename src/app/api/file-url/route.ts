@@ -4,7 +4,7 @@ import { requireAuth, unauthorizedResponse } from '@/lib/auth-middleware';
 
 const storage = new S3Storage({
   endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
-  accessKey: '',
+  accessKey: process.env.COZE_WORKLOAD_API_TOKEN || '',
   secretKey: '',
   bucketName: process.env.COZE_BUCKET_NAME,
   region: 'cn-beijing',
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const url = await storage.generatePresignedUrl({
       key,
-      expireTime: 86400, // 24 hours
+      expireTime: 604800, // 7 days
     });
 
     return NextResponse.json({ success: true, url });

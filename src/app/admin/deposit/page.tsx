@@ -72,6 +72,7 @@ export default function DepositPage() {
       setDeposits(result.ok ? result.data : []);
     } catch (err) {
       console.error('[deposits] load error:', err);
+      setMessage('加载保证金数据失败');
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,9 @@ export default function DepositPage() {
       const res = await fetch('/api/users?limit=500', { headers: getAuthHeaders() });
       const result = await res.json();
       if (result.ok) setUsers(result.data || []);
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('[deposits] load users error:', err);
+    }
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyPassword } from '@/lib/auth-password';
 
 // PC端手机号+密码登录
 export async function POST(request: NextRequest) {
@@ -23,13 +24,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '手机号或密码错误' }, { status: 401 });
     }
 
-    // 优先选择：is_active=true + 审核通过 + 有密码的账号
-    const user = users.find((u: Record<string, unknown>) => 
+    // 在所有候选账号中直接匹配密码（兼容明文/哈希，支持重复手机号）
+    const activeApprovedUsers = users.filter((u: Record<string, unknown>) => 
       u.password_hash && u.is_active === true && u.review_status === 'approved'
-    ) || users.find((u: Record<string, unknown>) => u.password_hash) || users[0];
+    );
+    const usersWithPassword = users.filter((u: Record<string, unknown>) => u.password_hash);
+    const candidates = activeApprovedUsers.length > 0 ? activeApprovedUsers : (usersWithPassword.length > 0 ? usersWithPassword : users);
+
+    const user = candidates.find((u: Record<string, unknown>) => 
+      typeof u.password_hash === 'string' && verifyPassword(password, u.password_hash as string)
+    );
 
     // 校验密码
-    if (!user.password_hash || user.password_hash !== password) {
+    if (!user || !user.password_hash) {
       return NextResponse.json({ error: '手机号或密码错误' }, { status: 401 });
     }
 
@@ -59,8 +66,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 生成token
-    const token = generateToken(user.id);
+    // 生成标准 JWT token（7天过期，环境变量 JWT_SECRET 签名）
+    const { signToken } = await import('@/lib/auth-token');
+    const token = signToken(user.id as string);
 
     return NextResponse.json({
       success: true,
@@ -79,11 +87,4 @@ export async function POST(request: NextRequest) {
     console.error('[password-login] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
-}
-
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
 }

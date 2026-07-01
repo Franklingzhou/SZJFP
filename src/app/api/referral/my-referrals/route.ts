@@ -10,23 +10,11 @@ export async function GET(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 解析用户
-    let userId = '';
-    const { data: sessionData } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', token)
-      .maybeSingle();
-    if (sessionData) {
-      userId = sessionData.id;
-    } else {
-      const jwt = await import('jsonwebtoken');
-      try {
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as { userId: string };
-        userId = decoded.userId;
-      } catch {
-        return NextResponse.json({ error: '无效 token' }, { status: 401 });
-      }
+    // 解析 JWT token
+    const { parseAndVerifyToken } = await import('@/lib/auth-token');
+    const userId = parseAndVerifyToken(token);
+    if (!userId) {
+      return NextResponse.json({ error: '无效 token' }, { status: 401 });
     }
 
     // 查我推荐的线索（阿姨意向）

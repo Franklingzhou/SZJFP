@@ -71,8 +71,8 @@ export async function PUT(request: NextRequest) {
   }
   try {
     const body = await request.json();
-    const { id, name, address, capacity, description } = body as {
-      id: string; name?: string; address?: string; capacity?: number; description?: string;
+    const { id, name, address, capacity, description, bookings, status } = body as {
+      id: string; name?: string; address?: string; capacity?: number; description?: string; bookings?: { date: string; time: string; course: string }[]; status?: string;
     };
     if (!id) return NextResponse.json({ error: '缺少场地ID' }, { status: 400 });
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
@@ -82,6 +82,8 @@ export async function PUT(request: NextRequest) {
     if (address !== undefined) updates.address = address;
     if (capacity !== undefined) updates.capacity = capacity;
     if (description !== undefined) updates.description = description;
+    if (bookings !== undefined) updates.bookings = bookings;
+    if (status !== undefined) updates.status = status;
     const { data, error } = await supabase.from('venues').update(updates).eq('id', id).select();
     if (error) {
       if (error.message?.includes('does not exist')) {
@@ -95,6 +97,35 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ success: true, data: data[0] });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '更新失败';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+// DELETE /api/venues?id={id} — 删除场地
+export async function DELETE(request: NextRequest) {
+  const result = await checkPermissionDetailed(request, 'venues:write');
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') return unauthorizedResponse();
+    return forbiddenResponse('无操作权限');
+  }
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ error: '缺少场地ID' }, { status: 400 });
+    }
+    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseClient();
+    const { error } = await supabase.from('venues').delete().eq('id', id);
+    if (error) {
+      if (error.message?.includes('does not exist')) {
+        return NextResponse.json({ success: true });
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '删除失败';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

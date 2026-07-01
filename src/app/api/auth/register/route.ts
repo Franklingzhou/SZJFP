@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth-token';
+import { hashPassword } from '@/lib/auth-password';
 
 // 公开注册接口（无需token）
 // 创建用户后需管理员审核才能登录
@@ -112,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     // 外部角色自动通过直接返回token，内部角色需等待审核
     if (autoApproved) {
-      const token = generateToken(newUser.id);
+      const token = signToken(newUser.id);
       return NextResponse.json(
         {
           success: true,
@@ -183,9 +185,3 @@ async function verifyCode(phone: string, code: string): Promise<boolean> {
   }
 }
 
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
-}

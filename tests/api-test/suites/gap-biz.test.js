@@ -109,8 +109,8 @@ module.exports = async function gapBizSuite() {
       { label:'B05-权限-无token→401', module:'referral', category:'权限校验', method:'GET',
         url:'/api/referral/my-referrals', expect:{ status:401 },
         fn:()=>createClient().get('/api/referral/my-referrals') },
-      { label:'B05-agent推荐记录(非标auth→401)', module:'referral', category:'正向功能', method:'GET',
-        url:'/api/referral/my-referrals', expect:{ status:401 },
+      { label:'B05-agent获取推荐记录→200', module:'referral', category:'正向功能', method:'GET',
+        url:'/api/referral/my-referrals', expect:{ status:200 },
         fn:async()=>{const tok=await loginAs('agent');return createClient(tok).get('/api/referral/my-referrals')} },
     ]));
   }

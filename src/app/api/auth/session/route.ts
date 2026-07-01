@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { parseAndVerifyToken } from '@/lib/auth-token';
 
 // 获取当前登录session
 // 通过token或openid验证用户身份
@@ -14,8 +15,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 解析token获取userId
-    const userId = parseToken(token);
+    // 使用统一 token 验证（支持 JWT + 旧格式）
+    const userId = parseAndVerifyToken(token);
     if (!userId) {
       return NextResponse.json(
         { error: 'token无效', isLoggedIn: false },
@@ -58,19 +59,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function parseToken(token: string): string | null {
-  try {
-    // token格式: base64url(userId:timestamp).hashPrefix
-    const parts = token.split('.');
-    if (parts.length < 2) return null;
-    const decoded = Buffer.from(parts[0], 'base64url').toString('utf-8');
-    const userId = decoded.split(':')[0];
-    return userId || null;
-  } catch {
-    return null;
-  }
-}
-
 async function findUserById(userId: string): Promise<{
   id: string;
   name: string;
@@ -79,8 +67,8 @@ async function findUserById(userId: string): Promise<{
   review_status: string;
 } | null> {
   try {
-    const { getSupabaseClient } = await import('@/storage/database/supabase-client');
-    const supabase = getSupabaseClient();
+    const { getSupabaseServiceClient } = await import('@/storage/database/supabase-client');
+    const supabase = getSupabaseServiceClient();
 
     const { data, error } = await supabase
       .from('users')

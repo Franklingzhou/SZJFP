@@ -74,7 +74,7 @@ export default function WorkerCoursesPage() {
   async function loadData() {
     setLoading(true);
     try {
-      const userId = localStorage.getItem('miniapp_user_id');
+      const userId = localStorage.getItem('miniapp_userid') || localStorage.getItem('auth_userid');
       if (!userId) {
         setEnrollments([]);
         return;

@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
       contentType: file.type,
     });
 
-    // Generate a presigned URL for immediate access
+    // Generate a presigned URL for immediate access (7 days, refreshed via /api/file-url)
     const presignedUrl = await storage.generatePresignedUrl({
       key: fileKey,
-      expireTime: 86400, // 24 hours
+      expireTime: 604800, // 7 days
     });
 
     return NextResponse.json({

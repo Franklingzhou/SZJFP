@@ -138,6 +138,7 @@ export default function OrdersPage() {
       if (data.data) setOrders(data.data);
     } catch (e) {
       console.error('订单数据加载失败:', e);
+      alert('订单数据加载失败，请刷新重试');
     } finally {
       setLoading(false);
     }
@@ -446,6 +447,7 @@ export default function OrdersPage() {
       }
     } catch (e) {
       console.error('加载合同失败', e);
+      alert('合同数据加载失败，请重试');
     }
   };
 
@@ -529,6 +531,7 @@ export default function OrdersPage() {
       }
     } catch (e) {
       console.error('确认失败', e);
+      alert('主管确认失败，网络错误');
     } finally {
       setSubmitting(false);
     }

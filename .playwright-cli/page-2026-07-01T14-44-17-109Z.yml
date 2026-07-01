@@ -1,0 +1,245 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "家政共创平台" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - generic [ref=e9]: 家政共创平台
+      - navigation [ref=e10]:
+        - list [ref=e11]:
+          - listitem [ref=e12]:
+            - link "仪表盘" [ref=e13] [cursor=pointer]:
+              - /url: /admin/dashboard
+              - img [ref=e14]
+              - generic [ref=e19]: 仪表盘
+          - listitem [ref=e20]:
+            - link "订单大厅" [ref=e21] [cursor=pointer]:
+              - /url: /admin/hall
+              - img [ref=e22]
+              - generic [ref=e25]: 订单大厅
+          - listitem [ref=e26]:
+            - link "客户管理" [ref=e27] [cursor=pointer]:
+              - /url: /admin/clients
+              - img [ref=e28]
+              - generic [ref=e32]: 客户管理
+          - listitem [ref=e33]:
+            - link "线索管理" [ref=e34] [cursor=pointer]:
+              - /url: /admin/leads
+              - img [ref=e35]
+              - generic [ref=e39]: 线索管理
+          - listitem [ref=e40]:
+            - link "学员管理" [ref=e41] [cursor=pointer]:
+              - /url: /admin/students
+              - img [ref=e42]
+              - generic [ref=e47]: 学员管理
+          - listitem [ref=e48]:
+            - link "阿姨简历库" [ref=e49] [cursor=pointer]:
+              - /url: /admin/workers
+              - img [ref=e50]
+              - generic [ref=e55]: 阿姨简历库
+          - listitem [ref=e56]:
+            - link "课程管理" [ref=e57] [cursor=pointer]:
+              - /url: /admin/courses
+              - img [ref=e58]
+              - generic [ref=e61]: 课程管理
+          - listitem [ref=e62]:
+            - link "排课管理" [ref=e63] [cursor=pointer]:
+              - /url: /admin/course-schedules
+              - img [ref=e64]
+              - generic [ref=e66]: 排课管理
+          - listitem [ref=e67]:
+            - link "考核打分" [ref=e68] [cursor=pointer]:
+              - /url: /admin/course-grading
+              - img [ref=e69]
+              - generic [ref=e72]: 考核打分
+          - listitem [ref=e73]:
+            - link "合同审核" [ref=e74] [cursor=pointer]:
+              - /url: /admin/contracts
+              - img [ref=e75]
+              - generic [ref=e78]: 合同审核
+          - listitem [ref=e79]:
+            - link "合同模板" [ref=e80] [cursor=pointer]:
+              - /url: /admin/contract-templates
+              - img [ref=e81]
+              - generic [ref=e84]: 合同模板
+          - listitem [ref=e85]:
+            - link "培训合同" [ref=e86] [cursor=pointer]:
+              - /url: /admin/lead-contracts
+              - img [ref=e87]
+              - generic [ref=e90]: 培训合同
+          - listitem [ref=e91]:
+            - link "中介合同" [ref=e92] [cursor=pointer]:
+              - /url: /admin/agency-contracts
+              - img [ref=e93]
+              - generic [ref=e98]: 中介合同
+          - listitem [ref=e99]:
+            - link "简历审核" [ref=e100] [cursor=pointer]:
+              - /url: /admin/resume-reviews
+              - img [ref=e101]
+              - generic [ref=e105]: 简历审核
+          - listitem [ref=e106]:
+            - link "订单管理" [ref=e107] [cursor=pointer]:
+              - /url: /admin/orders
+              - img [ref=e108]
+              - generic [ref=e111]: 订单管理
+          - listitem [ref=e112]:
+            - link "推荐记录" [ref=e113] [cursor=pointer]:
+              - /url: /admin/recommendations
+              - img [ref=e114]
+              - generic [ref=e119]: 推荐记录
+          - listitem [ref=e120]:
+            - link "推荐管理" [ref=e121] [cursor=pointer]:
+              - /url: /admin/referrals
+              - img [ref=e122]
+              - generic [ref=e126]: 推荐管理
+          - listitem [ref=e127]:
+            - link "客户管理" [ref=e128] [cursor=pointer]:
+              - /url: /admin/customer-leads
+              - img [ref=e129]
+              - generic [ref=e132]: 客户管理
+          - listitem [ref=e133]:
+            - link "order-signings" [ref=e134] [cursor=pointer]:
+              - /url: /admin/order-signings
+              - img [ref=e135]
+              - generic [ref=e140]: order-signings
+          - listitem [ref=e141]:
+            - link "评价" [ref=e142] [cursor=pointer]:
+              - /url: /admin/reviews
+              - img [ref=e143]
+              - generic [ref=e145]: 评价
+          - listitem [ref=e146]:
+            - link "佣金配置" [ref=e147] [cursor=pointer]:
+              - /url: /admin/commission
+              - img [ref=e148]
+              - generic [ref=e150]: 佣金配置
+          - listitem [ref=e151]:
+            - link "分账管理" [ref=e152] [cursor=pointer]:
+              - /url: /admin/settlement
+              - img [ref=e153]
+              - generic [ref=e156]: 分账管理
+          - listitem [ref=e157]:
+            - link "诚信分管理" [ref=e158] [cursor=pointer]:
+              - /url: /admin/credit
+              - img [ref=e159]
+              - generic [ref=e161]: 诚信分管理
+          - listitem [ref=e162]:
+            - link "保证金管理" [ref=e163] [cursor=pointer]:
+              - /url: /admin/deposit
+              - img [ref=e164]
+              - generic [ref=e166]: 保证金管理
+          - listitem [ref=e167]:
+            - link "积分管理" [ref=e168] [cursor=pointer]:
+              - /url: /admin/points
+              - img [ref=e169]
+              - generic [ref=e173]: 积分管理
+          - listitem [ref=e174]:
+            - link "退款管理" [ref=e175] [cursor=pointer]:
+              - /url: /admin/refunds
+              - img [ref=e176]
+              - generic [ref=e179]: 退款管理
+          - listitem [ref=e180]:
+            - link "平台收费" [ref=e181] [cursor=pointer]:
+              - /url: /admin/platform-fees
+              - img [ref=e182]
+              - generic [ref=e185]: 平台收费
+          - listitem [ref=e186]:
+            - link "证书管理" [ref=e187] [cursor=pointer]:
+              - /url: /admin/certificates
+              - img [ref=e188]
+              - generic [ref=e191]: 证书管理
+          - listitem [ref=e192]:
+            - link "用户管理" [ref=e193] [cursor=pointer]:
+              - /url: /admin/users
+              - img [ref=e194]
+              - generic [ref=e199]: 用户管理
+          - listitem [ref=e200]:
+            - link "角色审核" [ref=e201] [cursor=pointer]:
+              - /url: /admin/roles
+              - img [ref=e202]
+              - generic [ref=e206]: 角色审核
+          - listitem [ref=e207]:
+            - link "系统设置" [ref=e208] [cursor=pointer]:
+              - /url: /admin/settings
+              - img [ref=e209]
+              - generic [ref=e212]: 系统设置
+          - listitem [ref=e213]:
+            - link "角色权限" [ref=e214] [cursor=pointer]:
+              - /url: /admin/role-permissions
+              - img [ref=e215]
+              - generic [ref=e218]: 角色权限
+          - listitem [ref=e219]:
+            - link "数据权限" [ref=e220] [cursor=pointer]:
+              - /url: /admin/data-permissions
+              - img [ref=e221]
+              - generic [ref=e225]: 数据权限
+          - listitem [ref=e226]:
+            - link "字段权限" [ref=e227] [cursor=pointer]:
+              - /url: /admin/field-permissions
+              - img [ref=e228]
+              - generic [ref=e230]: 字段权限
+          - listitem [ref=e231]:
+            - link "通知管理" [ref=e232] [cursor=pointer]:
+              - /url: /admin/notifications
+              - img [ref=e233]
+              - generic [ref=e236]: 通知管理
+          - listitem [ref=e237]:
+            - link "场地管理" [ref=e238] [cursor=pointer]:
+              - /url: /admin/venues
+              - img [ref=e239]
+              - generic [ref=e242]: 场地管理
+          - listitem [ref=e243]:
+            - link "等级体系" [ref=e244] [cursor=pointer]:
+              - /url: /admin/tiers
+              - img [ref=e245]
+              - generic [ref=e248]: 等级体系
+          - listitem [ref=e249]:
+            - link "考核评估" [ref=e250] [cursor=pointer]:
+              - /url: /admin/assessments
+              - img [ref=e251]
+              - generic [ref=e253]: 考核评估
+          - listitem [ref=e254]:
+            - link "等级管理" [ref=e255] [cursor=pointer]:
+              - /url: /admin/levels
+              - img [ref=e256]
+              - generic [ref=e260]: 等级管理
+          - listitem [ref=e261]:
+            - link "操作日志" [ref=e262] [cursor=pointer]:
+              - /url: /admin/operation-logs
+              - img [ref=e263]
+              - generic [ref=e266]: 操作日志
+          - listitem [ref=e267]:
+            - link "个人中心" [ref=e268] [cursor=pointer]:
+              - /url: /admin/profile-settings
+              - img [ref=e269]
+              - generic [ref=e281]: 个人中心
+          - listitem [ref=e282]:
+            - link "我的简历" [ref=e283] [cursor=pointer]:
+              - /url: /admin/my-resume
+              - img [ref=e284]
+              - generic [ref=e287]: 我的简历
+          - listitem [ref=e288]:
+            - link "我的合同" [ref=e289] [cursor=pointer]:
+              - /url: /admin/my-contracts
+              - img [ref=e290]
+              - generic [ref=e293]: 我的合同
+      - generic [ref=e294]:
+        - button "退出登录" [ref=e295]:
+          - img [ref=e296]
+          - generic [ref=e299]: 退出登录
+        - button [ref=e300]:
+          - img [ref=e301]
+    - generic [ref=e303]:
+      - banner [ref=e304]:
+        - generic [ref=e306]:
+          - img [ref=e307]
+          - textbox "搜索阿姨、经纪人、订单..." [ref=e310]
+        - generic [ref=e311]:
+          - button [ref=e313]:
+            - img [ref=e314]
+          - generic [ref=e317]:
+            - img [ref=e319]
+            - generic [ref=e322]:
+              - generic [ref=e323]: 管理员新名
+              - generic [ref=e324]: 平台管理
+      - main [ref=e325]
+  - alert [ref=e328]

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
+import { verifyPassword, hashPassword } from '@/lib/auth-password';
 
 // 修改密码（需登录态，通过 x-session 识别用户）
 export async function POST(request: NextRequest) {
@@ -37,14 +38,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 校验旧密码
-    if (!user.password_hash || user.password_hash !== current_password) {
+    if (!user.password_hash || !verifyPassword(current_password, user.password_hash)) {
       return NextResponse.json({ error: '当前密码错误' }, { status: 401 });
     }
 
-    // 更新密码
+    // 更新密码（哈希存储）
     const { error: updateError } = await supabase
       .from('users')
-      .update({ password_hash: new_password })
+      .update({ password_hash: hashPassword(new_password) })
       .eq('id', user.id);
 
     if (updateError) {

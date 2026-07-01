@@ -40,6 +40,14 @@ export default function AgentHomePage() {
   const [orderLocation, setOrderLocation] = useState('');
   const [orderDesc, setOrderDesc] = useState('');
 
+  // 修改订单表单
+  const [editOrderTitle, setEditOrderTitle] = useState('');
+  const [editOrderSalaryMin, setEditOrderSalaryMin] = useState('');
+  const [editOrderSalaryMax, setEditOrderSalaryMax] = useState('');
+  const [editOrderLocation, setEditOrderLocation] = useState('');
+  const [editOrderDesc, setEditOrderDesc] = useState('');
+  const [savingEditOrder, setSavingEditOrder] = useState(false);
+
   // 我的发单（dataVersion变化时重新计算）
   void dataVersion;
   const myApplications = mockHallOrders.filter(o => o.agentId === user?.id);
@@ -85,6 +93,46 @@ export default function AgentHomePage() {
     navigator.clipboard.writeText(text).then(() => {
       alert('订单内容已复制，可粘贴到微信群发送');
     });
+  };
+
+  const openEditOrder = (orderId: string) => {
+    const order = mockOrders.find(o => o.id === orderId);
+    if (order) {
+      setEditOrderTitle(order.title);
+      setEditOrderSalaryMin(String(order.salaryMin));
+      setEditOrderSalaryMax(String(order.salaryMax));
+      setEditOrderLocation(order.location);
+      setEditOrderDesc(order.description || '');
+    }
+    setShowEditOrder(orderId);
+  };
+
+  const handleSaveEditOrder = async () => {
+    if (!showEditOrder) return;
+    setSavingEditOrder(true);
+    try {
+      const { updateRecord, refreshData } = await import('@/lib/data-service');
+      const result = await updateRecord('orders', showEditOrder, {
+        title: editOrderTitle,
+        salary_min: Number(editOrderSalaryMin),
+        salary_max: Number(editOrderSalaryMax),
+        location: editOrderLocation,
+        description: editOrderDesc,
+      });
+      if (result.success) {
+        await refreshData();
+      } else {
+        alert('保存失败：' + (result.error || '请重试'));
+        setSavingEditOrder(false);
+        return;
+      }
+    } catch {
+      alert('保存失败，请重试');
+      setSavingEditOrder(false);
+      return;
+    }
+    setSavingEditOrder(false);
+    setShowEditOrder(null);
   };
 
   return (
@@ -187,7 +235,7 @@ export default function AgentHomePage() {
               <p className="text-xs text-slate-500 mt-1">{o.jobType} · {o.salaryMin}-{o.salaryMax}元/月</p>
               <div className="flex items-center gap-2 mt-2">
                 <button
-                  onClick={() => setShowEditOrder(o.id)}
+                  onClick={() => openEditOrder(o.id)}
                   className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-blue-600 bg-blue-50"
                 >
                   <Pencil className="h-3 w-3" /> 修改
@@ -288,28 +336,28 @@ export default function AgentHomePage() {
               </div>
               <div>
                 <label className="text-xs text-slate-500">订单标题</label>
-                <input defaultValue={order.title} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
+                <input value={editOrderTitle} onChange={e => setEditOrderTitle(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs text-slate-500">最低薪资</label>
-                  <input defaultValue={order.salaryMin} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
+                  <input value={editOrderSalaryMin} onChange={e => setEditOrderSalaryMin(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
                 </div>
                 <div>
                   <label className="text-xs text-slate-500">最高薪资</label>
-                  <input defaultValue={order.salaryMax} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
+                  <input value={editOrderSalaryMax} onChange={e => setEditOrderSalaryMax(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
                 </div>
               </div>
               <div>
                 <label className="text-xs text-slate-500">地点</label>
-                <input defaultValue={order.location} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
+                <input value={editOrderLocation} onChange={e => setEditOrderLocation(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mt-1" />
               </div>
               <div>
                 <label className="text-xs text-slate-500">详细要求</label>
-                <textarea defaultValue={order.description} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 h-20" />
+                <textarea value={editOrderDesc} onChange={e => setEditOrderDesc(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mt-1 h-20" />
               </div>
-              <button onClick={() => { alert('订单修改成功'); setShowEditOrder(null); }} className="w-full bg-amber-600 text-white rounded-xl py-3 font-medium">
-                保存修改
+              <button onClick={handleSaveEditOrder} disabled={savingEditOrder} className="w-full bg-amber-600 text-white rounded-xl py-3 font-medium disabled:opacity-50">
+                {savingEditOrder ? '保存中...' : '保存修改'}
               </button>
             </div>
           </div>

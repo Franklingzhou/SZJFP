@@ -74,6 +74,9 @@ export default function CustomerOrdersPage() {
       const token = localStorage.getItem('miniapp_token');
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
+      const order = myOrders.find(o => o.id === reviewingOrder);
+      const workerId = (order as Record<string,unknown>)?.signed_worker_id || (order as any)?.signedWorkerId || '';
+      if (!workerId) { alert('未能找到签约阿姨信息，无法评价'); return; }
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers,
@@ -81,17 +84,21 @@ export default function CustomerOrdersPage() {
           order_id: reviewingOrder,
           reviewer_id: userId,
           reviewer_role: 'customer',
-          target_user_id: '',  // 后续从订单取worker_id
+          target_user_id: workerId,
           rating: reviewRating,
           content: reviewContent,
         }),
       });
       const result = await res.json();
-      if (!result.success) alert('评价失败：' + (result.error || '请重试'));
-    } catch (e) { console.error('提交评价失败', e); }
-    setReviewingOrder(null);
-    setReviewContent('');
-    setReviewRating(5);
+      if (result.success) {
+        alert('评价提交成功！等待管理员审核后上线。');
+        setReviewingOrder(null);
+        setReviewContent('');
+        setReviewRating(5);
+      } else {
+        alert('评价失败：' + (result.error || '请重试'));
+      }
+    } catch (e) { console.error('提交评价失败', e); alert('网络错误，评价提交失败，请重试'); }
   };
 
   if (loading) {

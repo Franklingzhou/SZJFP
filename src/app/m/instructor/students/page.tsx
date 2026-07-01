@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { BookOpen, CheckCircle, Phone, RefreshCw } from 'lucide-react';
+import { BookOpen, CheckCircle, Phone, RefreshCw, X, Star } from 'lucide-react';
 
 interface Enrollment {
   id: string;
@@ -40,6 +40,10 @@ export default function InstructorStudentsPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState<string | null>(null);
+  // 点评
+  const [reviewTarget, setReviewTarget] = useState<Enrollment | null>(null);
+  const [reviewContent, setReviewContent] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
 
   const loadEnrollments = async () => {
     setLoading(true);
@@ -77,6 +81,38 @@ export default function InstructorStudentsPage() {
     } finally {
       setSubmitting(null);
     }
+  };
+
+  const handleReviewOpen = (enrollment: Enrollment) => {
+    setReviewTarget(enrollment);
+    setReviewContent('');
+    setReviewRating(5);
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!reviewTarget || !reviewContent.trim()) { alert('请填写评价内容'); return; }
+    setSubmitting('review');
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          target_user_id: reviewTarget.worker_id,
+          rating: reviewRating,
+          content: reviewContent,
+          reviewer_role: 'instructor',
+          target_role: 'worker',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('点评提交成功！');
+        setReviewTarget(null);
+      } else {
+        alert('点评失败：' + (data.error || '请重试'));
+      }
+    } catch { alert('点评失败，请重试'); }
+    finally { setSubmitting(null); }
   };
 
   if (loading) {
@@ -117,7 +153,10 @@ export default function InstructorStudentsPage() {
                     )}
                   </div>
                   <div className="flex gap-2 mt-2">
-                    <button className="h-7 text-xs px-3 rounded-md border border-slate-200 bg-white hover:bg-slate-50">
+                    <button
+                      onClick={() => handleReviewOpen(e)}
+                      className="h-7 text-xs px-3 rounded-md border border-slate-200 bg-white hover:bg-slate-50"
+                    >
                       培训点评
                     </button>
                     {(e.status === 'enrolled' || e.status === 'qualified') && (
@@ -135,6 +174,29 @@ export default function InstructorStudentsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* 点评弹窗 */}
+      {reviewTarget && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={() => setReviewTarget(null)}>
+          <div className="bg-white rounded-t-2xl w-full max-w-lg p-5" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-semibold">培训点评 - {reviewTarget.worker?.name || reviewTarget.student_name || '学员'}</h3>
+              <X className="h-5 w-5 text-slate-400 cursor-pointer" onClick={() => setReviewTarget(null)} />
+            </div>
+            <div className="space-y-3">
+              <div className="flex gap-1">
+                {[1,2,3,4,5].map(n => (
+                  <Star key={n} className={`h-8 w-8 cursor-pointer ${n <= reviewRating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`} onClick={() => setReviewRating(n)} />
+                ))}
+              </div>
+              <textarea value={reviewContent} onChange={e => setReviewContent(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm h-24" placeholder="请输入培训点评内容..." />
+              <button onClick={handleReviewSubmit} disabled={submitting === 'review' || !reviewContent.trim()} className="w-full py-3 bg-amber-500 text-white rounded-xl font-medium disabled:opacity-50">
+                {submitting === 'review' ? '提交中...' : '提交点评'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

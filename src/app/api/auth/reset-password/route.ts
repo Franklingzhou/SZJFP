@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { hashPassword } from '@/lib/auth-password';
 
 // 重置密码（通过验证码验证身份，不需要旧密码）
 export async function POST(request: NextRequest) {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     for (const user of users) {
       await supabase
         .from('users')
-        .update({ password_hash: newPassword })
+        .update({ password_hash: hashPassword(newPassword) })
         .eq('id', user.id);
     }
 

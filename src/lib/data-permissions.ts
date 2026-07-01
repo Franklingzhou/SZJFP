@@ -543,5 +543,5 @@ export function getCurrentUserId(): string {
 // 获取当前角色
 export function getCurrentRole(): string {
   if (typeof window === 'undefined') return '';
-  return localStorage.getItem('miniapp_role') || localStorage.getItem('auth_role') || '';
+  return localStorage.getItem('auth_role') || localStorage.getItem('miniapp_role') || '';
 }

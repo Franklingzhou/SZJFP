@@ -72,6 +72,7 @@ export default function AdminLoginPage() {
           localStorage.setItem('auth_role', data.user.role);
           localStorage.setItem('auth_user_id', data.user.id);
           localStorage.setItem('auth_name', data.user.name);
+          localStorage.setItem('auth_username', data.user.name);
 
           router.push('/admin/dashboard');
       } else {

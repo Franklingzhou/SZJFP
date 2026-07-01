@@ -5,7 +5,7 @@ import { LEAD_STATUS_LABELS } from '@/lib/types';
 import type { LeadStatus } from '@/lib/types';
 import { mockRecruiterLeads } from '@/lib/data-service';
 import type { RecruiterLead } from '@/lib/data-service';
-import { initDataFromApi, createRecord, updateRecord, fetchData } from '@/lib/data-service';
+import { initDataFromApi, createRecord, updateRecord, fetchData, refreshData } from '@/lib/data-service';
 import { Search, Plus, Phone, X, Send, Mail, ScanLine, User } from 'lucide-react';
 
 type FollowFilter = 'all' | 'new' | 'following' | 'signed' | 'lost';
@@ -60,6 +60,7 @@ export default function RecruiterFollowPage() {
   const [selectedLead, setSelectedLead] = useState<string | null>(null);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [followRecords, setFollowRecords] = useState<Record<string, FollowRecord[]>>(initialFollowRecords);
+  const [loadingFollows, setLoadingFollows] = useState<Record<string, boolean>>({});
 
   // 从API加载真实线索数据
   useEffect(() => {
@@ -74,6 +75,30 @@ export default function RecruiterFollowPage() {
     };
     loadLeads();
   }, []);
+
+  // 选中线索时加载跟进记录
+  useEffect(() => {
+    if (!selectedLead) return;
+    if (loadingFollows[selectedLead]) return;
+    const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['x-session'] = token;
+    setLoadingFollows(prev => ({ ...prev, [selectedLead]: true }));
+    fetch(`/api/leads/${selectedLead}/followups`, { headers })
+      .then(r => r.json())
+      .then(data => {
+        if (data.data && data.data.length > 0) {
+          const records: FollowRecord[] = data.data.map((f: any) => ({
+            date: (f.created_at || '').slice(0, 10),
+            content: f.content || '',
+            result: f.result || '已跟进',
+          }));
+          setFollowRecords(prev => ({ ...prev, [selectedLead]: records }));
+        }
+      })
+      .catch(e => console.error('加载跟进记录失败:', e))
+      .finally(() => setLoadingFollows(prev => ({ ...prev, [selectedLead]: false })));
+  }, [selectedLead]);
 
   // 录线索表单
   const [leadName, setLeadName] = useState('');
@@ -99,11 +124,13 @@ export default function RecruiterFollowPage() {
 
   // 发送合同表单
   const [showContractForm, setShowContractForm] = useState(false);
+  const [contractFormLeadId, setContractFormLeadId] = useState<string | null>(null);
   const [contractName, setContractName] = useState('');
   const [contractIdCard, setContractIdCard] = useState('');
   const [contractCourse, setContractCourse] = useState('');
   const [contractPrice, setContractPrice] = useState('');
   const [contractIdResult, setContractIdResult] = useState<{ gender: string; birthday: string } | null>(null);
+  const [sendingContract, setSendingContract] = useState(false);
 
   let filteredLeads = leads;
   if (search) filteredLeads = filteredLeads.filter(l => l.name.includes(search) || l.phone.includes(search));
@@ -172,10 +199,22 @@ export default function RecruiterFollowPage() {
       content: followContent,
       result: resultLabel,
     };
+    // 先更新本地状态
     setFollowRecords(prev => ({
       ...prev,
       [showFollowRecord]: [...(prev[showFollowRecord] || []), newRecord],
     }));
+    // 持久化到API
+    try {
+      const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['x-session'] = token;
+      await fetch(`/api/leads/${showFollowRecord}/followups`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ content: followContent, result: followResult || 'following' }),
+      });
+    } catch (e) { console.error('保存跟进记录失败:', e); }
     // 更新线索状态到API
     if (followResult) {
       setLeads(prev => prev.map(l => l.id === showFollowRecord ? { ...l, status: followResult as LeadStatus } : l));
@@ -185,6 +224,7 @@ export default function RecruiterFollowPage() {
     }
     setFollowContent('');
     setFollowResult('');
+    setShowFollowRecord(null);
   };
 
   const handleSignLead = async (leadId: string) => {
@@ -279,20 +319,46 @@ export default function RecruiterFollowPage() {
     setContractIdResult({ gender, birthday: `${year}-${month}-${day}` });
   };
 
-  const handleSendContract = () => {
-    if (!contractName || !contractIdCard || !contractCourse || !contractPrice) {
+  const handleSendContract = async () => {
+    if (!contractName || !contractIdCard || !contractCourse || !contractPrice || !contractFormLeadId) {
       alert('请填写完整信息');
       return;
     }
-    alert(`合同已发送给 ${contractName}\n身份证：${contractIdCard}\n课程：${contractCourse}\n价格：¥${contractPrice}\n\n对方将通过微信小程序查看并短信验证签署。`);
-    setShowContractForm(false);
-    setContractName(''); setContractIdCard(''); setContractCourse(''); setContractPrice('');
-    setContractIdResult(null);
+    setSendingContract(true);
+    try {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+      const res = await fetch('/api/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-session': token || '' },
+        body: JSON.stringify({
+          type: 'training',
+          title: `${contractName} - ${contractCourse}`,
+          party_b_name: contractName,
+          party_b_id_card: contractIdCard,
+          price: parseFloat(contractPrice),
+        }),
+      });
+      const result = await res.json();
+      if (res.ok && (result.success || result.data)) {
+        alert(`培训合同已创建：${contractName}\n课程：${contractCourse}\n金额：¥${contractPrice}\n\n合同状态：草稿，待学员签署`);
+        setShowContractForm(false);
+        setContractName(''); setContractIdCard(''); setContractCourse(''); setContractPrice('');
+        setContractFormLeadId(null);
+        setContractIdResult(null);
+      } else {
+        alert('创建合同失败：' + (result.error || '请重试'));
+      }
+    } catch {
+      alert('网络错误，请重试');
+    } finally {
+      setSendingContract(false);
+    }
   };
 
   const openContractForm = (leadId: string) => {
     const lead = leads.find(l => l.id === leadId);
     if (lead) {
+      setContractFormLeadId(leadId);
       setContractName(lead.name);
       setContractIdCard('');
       setContractCourse('');
@@ -375,18 +441,18 @@ export default function RecruiterFollowPage() {
                       value={showFollowRecord === l.id ? followContent : ''}
                       onChange={e => { if (showFollowRecord !== l.id) setShowFollowRecord(l.id); setFollowContent(e.target.value); }}
                       onClick={e => e.stopPropagation()}
-                      placeholder="输入本次跟进内容…"
                       className="w-full border border-blue-200 rounded-lg px-2 py-1.5 text-xs bg-white resize-none"
-                      rows={2}
+                      rows={5}
+                      placeholder="输入本次跟进内容（支持多行）…"
                     />
-                    <p className="text-xs font-semibold text-blue-700 mb-1.5 mt-1.5">跟进结果</p>
+                    <p className="text-xs font-semibold text-blue-700 mb-1.5 mt-2">跟进结果</p>
                     <div className="grid grid-cols-2 gap-1.5">
                       {FOLLOW_RESULT_OPTIONS.map(opt => (
                         <button
                           key={opt.value}
                           type="button"
                           onClick={(e) => { e.stopPropagation(); if (showFollowRecord !== l.id) setShowFollowRecord(l.id); setFollowResult(opt.value); }}
-                          className={`py-1 text-xs rounded-lg border transition-colors ${
+                          className={`py-1.5 text-xs rounded-lg border transition-colors ${
                             (showFollowRecord === l.id ? followResult : '') === opt.value
                               ? 'bg-blue-500 text-white border-blue-500'
                               : 'bg-white text-slate-600 border-slate-200'
@@ -408,7 +474,7 @@ export default function RecruiterFollowPage() {
                         onClick={(e) => { e.stopPropagation(); openContractForm(l.id); }}
                         className="flex-1 py-1.5 bg-amber-500 text-white text-xs rounded-lg flex items-center justify-center gap-1"
                       >
-                        <Mail className="h-3 w-3" /> 发送合同
+                        <Mail className="h-3 w-3" /> 发合同
                       </button>
                     </div>
                   </div>
@@ -547,10 +613,10 @@ export default function RecruiterFollowPage() {
             </div>
             <button
               onClick={handleSendContract}
-              disabled={!contractName || !contractIdCard || !contractCourse || !contractPrice}
+              disabled={!contractName || !contractIdCard || !contractCourse || !contractPrice || sendingContract}
               className="w-full py-3 bg-amber-500 text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-1"
             >
-              <Mail className="h-4 w-4" /> 发送合同
+              {sendingContract ? '发送中…' : (<><Mail className="h-4 w-4" /> 发送合同</>)}
             </button>
             <button onClick={() => setShowContractForm(false)} className="w-full py-3 bg-slate-100 text-slate-700 rounded-xl font-medium">取消</button>
           </div>

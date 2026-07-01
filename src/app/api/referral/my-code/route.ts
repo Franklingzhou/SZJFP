@@ -20,55 +20,33 @@ export async function GET(request: NextRequest) {
     const { getSupabaseClient } = await import('@/storage/database/supabase-client');
     const supabase = getSupabaseClient();
 
-    // 从 token 解析用户
-    const { data: sessionData } = await supabase
-      .from('users')
-      .select('id, name, role, referral_code')
-      .eq('id', token)
-      .maybeSingle();
-
-    if (!sessionData) {
-      // token 不是 user id，尝试解析 JWT
-      const jwt = await import('jsonwebtoken');
-      try {
-        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as { userId: string };
-        const { data: user } = await supabase
-          .from('users')
-          .select('id, name, role, referral_code')
-          .eq('id', decoded.userId)
-          .maybeSingle();
-        
-        if (!user) {
-          return NextResponse.json({ error: '用户不存在' }, { status: 404 });
-        }
-
-        // 无推荐码则生成
-        if (!user.referral_code) {
-          const code = generateReferralCode();
-          await supabase.from('users').update({ referral_code: code }).eq('id', user.id);
-          user.referral_code = code;
-        }
-
-        return NextResponse.json({
-          referral_code: user.referral_code,
-          name: user.name,
-          role: user.role,
-        });
-      } catch {
-        return NextResponse.json({ error: '无效 token' }, { status: 401 });
-      }
+    // 解析 JWT token
+    const { parseAndVerifyToken } = await import('@/lib/auth-token');
+    const userId = parseAndVerifyToken(token);
+    if (!userId) {
+      return NextResponse.json({ error: '无效 token' }, { status: 401 });
     }
 
-    if (!sessionData.referral_code) {
+    const { data: user } = await supabase
+      .from('users')
+      .select('id, name, role, referral_code')
+      .eq('id', userId)
+      .maybeSingle();
+    
+    if (!user) {
+      return NextResponse.json({ error: '用户不存在' }, { status: 404 });
+    }
+
+    if (!user.referral_code) {
       const code = generateReferralCode();
-      await supabase.from('users').update({ referral_code: code }).eq('id', sessionData.id);
-      sessionData.referral_code = code;
+      await supabase.from('users').update({ referral_code: code }).eq('id', user.id);
+      user.referral_code = code;
     }
 
     return NextResponse.json({
-      referral_code: sessionData.referral_code,
-      name: sessionData.name,
-      role: sessionData.role,
+      referral_code: user.referral_code,
+      name: user.name,
+      role: user.role,
     });
   } catch (error) {
     console.error('[referral my-code] Error:', error);

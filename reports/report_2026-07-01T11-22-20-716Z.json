@@ -1,0 +1,643 @@
+{
+  "summary": {
+    "total": 34,
+    "pass": 32,
+    "fail": 2,
+    "duration": 30624,
+    "byCategory": {
+      "正向功能": {
+        "total": 14,
+        "pass": 12,
+        "fail": 2
+      },
+      "参数异常": {
+        "total": 9,
+        "pass": 9,
+        "fail": 0
+      },
+      "边界值": {
+        "total": 5,
+        "pass": 5,
+        "fail": 0
+      },
+      "重复操作": {
+        "total": 2,
+        "pass": 2,
+        "fail": 0
+      },
+      "权限校验": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      }
+    },
+    "byModule": {
+      "auth": {
+        "total": 34,
+        "pass": 32,
+        "fail": 2
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "A01-admin密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 2655,
+      "timestamp": "2026-07-01T11:21:52.734Z"
+    },
+    {
+      "label": "R01-招生密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13500003456",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 453,
+      "timestamp": "2026-07-01T11:21:53.189Z"
+    },
+    {
+      "label": "T01-讲师密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13700007890",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 376,
+      "timestamp": "2026-07-01T11:21:53.566Z"
+    },
+    {
+      "label": "S01-培训主管密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13100001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 415,
+      "timestamp": "2026-07-01T11:21:53.981Z"
+    },
+    {
+      "label": "B01-经纪人密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 337,
+      "timestamp": "2026-07-01T11:21:54.318Z"
+    },
+    {
+      "label": "W01-阿姨运营密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13200002222",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 902,
+      "timestamp": "2026-07-01T11:21:55.220Z"
+    },
+    {
+      "label": "K01-阿姨密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 600,
+      "timestamp": "2026-07-01T11:21:55.820Z"
+    },
+    {
+      "label": "C01-客户密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900009876",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 401,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 401 | 响应: {\"error\":\"手机号或密码错误\"}",
+      "duration": 431,
+      "timestamp": "2026-07-01T11:21:56.251Z"
+    },
+    {
+      "label": "登录返回token含user字段",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 1037,
+      "timestamp": "2026-07-01T11:21:57.289Z"
+    },
+    {
+      "label": "缺少手机号",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 86,
+      "timestamp": "2026-07-01T11:21:57.376Z"
+    },
+    {
+      "label": "缺少密码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 39,
+      "timestamp": "2026-07-01T11:21:57.416Z"
+    },
+    {
+      "label": "空请求体",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 46,
+      "timestamp": "2026-07-01T11:21:57.462Z"
+    },
+    {
+      "label": "手机号格式错误(含字母)",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "abc12345678",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 520,
+      "timestamp": "2026-07-01T11:21:57.982Z"
+    },
+    {
+      "label": "密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "wrongpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 270,
+      "timestamp": "2026-07-01T11:21:58.252Z"
+    },
+    {
+      "label": "手机号不存在",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19900000000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 209,
+      "timestamp": "2026-07-01T11:21:58.462Z"
+    },
+    {
+      "label": "超长手机号(20位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001222233334",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 638,
+      "timestamp": "2026-07-01T11:21:59.100Z"
+    },
+    {
+      "label": "超短手机号(5位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 202,
+      "timestamp": "2026-07-01T11:21:59.302Z"
+    },
+    {
+      "label": "密码最小长度1位",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "1"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 1335,
+      "timestamp": "2026-07-01T11:22:00.637Z"
+    },
+    {
+      "label": "空字符串手机号",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 33,
+      "timestamp": "2026-07-01T11:22:00.670Z"
+    },
+    {
+      "label": "同一账号连续登录2次",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 2121,
+      "timestamp": "2026-07-01T11:22:02.791Z"
+    },
+    {
+      "label": "有效token获取session",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 404,
+      "status": "FAIL",
+      "error": "期望状态码 200，实际 404 | 响应: {\"error\":\"用户不存在\",\"isLoggedIn\":false}",
+      "duration": 831,
+      "timestamp": "2026-07-01T11:22:03.624Z"
+    },
+    {
+      "label": "获取用户profile",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/profile",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 781,
+      "timestamp": "2026-07-01T11:22:04.406Z"
+    },
+    {
+      "label": "无token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 76,
+      "timestamp": "2026-07-01T11:22:04.483Z"
+    },
+    {
+      "label": "伪造token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 60,
+      "timestamp": "2026-07-01T11:22:04.543Z"
+    },
+    {
+      "label": "过期token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": 404,
+      "status": "PASS",
+      "error": null,
+      "duration": 237,
+      "timestamp": "2026-07-01T11:22:04.780Z"
+    },
+    {
+      "label": "A25-修改密码-正向",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "test9999"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 3808,
+      "timestamp": "2026-07-01T11:22:08.588Z"
+    },
+    {
+      "label": "改密后恢复原密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "test9999",
+        "new_password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 1160,
+      "timestamp": "2026-07-01T11:22:09.748Z"
+    },
+    {
+      "label": "改密-当前密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "wrong",
+        "new_password": "newpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": 401,
+      "status": "PASS",
+      "error": null,
+      "duration": 7455,
+      "timestamp": "2026-07-01T11:22:17.203Z"
+    },
+    {
+      "label": "改密-新密码太短",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "12"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 569,
+      "timestamp": "2026-07-01T11:22:17.772Z"
+    },
+    {
+      "label": "改密-未登录",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "123456"
+      },
+      "expectStatus": 200,
+      "actualStatus": 200,
+      "status": "PASS",
+      "error": null,
+      "duration": 1692,
+      "timestamp": "2026-07-01T11:22:19.464Z"
+    },
+    {
+      "label": "A13-新用户注册",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000008884",
+        "name": "测试用户",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 201,
+      "actualStatus": 201,
+      "status": "PASS",
+      "error": null,
+      "duration": 627,
+      "timestamp": "2026-07-01T11:22:20.091Z"
+    },
+    {
+      "label": "注册-手机号格式错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "123",
+        "name": "测试",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 28,
+      "timestamp": "2026-07-01T11:22:20.119Z"
+    },
+    {
+      "label": "注册-已存在手机号",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "name": "重复",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 409,
+      "actualStatus": 409,
+      "status": "PASS",
+      "error": null,
+      "duration": 526,
+      "timestamp": "2026-07-01T11:22:20.645Z"
+    },
+    {
+      "label": "注册-缺少验证码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009999",
+        "name": "测试",
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": 400,
+      "status": "PASS",
+      "error": null,
+      "duration": 69,
+      "timestamp": "2026-07-01T11:22:20.714Z"
+    }
+  ]
+}

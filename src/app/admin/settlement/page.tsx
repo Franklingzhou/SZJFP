@@ -48,6 +48,8 @@ export default function SettlementPage() {
     } catch (err) {
       console.error('[settlement load] error:', err);
       setRecords([]);
+      setLoading(false);
+      alert('加载分账数据失败，请刷新重试');
     } finally {
       setLoading(false);
     }
@@ -116,6 +118,7 @@ export default function SettlementPage() {
       else alert(result.error || '操作失败');
     } catch (err) {
       console.error('[settlement cancel] error:', err);
+      alert('取消失败：网络错误，请重试');
     }
   };
 

@@ -15,6 +15,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { parseAndVerifyToken } from '@/lib/auth-token';
 
 export interface AuthSession {
   userId: string;
@@ -37,7 +38,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
   // === 线索管理 ===
   'leads:read':  ['admin', 'recruiter', 'training_supervisor'],
-  'leads:write': ['admin', 'recruiter', 'agent', 'training_supervisor'],
+  'leads:write': ['admin', 'agent', 'recruiter', 'training_supervisor'],  // 经纪人可关闭/转化关联线索
 
   // === 学员管理 ===
   'students:read':  ['admin', 'recruiter', 'instructor', 'training_supervisor'],
@@ -45,12 +46,13 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
   // === 阿姨简历库 ===
   'workers:read':  ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor', 'worker'],
-  'workers:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
+  'workers:write': ['admin', 'agent', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],  // 经纪人管理阿姨、招生录入阿姨
   'workers:approve': ['admin'],
 
   // === 课程管理 ===
   'courses:read':  ['admin', 'recruiter', 'instructor', 'training_supervisor', 'worker'],
-  'courses:write': ['admin', 'recruiter', 'instructor', 'training_supervisor'],
+  'courses:write': ['admin', 'instructor', 'training_supervisor'],  // P0-4修复：移除recruiter（招生不应修改课程）
+  'courses:approve': ['admin'],  // 仅管理员可审核课程
 
   // === 评价相关 ===
   'reviews:read': ['admin', 'agent', 'worker', 'customer', 'recruiter', 'instructor', 'worker_operator', 'training_supervisor'],
@@ -76,7 +78,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
   // === 合同相关 ===
   'contracts:read': ['admin', 'agent', 'recruiter', 'training_supervisor', 'worker', 'customer'],
-  'contracts:write': ['admin', 'agent', 'recruiter', 'training_supervisor'],
+  'contracts:write': ['admin', 'agent', 'training_supervisor'],  // P0-3修复：移除recruiter（招生不应修改经纪人合同）
   'contracts:approve': ['admin', 'training_supervisor'],
 
   // === 培训合同 ===
@@ -176,32 +178,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
 
 };
 
-/**
- * 从请求中解析token获取userId
- */
-function parseToken(token: string): string | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length < 2) return null;
-
-    // 优先尝试 JWT 格式：解码 payload（第二段）
-    if (parts.length === 3) {
-      try {
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf-8'));
-        if (payload.userId) return payload.userId;
-      } catch {
-        // 不是 JWT，继续尝试自定义格式
-      }
-    }
-
-    // 自定义 token 格式：base64url(userId:timestamp)
-    const decoded = Buffer.from(parts[0], 'base64url').toString('utf-8');
-    const userId = decoded.split(':')[0];
-    return userId || null;
-  } catch {
-    return null;
-  }
-}
 
 /**
  * 从请求头中提取token
@@ -226,7 +202,8 @@ function extractToken(request: NextRequest): string | null {
  * 验证token并返回用户信息
  */
 async function verifyToken(token: string): Promise<AuthSession | null> {
-  const userId = parseToken(token);
+  // 使用新的统一 token 验证（JWT + 旧版兼容）
+  const userId = parseAndVerifyToken(token);
   if (!userId) return null;
   
   try {
@@ -298,11 +275,6 @@ export async function requireAuth(request: NextRequest): Promise<AuthSession | n
   }
   
   const session = await verifyToken(token);
-  if (!session && !isProd) {
-    // dev模式下无效token返回guest角色session（权限最低）
-    return { userId: token, role: 'guest', name: 'DevUser', phone: '', reviewStatus: 'approved' };
-  }
-  
   return session;
 }
 
@@ -392,3 +364,4 @@ export function unauthorizedResponse(message: string = '未登录，请先登录
 export function forbiddenResponse(message: string = '无操作权限') {
   return NextResponse.json({ error: message, code: 'FORBIDDEN' }, { status: 403 });
 }
+

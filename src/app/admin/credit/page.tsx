@@ -96,7 +96,8 @@ export default function CreditPage() {
 
   // Rules tab
   const [activeTab, setActiveTab] = useState<'records' | 'rules'>('records');
-  const [rules, setRules] = useState<CreditRule[]>(DEFAULT_RULES);
+  const [rules, setRules] = useState<CreditRule[]>([]);
+  const [rulesLoaded, setRulesLoaded] = useState(false);
   const [rulesDirty, setRulesDirty] = useState(false);
   const [savingRules, setSavingRules] = useState(false);
 
@@ -132,8 +133,16 @@ export default function CreditPage() {
       const result = await res.json();
       if (result.ok && result.data?.length > 0) {
         setRules(result.data);
+      } else {
+        // API 返回空，使用默认种子数据
+        setRules(DEFAULT_RULES);
       }
-    } catch { /* use defaults */ }
+    } catch {
+      // API 不可用，回退到默认种子数据
+      setRules(DEFAULT_RULES);
+    } finally {
+      setRulesLoaded(true);
+    }
   }, []);
 
   useEffect(() => { loadRecords(); }, [loadRecords]);
@@ -640,6 +649,9 @@ export default function CreditPage() {
           </div>
 
           {/* Rules list */}
+          {!rulesLoaded ? (
+            <div className="text-center py-12 text-slate-400">加载规则中...</div>
+          ) : (
           <div className="space-y-2">
             {rules.map((rule, idx) => (
               <Card key={rule.id} className={cn(
@@ -740,6 +752,7 @@ export default function CreditPage() {
               </div>
             )}
           </div>
+          )}
 
           {/* 规则说明 */}
           <Card className="bg-slate-50 border-slate-200">

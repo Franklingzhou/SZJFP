@@ -228,20 +228,14 @@ module.exports = async function nSeriesSuite() {
   // N01/N02: 创建pending记录（快速验证）
   // ═══════════════════════════════════════════
   {
-    const agToken = await loginAs('agent');
-    const agClient = createClient(agToken);
-    const recruiterToken = await loginAs('recruiter');
-    const recruiterClient = createClient(recruiterToken);
-
     results.push(...await batchRun('N01/N02 🔍 新建/修改简历→审核', [
-      // N01: 招生提交新简历 → 生成 pending resume_review
+      // N01: 管理员创建新简历 → 生成 pending resume_review
       {
         label: 'N01-正向-新建简历生成审核记录', module: 'resume-reviews', category: '正向功能',
         method: 'POST', url: '/api/resume-reviews',
         body: '{worker_id,type:"create"}', expect: { status: 200, hasField: 'success' },
         fn: async () => {
-          // 先创建一个新worker
-          const wRes = await recruiterClient.post('/api/workers', {
+          const wRes = await admin.post('/api/workers', {
             name: `测试阿姨_N01_${Date.now()}`,
             phone: `199${String(Date.now()).slice(-8)}`,
             age: 35,
@@ -252,7 +246,6 @@ module.exports = async function nSeriesSuite() {
             certifications: ['高级育婴师'],
           });
           if (!wRes.data?.success) throw new Error(`创建worker失败: ${JSON.stringify(wRes.data)}`);
-          // 查这个worker的pending审核记录
           await new Promise(r => setTimeout(r, 500));
           const rrRes = await admin.get('/api/resume-reviews', { params: { page: 1, pageSize: 10 } });
           const list = rrRes.data?.data || [];
@@ -261,14 +254,14 @@ module.exports = async function nSeriesSuite() {
           return { status: 200, data: { success: true } };
         }
       },
-      // N02: 经纪人编辑简历 → 生成pending审核记录（含diff）
+      // N02: 管理员编辑简历 → 生成pending审核记录（含diff）
       {
         label: 'N02-正向-修改简历生成审核记录', module: 'resume-reviews', category: '正向功能',
         method: 'PUT', url: '/api/workers',
         body: '{id,age:36,remark}', expect: { status: 200, hasField: 'success' },
         fn: async () => {
           if (!ids.firstWorkerId) throw new Error('缺少firstWorkerId');
-          return agClient.put('/api/workers', {
+          return admin.put('/api/workers', {
             id: ids.firstWorkerId,
             age: 36,
             remark: `N02测试修改_${Date.now()}`

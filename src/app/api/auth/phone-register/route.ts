@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth-token';
+import { hashPassword } from '@/lib/auth-password';
 
 // 手机号注册新用户
 // v7: 注册时同时创建角色表记录（workers/agents等）
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
         review_status: initReviewStatus,
         is_active: initIsActive,
         register_source: 'self',
-        password_hash: '123456',
+        password_hash: hashPassword('123456'),
       })
       .select('id, name, phone, role, review_status')
       .single();
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     // 外部角色自动通过，直接返回token；内部角色需等待审核
     if (autoApproved) {
-      const token = generateToken(newUserId);
+      const token = signToken(newUserId);
       return NextResponse.json({
         success: true,
         needs_review: false,
@@ -119,11 +121,4 @@ export async function POST(request: NextRequest) {
     console.error('[phone-register] Error:', message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
-}
-
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
 }

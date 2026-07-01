@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth-token';
 
 // 微信小程序登录API
 // 流程：小程序 wx.login() 获取 code → 传给此API → 后端用 code 换 openid → 查找/创建用户 → 返回session
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
       }
 
       // 生成session token
-      const token = generateToken(user.id);
+      const token = signToken(user.id);
 
       return NextResponse.json({
         success: true,
@@ -165,11 +166,3 @@ function findUserByOpenIdLocal(openid: string): {
   return null;
 }
 
-// 生成简单token（生产环境应使用JWT）
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  // 简易token：base64(userId:timestamp:hash)
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
-}

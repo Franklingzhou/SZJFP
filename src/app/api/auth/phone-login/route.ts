@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth-token';
+import { hashPassword } from '@/lib/auth-password';
 
 // 手机号+验证码登录API（v3 统一版）
 // 不管什么角色，同一个登录入口：
@@ -68,7 +70,7 @@ export async function POST(request: NextRequest) {
       }
 
       // 转岗申请中的用户也能正常登录（用当前角色）
-      const token = generateToken(user.id);
+      const token = signToken(user.id);
       return NextResponse.json({
         success: true,
         isNewUser: false,
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
     const claimedResult = await tryClaimPreRegistered(phone);
 
     if (claimedResult) {
-      const token = generateToken(claimedResult.userId);
+      const token = signToken(claimedResult.userId);
       return NextResponse.json({
         success: true,
         isNewUser: false,
@@ -280,7 +282,7 @@ async function tryClaimPreRegistered(phone: string): Promise<{
         review_status: 'approved',
         is_active: true,
         register_source: 'pre_registered',
-        password_hash: '123456',
+        password_hash: hashPassword('123456'),
       })
       .select('id, name, phone, role')
       .single();
@@ -320,12 +322,4 @@ async function tryClaimPreRegistered(phone: string): Promise<{
     console.error('[tryClaimPreRegistered] Error:', err);
     return null;
   }
-}
-
-// 生成简单token
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
 }

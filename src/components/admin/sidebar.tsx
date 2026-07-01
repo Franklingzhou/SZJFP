@@ -196,9 +196,9 @@ export default function AdminSidebar() {
   const [pageAccess, setPageAccess] = useState<Record<string, string[]> | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 客户端挂载后读取角色
+  // PC 管理后台侧边栏优先使用 auth_role，避免 miniapp_role 旧值污染
   useEffect(() => {
-    const role = localStorage.getItem('miniapp_role') || localStorage.getItem('auth_role') || '';
+    const role = localStorage.getItem('auth_role') || localStorage.getItem('miniapp_role') || '';
     setCurrentRole(role);
   }, []);
 
@@ -248,6 +248,9 @@ export default function AdminSidebar() {
     localStorage.removeItem('auth_role');
     localStorage.removeItem('miniapp_userid');
     localStorage.removeItem('auth_userid');
+    localStorage.removeItem('miniapp_username');
+    localStorage.removeItem('auth_username');
+    localStorage.removeItem('auth_name');
     router.push('/admin/login');
   };
 

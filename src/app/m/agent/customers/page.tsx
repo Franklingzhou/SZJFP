@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { mockCustomers, mockWorkers } from '@/lib/data-service';
+import React, { useState, useEffect } from 'react';
+import { mockCustomers, mockWorkers, initDataFromApi, createRecord, updateRecord, refreshData, fetchData } from '@/lib/data-service';
 import { useMiniApp } from '@/components/miniapp/context';
 import AddCustomerForm from '@/components/miniapp/add-customer-form';
 import { Phone, Plus, Search, Pencil, Send, MessageSquare } from 'lucide-react';
 
 export default function AgentCustomersPage() {
   const { user } = useMiniApp();
+  const [customers, setCustomers] = useState<typeof mockCustomers>(mockCustomers);
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | null>(null);
@@ -18,15 +19,47 @@ export default function AgentCustomersPage() {
   const [orderCustomerId, setOrderCustomerId] = useState<string | null>(null);
   const [orderForm, setOrderForm] = useState({ jobType: '保姆', salary: '', address: '', remark: '' });
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [followContent, setFollowContent] = useState('');
   const [followResult, setFollowResult] = useState('有意向');
   const [followRecords, setFollowRecords] = useState<Record<string, Array<{content: string; result: string; time: string}>>>({});
+  const [savingEdit, setSavingEdit] = useState(false);
 
-  const filtered = mockCustomers.filter(c => {
+  // 初始化加载真实数据
+  useEffect(() => {
+    initDataFromApi().then(() => {
+      setCustomers([...mockCustomers]);
+      // 加载跟进记录
+      loadAllFollowRecords();
+    });
+  }, []);
+
+  const loadAllFollowRecords = async () => {
+    try {
+      const data = await fetchData<any[]>('customer-followups');
+      if (data && Array.isArray(data)) {
+        const records: Record<string, Array<{content: string; result: string; time: string}>> = {};
+        data.forEach((f: any) => {
+          const cid = f.customer_id || f.customerId;
+          if (cid) {
+            if (!records[cid]) records[cid] = [];
+            records[cid].push({
+              content: f.content || '',
+              result: f.result || '',
+              time: new Date(f.created_at || f.createdAt).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+            });
+          }
+        });
+        setFollowRecords(records);
+      }
+    } catch (e) { console.error('加载跟进记录失败:', e); }
+  };
+
+  const filtered = customers.filter(c => {
     return !search || c.name.includes(search) || c.phone.includes(search) || (c.requirement || '').includes(search);
   });
 
-  const selected = mockCustomers.find(c => c.id === selectedCustomer);
+  const selected = customers.find(c => c.id === selectedCustomer);
 
   const handleCall = (phone: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,14 +71,24 @@ export default function AgentCustomersPage() {
     setEditingCustomer({ ...customer });
   };
 
-  const handleSaveEdit = () => {
-    if (editingCustomer) {
-      const idx = mockCustomers.findIndex(c => c.id === editingCustomer.id);
-      if (idx !== -1) {
-        mockCustomers[idx] = { ...editingCustomer };
+  const handleSaveEdit = async () => {
+    if (!editingCustomer) return;
+    setSavingEdit(true);
+    try {
+      const result = await updateRecord('customers', editingCustomer.id, {
+        name: editingCustomer.name,
+        phone: editingCustomer.phone,
+        requirement: editingCustomer.requirement,
+        address: editingCustomer.address,
+      } as Record<string, unknown>);
+      if (result.success) {
+        await refreshData();
+        setCustomers([...mockCustomers]);
+      } else {
+        alert('保存失败：' + (result.error || '请重试'));
       }
-      setEditingCustomer(null);
-    }
+    } catch (e) { alert('保存失败，请重试'); }
+    finally { setSavingEdit(false); setEditingCustomer(null); }
   };
 
   const handleCreateOrder = (customerId: string, e: React.MouseEvent) => {
@@ -55,12 +98,33 @@ export default function AgentCustomersPage() {
     setShowOrderForm(true);
   };
 
-  const handleSubmitOrder = () => {
-    setOrderSuccess(true);
-    setTimeout(() => {
-      setShowOrderForm(false);
-      setOrderSuccess(false);
-    }, 1500);
+  const handleSubmitOrder = async () => {
+    if (!orderCustomerId) return;
+    setOrderSubmitting(true);
+    try {
+      const salaryParts = orderForm.salary.split('-').map(s => parseInt(s.trim()) || 0);
+      const result = await createRecord('orders', {
+        title: `${orderForm.jobType}服务`,
+        job_type: orderForm.jobType,
+        salary_min: salaryParts[0] || 5000,
+        salary_max: salaryParts[1] || salaryParts[0] || 8000,
+        location: orderForm.address || '待定',
+        description: orderForm.remark || '',
+        customer_id: orderCustomerId,
+        status: 'open',
+      } as Record<string, unknown>);
+      if (result.success) {
+        setOrderSuccess(true);
+        setTimeout(() => {
+          setShowOrderForm(false);
+          setOrderSuccess(false);
+          setOrderCustomerId(null);
+        }, 1500);
+      } else {
+        alert('发单失败：' + (result.error || '请重试'));
+      }
+    } catch (e) { alert('发单失败，请重试'); }
+    finally { setOrderSubmitting(false); }
   };
 
   return (
@@ -185,16 +249,11 @@ export default function AgentCustomersPage() {
               </div>
             </div>
             <button
-              onClick={() => {
-                const idx = mockCustomers.findIndex(c => c.id === editingCustomer.id);
-                if (idx >= 0) {
-                  mockCustomers[idx] = { ...editingCustomer };
-                }
-                setEditingCustomer(null);
-              }}
-              className="w-full mt-4 bg-blue-500 text-white py-2.5 rounded-xl font-medium"
+              onClick={handleSaveEdit}
+              disabled={savingEdit}
+              className="w-full mt-4 bg-blue-500 text-white py-2.5 rounded-xl font-medium disabled:opacity-50"
             >
-              保存修改
+              {savingEdit ? '保存中...' : '保存修改'}
             </button>
           </div>
         </div>
@@ -235,15 +294,28 @@ export default function AgentCustomersPage() {
               </div>
             </div>
             <button
-              onClick={() => {
-                if (followContent.trim()) {
+              onClick={async () => {
+                if (followContent.trim() && followTarget) {
                   const records = { ...followRecords };
                   if (!records[followTarget.id]) records[followTarget.id] = [];
-                  records[followTarget.id] = [
-                    { content: followContent, result: followResult, time: new Date().toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) },
-                    ...records[followTarget.id]
-                  ];
+                  const newRecord = {
+                    content: followContent,
+                    result: followResult,
+                    time: new Date().toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+                  };
+                  records[followTarget.id] = [newRecord, ...records[followTarget.id]];
                   setFollowRecords(records);
+                  // 持久化到API
+                  try {
+                    const token = localStorage.getItem('miniapp_token') || localStorage.getItem('auth_token');
+                    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+                    if (token) headers['x-session'] = token;
+                    await fetch(`/api/customer-followups`, {
+                      method: 'POST',
+                      headers,
+                      body: JSON.stringify({ customer_id: followTarget.id, content: followContent, result: followResult }),
+                    });
+                  } catch (e) { console.error('保存跟进记录失败:', e); }
                   setFollowContent('');
                   setFollowResult('有意向');
                   setShowFollowModal(false);
@@ -296,7 +368,7 @@ export default function AgentCustomersPage() {
                     <textarea className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" rows={3} placeholder="描述客户的具体需求" value={orderForm.remark} onChange={e => setOrderForm({ ...orderForm, remark: e.target.value })} />
                   </div>
                 </div>
-                <button onClick={handleSubmitOrder} className="w-full mt-4 bg-amber-500 text-white py-2.5 rounded-xl font-medium">确认发单</button>
+                <button onClick={handleSubmitOrder} disabled={orderSubmitting} className="w-full mt-4 bg-amber-500 text-white py-2.5 rounded-xl font-medium disabled:opacity-50">{orderSubmitting ? '发单中...' : '确认发单'}</button>
               </>
             )}
           </div>

@@ -53,5 +53,24 @@ export function getStatusColor(status: string): string {
 }
 
 export function maskPhone(phone: string): string {
-  return phone;
+  if (!phone || phone.length < 7) return phone || '';
+  // 13900001111 → 139****1111（保留前3后4）
+  return phone.slice(0, 3) + '****' + phone.slice(-4);
+}
+
+/** 身份证号脱敏：320102199001011234 → 320102********1234 */
+export function maskIdCard(idCard: string): string {
+  if (!idCard || idCard.length < 8) return idCard || '';
+  return idCard.slice(0, 6) + '********' + idCard.slice(-4);
+}
+
+/** XSS 防护：转义 HTML 特殊字符 */
+export function sanitizeHtml(input: string): string {
+  if (!input) return '';
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
 }

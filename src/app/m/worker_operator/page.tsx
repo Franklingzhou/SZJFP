@@ -43,14 +43,14 @@ export default function WorkerOpsHomePage() {
 
       {/* 快捷入口 */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <Link href="/m/worker_ops/workers" className="bg-white rounded-xl p-4 shadow-sm flex flex-col items-center gap-2 active:bg-slate-50">
+        <Link href="/m/worker_operator/workers" className="bg-white rounded-xl p-4 shadow-sm flex flex-col items-center gap-2 active:bg-slate-50">
           <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center">
             <Users className="h-6 w-6 text-rose-500" />
           </div>
           <span className="text-sm font-medium text-slate-700">阿姨管理</span>
           <span className="text-xs text-slate-400">{workerCount}位阿姨</span>
         </Link>
-        <Link href="/m/worker_ops/hall" className="bg-white rounded-xl p-4 shadow-sm flex flex-col items-center gap-2 active:bg-slate-50">
+        <Link href="/m/worker_operator/hall" className="bg-white rounded-xl p-4 shadow-sm flex flex-col items-center gap-2 active:bg-slate-50">
           <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
             <Briefcase className="h-6 w-6 text-amber-500" />
           </div>
@@ -63,7 +63,7 @@ export default function WorkerOpsHomePage() {
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-slate-700">空闲阿姨</h2>
-          <Link href="/m/worker_ops/workers" className="text-xs text-rose-500 flex items-center gap-1">
+          <Link href="/m/worker_operator/workers" className="text-xs text-rose-500 flex items-center gap-1">
             查看全部 <ChevronRight className="h-3 w-3" />
           </Link>
         </div>
@@ -89,7 +89,7 @@ export default function WorkerOpsHomePage() {
       <div>
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-slate-700">最新合单</h2>
-          <Link href="/m/worker_ops/hall" className="text-xs text-rose-500 flex items-center gap-1">
+          <Link href="/m/worker_operator/hall" className="text-xs text-rose-500 flex items-center gap-1">
             查看全部 <ChevronRight className="h-3 w-3" />
           </Link>
         </div>

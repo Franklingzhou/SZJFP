@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { signToken } from '@/lib/auth-token';
 
 // 微信登录后绑定角色/注册新用户
 // 用于新用户第一次登录时选择角色并绑定openid
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = generateToken(user.id);
+    const token = signToken(user.id);
 
     return NextResponse.json({
       success: true,
@@ -163,9 +164,3 @@ function createLocalUser(
   return null;
 }
 
-function generateToken(userId: string): string {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key';
-  const timestamp = Date.now();
-  const hash = Buffer.from(`${userId}:${timestamp}:${secret}`).toString('base64url');
-  return Buffer.from(`${userId}:${timestamp}`).toString('base64url') + '.' + hash.substring(0, 16);
-}

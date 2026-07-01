@@ -73,6 +73,13 @@ function WorkerResumePage() {
           setSelectedJobTypes(w.jobTypes as JobType[]);
           setSpecialties(w.specialties);
           setCertifications(w.certifications);
+          // 恢复已保存的文件和 key
+          if (apiWorker.avatar_url) setAvatar(apiWorker.avatar_url);
+          if (apiWorker.avatar_key) setAvatarKey(apiWorker.avatar_key);
+          if (apiWorker.idcard_front_url) setIdCardFront(apiWorker.idcard_front_url);
+          if (apiWorker.idcard_front_key) setIdCardFrontKey(apiWorker.idcard_front_key);
+          if (apiWorker.idcard_back_url) setIdCardBack(apiWorker.idcard_back_url);
+          if (apiWorker.idcard_back_key) setIdCardBackKey(apiWorker.idcard_back_key);
           setEditing(true);
         } else {
           setWorkerData(emptyWorker);
@@ -109,15 +116,18 @@ function WorkerResumePage() {
 
   // 图片和视频
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<{id: string; url: string; category: string}[]>([
+  const [avatarKey, setAvatarKey] = useState<string>('');
+  const [photos, setPhotos] = useState<{id: string; url: string; category: string; key?: string}[]>([
     { id: 'p1', url: '', category: '生活照' },
   ]);
-  const [videos, setVideos] = useState<{id: string; url: string; coverUrl: string}[]>([]);
+  const [videos, setVideos] = useState<{id: string; url: string; coverUrl: string; key?: string}[]>([]);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   const [photoCategory, setPhotoCategory] = useState('生活照');
   const [showVideoUpload, setShowVideoUpload] = useState(false);
   const [idCardFront, setIdCardFront] = useState('');
+  const [idCardFrontKey, setIdCardFrontKey] = useState('');
   const [idCardBack, setIdCardBack] = useState('');
+  const [idCardBackKey, setIdCardBackKey] = useState('');
 
   // 征信查询
   const [creditExpanded, setCreditExpanded] = useState(false);
@@ -137,6 +147,53 @@ function WorkerResumePage() {
   ]);
   const [showExpForm, setShowExpForm] = useState(false);
   const [expForm, setExpForm] = useState<Omit<WorkExperience, 'id'>>({ period: '', employer: '', jobType: '保姆', description: '' });
+
+  // 上传文件到 S3，返回 {key, url}
+  const uploadFile = async (file: File, category: string): Promise<{ key: string; url: string } | null> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', category);
+      const token = localStorage.getItem('miniapp_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch('/api/upload', { method: 'POST', headers, body: formData });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || '上传失败');
+      return { key: result.data.key, url: result.data.url };
+    } catch (err) {
+      console.error('[resume] uploadFile error:', err);
+      alert('文件上传失败，请重试');
+      return null;
+    }
+  };
+
+  // 用 key 刷新过期链接
+  const resolveFileUrl = async (key: string): Promise<string | null> => {
+    if (!key) return null;
+    try {
+      const token = localStorage.getItem('miniapp_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`/api/file-url?key=${encodeURIComponent(key)}`, { headers });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error);
+      return result.url;
+    } catch (err) {
+      console.error('[resume] resolveFileUrl error:', err);
+      return null;
+    }
+  };
+
+  // 刷新图片 src（onError 回退）
+  const handleImgError = async (
+    key: string | undefined,
+    setUrl: (url: string | null) => void,
+  ) => {
+    if (!key) return;
+    const newUrl = await resolveFileUrl(key);
+    if (newUrl) setUrl(newUrl);
+  };
 
   const toggleJobType = (jt: JobType) => {
     setSelectedJobTypes(prev =>
@@ -248,6 +305,12 @@ function WorkerResumePage() {
           old_data: JSON.stringify(oldData),
           new_data: JSON.stringify(newData),
           changes: changes.length > 0 ? changes.join('\n') : '新建简历',
+          // 文件 key 持久化：链接过期后可用 key 重新生成
+          avatar_key: avatarKey || undefined,
+          idcard_front_key: idCardFrontKey || undefined,
+          idcard_back_key: idCardBackKey || undefined,
+          photo_keys: photos.filter(p => p.key).map(p => p.key),
+          video_keys: videos.filter(v => v.key).map(v => v.key),
         }),
       });
       const result = await res.json();
@@ -338,6 +401,10 @@ function WorkerResumePage() {
     setSpecialties(worker.specialties);
     setCertifications(worker.certifications);
     setEditing(false);
+    // 重置图片/视频 key
+    setAvatarKey('');
+    setIdCardFrontKey('');
+    setIdCardBackKey('');
   };
 
   return (
@@ -445,9 +512,10 @@ function WorkerResumePage() {
         <div className="flex items-center gap-4">
           {avatar ? (
             <div className="relative">
-              <img src={avatar} alt="头像" className="h-20 w-20 rounded-full object-cover border-2 border-amber-200" />
+              <img src={avatar} alt="头像" className="h-20 w-20 rounded-full object-cover border-2 border-amber-200"
+                onError={() => handleImgError(avatarKey, setAvatar)} />
               {editing && (
-                <button onClick={() => setAvatar(null)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                <button onClick={() => { setAvatar(null); setAvatarKey(''); }} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
                   <X className="h-3 w-3" />
                 </button>
               )}
@@ -457,12 +525,11 @@ function WorkerResumePage() {
               <label className="h-20 w-20 rounded-full bg-amber-50 border-2 border-dashed border-amber-300 flex flex-col items-center justify-center cursor-pointer hover:bg-amber-100 transition-colors">
                 <Camera className="h-6 w-6 text-amber-400" />
                 <span className="text-xs text-amber-500 mt-1">上传头像</span>
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => setAvatar(ev.target?.result as string);
-                    reader.readAsDataURL(file);
+                    const result = await uploadFile(file, 'avatar');
+                    if (result) { setAvatar(result.url); setAvatarKey(result.key); }
                   }
                 }} />
               </label>
@@ -500,11 +567,13 @@ function WorkerResumePage() {
             <Video className="h-8 w-8 text-slate-300 mb-2" />
             <span className="text-sm text-slate-400">添加介绍视频</span>
             <span className="text-xs text-slate-300 mt-1">自我介绍、工作展示</span>
-            <input type="file" accept="video/*" className="hidden" onChange={(e) => {
+            <input type="file" accept="video/*" className="hidden" onChange={async (e) => {
               const file = e.target.files?.[0];
               if (file) {
-                const url = URL.createObjectURL(file);
-                setVideos(prev => [...prev, { id: `v-${Date.now()}`, url, coverUrl: '' }]);
+                const result = await uploadFile(file, 'general');
+                if (result) {
+                  setVideos(prev => [...prev, { id: `v-${Date.now()}`, url: result.url, key: result.key, coverUrl: '' }]);
+                }
               }
             }} />
           </label>
@@ -524,7 +593,7 @@ function WorkerResumePage() {
               {idCardFront ? (
                 <div className="relative rounded-lg overflow-hidden bg-slate-100 aspect-[1.6/1]">
                   <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-500">已上传</div>
-                  <button onClick={() => setIdCardFront('')} className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5">
+                  <button onClick={() => { setIdCardFront(''); setIdCardFrontKey(''); }} className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5">
                     <XCircle className="h-4 w-4 text-white" />
                   </button>
                 </div>
@@ -532,8 +601,12 @@ function WorkerResumePage() {
                 <label className="block border-2 border-dashed border-slate-200 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 aspect-[1.6/1]">
                   <ImagePlus className="h-6 w-6 text-slate-300 mb-1" />
                   <span className="text-xs text-slate-400">上传人像面</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.files?.[0]) setIdCardFront('uploaded');
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const result = await uploadFile(file, 'idcard');
+                      if (result) { setIdCardFront(result.url); setIdCardFrontKey(result.key); }
+                    }
                   }} />
                 </label>
               )}
@@ -543,7 +616,7 @@ function WorkerResumePage() {
               {idCardBack ? (
                 <div className="relative rounded-lg overflow-hidden bg-slate-100 aspect-[1.6/1]">
                   <div className="absolute inset-0 flex items-center justify-center text-sm text-slate-500">已上传</div>
-                  <button onClick={() => setIdCardBack('')} className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5">
+                  <button onClick={() => { setIdCardBack(''); setIdCardBackKey(''); }} className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5">
                     <XCircle className="h-4 w-4 text-white" />
                   </button>
                 </div>
@@ -551,8 +624,12 @@ function WorkerResumePage() {
                 <label className="block border-2 border-dashed border-slate-200 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 aspect-[1.6/1]">
                   <ImagePlus className="h-6 w-6 text-slate-300 mb-1" />
                   <span className="text-xs text-slate-400">上传国徽面</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.files?.[0]) setIdCardBack('uploaded');
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const result = await uploadFile(file, 'idcard');
+                      if (result) { setIdCardBack(result.url); setIdCardBackKey(result.key); }
+                    }
                   }} />
                 </label>
               )}
@@ -659,7 +736,13 @@ function WorkerResumePage() {
             {photos.map((p, i) => (
               <div key={p.id} className="relative aspect-square rounded-lg overflow-hidden bg-slate-100">
                 {p.url ? (
-                  <img src={p.url} alt={p.category} className="w-full h-full object-cover" />
+                  <img src={p.url} alt={p.category} className="w-full h-full object-cover"
+                    onError={async () => {
+                      if (p.key) {
+                        const newUrl = await resolveFileUrl(p.key);
+                        if (newUrl) setPhotos(prev => prev.map(x => x.id === p.id ? { ...x, url: newUrl } : x));
+                      }
+                    }} />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center">
                     <Camera className="h-6 w-6 text-slate-300" />
@@ -715,15 +798,20 @@ function WorkerResumePage() {
               <ImagePlus className="h-10 w-10 text-amber-400 mb-2" />
               <span className="text-sm text-amber-600">选择照片上传</span>
               <span className="text-xs text-amber-400 mt-1">支持 JPG、PNG 格式</span>
-              <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+              <input type="file" accept="image/*" multiple className="hidden" onChange={async (e) => {
                 const files = e.target.files;
                 if (files) {
-                  const newPhotos = Array.from(files).map((file, idx) => ({
-                    id: `p-${Date.now()}-${idx}`,
-                    url: URL.createObjectURL(file),
-                    category: photoCategory,
-                  }));
-                  setPhotos(prev => [...prev, ...newPhotos]);
+                  for (const file of Array.from(files)) {
+                    const result = await uploadFile(file, 'photo');
+                    if (result) {
+                      setPhotos(prev => [...prev, {
+                        id: `p-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+                        url: result.url,
+                        key: result.key,
+                        category: photoCategory,
+                      }]);
+                    }
+                  }
                   setShowPhotoUpload(false);
                 }
               }} />

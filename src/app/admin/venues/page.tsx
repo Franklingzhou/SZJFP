@@ -1,50 +1,137 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Calendar, Clock, MapPin, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Plus, Calendar, Clock, MapPin, X, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface Booking { date: string; time: string; course: string; }
 interface Venue { id: string; name: string; capacity: number; location: string; status: string; bookings: Booking[]; }
 
-const initialVenues: Venue[] = [
-  { id: 'v001', name: '总部培训室A', capacity: 25, location: '总部3楼', status: 'available', bookings: [
-    { date: '2026-06-01', time: '09:00-12:00', course: '高级月嫂技能提升班' },
-    { date: '2026-06-15', time: '14:00-17:00', course: '家政服务员基础班' },
-  ]},
-  { id: 'v002', name: '总部培训室B', capacity: 20, location: '总部3楼', status: 'occupied', bookings: [
-    { date: '2026-05-15', time: '09:00-17:00', course: '新手月嫂入门班' },
-  ]},
-  { id: 'v003', name: '分部培训室', capacity: 20, location: '分部2楼', status: 'available', bookings: [
-    { date: '2026-06-10', time: '09:00-12:00', course: '养老护理专业培训' },
-  ]},
-];
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = localStorage.getItem('auth_token') || localStorage.getItem('miniapp_token');
+  if (token) headers['x-session'] = token;
+  return headers;
+}
 
 export default function VenuesPage() {
-  const [venues, setVenues] = useState(initialVenues);
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionMsg, setActionMsg] = useState('');
   const [showAddVenue, setShowAddVenue] = useState(false);
   const [showBooking, setShowBooking] = useState<string | null>(null);
   const [newVenue, setNewVenue] = useState({ name: '', capacity: 20, location: '' });
   const [newBooking, setNewBooking] = useState({ date: '', time: '', course: '' });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleAddVenue = () => {
-    if (!newVenue.name || !newVenue.location) return;
-    setVenues(prev => [...prev, { id: `v${Date.now()}`, ...newVenue, status: 'available', bookings: [] }]);
-    setNewVenue({ name: '', capacity: 20, location: '' });
-    setShowAddVenue(false);
+  // 从 API 加载场地列表
+  const loadVenues = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/venues', { headers: getAuthHeaders() });
+      const result = await res.json();
+      if (result.data) {
+        setVenues(result.data.map((v: Record<string, unknown>) => ({
+          id: v.id as string,
+          name: (v.name as string) || '',
+          capacity: (v.capacity as number) || 0,
+          location: (v.address as string) || (v.location as string) || '',
+          status: (v.status as string) || 'available',
+          bookings: (v.bookings as Booking[]) || [],
+        })));
+      }
+    } catch (err) {
+      console.error('[venues] load error:', err);
+      setActionMsg('加载场地数据失败');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddBooking = (venueId: string) => {
+  useEffect(() => { loadVenues(); }, []);
+
+  const showMsg = (msg: string) => {
+    setActionMsg(msg);
+    setTimeout(() => setActionMsg(''), 3000);
+  };
+
+  const handleAddVenue = async () => {
+    if (!newVenue.name || !newVenue.location) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/venues', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          name: newVenue.name,
+          address: newVenue.location,
+          capacity: newVenue.capacity,
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setNewVenue({ name: '', capacity: 20, location: '' });
+        setShowAddVenue(false);
+        showMsg('场地创建成功');
+        loadVenues();
+      } else {
+        showMsg(result.error || '创建失败');
+      }
+    } catch {
+      showMsg('网络错误，请重试');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAddBooking = async (venueId: string) => {
     if (!newBooking.date || !newBooking.time || !newBooking.course) return;
-    setVenues(prev => prev.map(v => v.id === venueId ? { ...v, bookings: [...v.bookings, newBooking] } : v));
+    const targetVenue = venues.find(v => v.id === venueId);
+    if (!targetVenue) return;
+    const updatedBookings = [...targetVenue.bookings, { ...newBooking }];
+    // 先本地乐观更新
+    setVenues(prev => prev.map(v => v.id === venueId ? { ...v, bookings: updatedBookings } : v));
     setNewBooking({ date: '', time: '', course: '' });
     setShowBooking(null);
+    // 持久化到数据库
+    try {
+      const res = await fetch('/api/venues', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ id: venueId, bookings: updatedBookings }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        showMsg('预约已保存');
+      } else {
+        showMsg(result.error || '预约保存失败');
+        loadVenues(); // 回滚到服务端数据
+      }
+    } catch {
+      showMsg('网络错误，预约未持久化');
+      loadVenues();
+    }
   };
 
-  const handleDeleteVenue = (id: string) => {
-    setVenues(prev => prev.filter(v => v.id !== id));
+  const handleDeleteVenue = async (id: string) => {
+    if (!confirm('确定删除该场地？此操作不可撤销。')) return;
+    try {
+      const res = await fetch(`/api/venues?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+      const result = await res.json();
+      if (result.success) {
+        showMsg('场地已删除');
+        loadVenues();
+      } else {
+        showMsg(result.error || '删除失败');
+      }
+    } catch {
+      showMsg('删除请求失败');
+    }
   };
 
   return (
@@ -54,10 +141,29 @@ export default function VenuesPage() {
           <h1 className="text-2xl font-bold text-slate-900">场地管理</h1>
           <p className="text-sm text-muted-foreground mt-1">培训场地预约与使用情况管理</p>
         </div>
-        <Button className="gap-1" onClick={() => setShowAddVenue(true)}>
+        <Button className="gap-1" onClick={() => setShowAddVenue(true)} disabled={submitting}>
           <Plus className="h-4 w-4" /> 添加场地
         </Button>
       </div>
+
+      {/* 操作提示 */}
+      {actionMsg && (
+        <div className={`p-3 rounded-lg text-sm ${actionMsg.includes('成功') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+          {actionMsg}
+        </div>
+      )}
+
+      {/* 加载状态 */}
+      {loading && (
+        <div className="text-center py-12 text-slate-400">
+          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+          加载中...
+        </div>
+      )}
+
+      {!loading && venues.length === 0 && (
+        <div className="text-center py-12 text-slate-400">暂无场地数据，点击「添加场地」创建</div>
+      )}
 
       {showAddVenue && (
         <Card>
@@ -81,7 +187,7 @@ export default function VenuesPage() {
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <Button size="sm" onClick={handleAddVenue}>保存</Button>
+              <Button size="sm" onClick={handleAddVenue} disabled={submitting}>{submitting ? '保存中...' : '保存'}</Button>
               <Button size="sm" variant="outline" onClick={() => setShowAddVenue(false)}>取消</Button>
             </div>
           </CardContent>

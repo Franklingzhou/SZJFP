@@ -1,0 +1,1073 @@
+{
+  "summary": {
+    "total": 58,
+    "pass": 0,
+    "fail": 58,
+    "duration": 48663,
+    "byCategory": {
+      "正向功能": {
+        "total": 14,
+        "pass": 0,
+        "fail": 14
+      },
+      "参数异常": {
+        "total": 9,
+        "pass": 0,
+        "fail": 9
+      },
+      "边界值": {
+        "total": 5,
+        "pass": 0,
+        "fail": 5
+      },
+      "重复操作": {
+        "total": 2,
+        "pass": 0,
+        "fail": 2
+      },
+      "权限校验": {
+        "total": 4,
+        "pass": 0,
+        "fail": 4
+      },
+      "端到端流程": {
+        "total": 19,
+        "pass": 0,
+        "fail": 19
+      },
+      "清理": {
+        "total": 5,
+        "pass": 0,
+        "fail": 5
+      }
+    },
+    "byModule": {
+      "auth": {
+        "total": 37,
+        "pass": 0,
+        "fail": 37
+      },
+      "workers": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "orders": {
+        "total": 2,
+        "pass": 0,
+        "fail": 2
+      },
+      "order_signings": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "leads": {
+        "total": 2,
+        "pass": 0,
+        "fail": 2
+      },
+      "courses": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "enrollments": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "contracts": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "customers": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "authz": {
+        "total": 4,
+        "pass": 0,
+        "fail": 4
+      },
+      "settings": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "worker_applications": {
+        "total": 1,
+        "pass": 0,
+        "fail": 1
+      },
+      "cleanup": {
+        "total": 5,
+        "pass": 0,
+        "fail": 5
+      }
+    }
+  },
+  "results": [
+    {
+      "label": "A01-admin密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1539,
+      "timestamp": "2026-07-01T14:26:04.782Z"
+    },
+    {
+      "label": "R01-招生密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13500003456",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1542,
+      "timestamp": "2026-07-01T14:26:06.328Z"
+    },
+    {
+      "label": "T01-讲师密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13700007890",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1544,
+      "timestamp": "2026-07-01T14:26:07.872Z"
+    },
+    {
+      "label": "S01-培训主管密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13100001111",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1538,
+      "timestamp": "2026-07-01T14:26:09.410Z"
+    },
+    {
+      "label": "B01-经纪人密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1531,
+      "timestamp": "2026-07-01T14:26:10.942Z"
+    },
+    {
+      "label": "W01-阿姨运营密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13200002222",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1517,
+      "timestamp": "2026-07-01T14:26:12.459Z"
+    },
+    {
+      "label": "K01-阿姨密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13800005678",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1513,
+      "timestamp": "2026-07-01T14:26:13.972Z"
+    },
+    {
+      "label": "C01-客户密码登录",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13900009876",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1523,
+      "timestamp": "2026-07-01T14:26:15.495Z"
+    },
+    {
+      "label": "登录返回token含user字段",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1530,
+      "timestamp": "2026-07-01T14:26:17.025Z"
+    },
+    {
+      "label": "缺少手机号",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1536,
+      "timestamp": "2026-07-01T14:26:18.563Z"
+    },
+    {
+      "label": "缺少密码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1534,
+      "timestamp": "2026-07-01T14:26:20.097Z"
+    },
+    {
+      "label": "空请求体",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {},
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1527,
+      "timestamp": "2026-07-01T14:26:21.624Z"
+    },
+    {
+      "label": "手机号格式错误(含字母)",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "abc12345678",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1541,
+      "timestamp": "2026-07-01T14:26:23.165Z"
+    },
+    {
+      "label": "密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "wrongpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1550,
+      "timestamp": "2026-07-01T14:26:24.715Z"
+    },
+    {
+      "label": "手机号不存在",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "19900000000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1531,
+      "timestamp": "2026-07-01T14:26:26.246Z"
+    },
+    {
+      "label": "超长手机号(20位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001222233334",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1521,
+      "timestamp": "2026-07-01T14:26:27.767Z"
+    },
+    {
+      "label": "超短手机号(5位)",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000",
+        "password": "888888"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1529,
+      "timestamp": "2026-07-01T14:26:29.296Z"
+    },
+    {
+      "label": "密码最小长度1位",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "1"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1563,
+      "timestamp": "2026-07-01T14:26:30.859Z"
+    },
+    {
+      "label": "空字符串手机号",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "",
+        "password": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1548,
+      "timestamp": "2026-07-01T14:26:32.407Z"
+    },
+    {
+      "label": "同一账号连续登录2次",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/password-login",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13000000001",
+        "password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1524,
+      "timestamp": "2026-07-01T14:26:33.931Z"
+    },
+    {
+      "label": "有效token获取session",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 26,
+      "timestamp": "2026-07-01T14:26:33.968Z"
+    },
+    {
+      "label": "获取用户profile",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "GET",
+      "url": "/api/auth/profile",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 9,
+      "timestamp": "2026-07-01T14:26:33.978Z"
+    },
+    {
+      "label": "无token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1582,
+      "timestamp": "2026-07-01T14:26:35.561Z"
+    },
+    {
+      "label": "伪造token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1565,
+      "timestamp": "2026-07-01T14:26:37.126Z"
+    },
+    {
+      "label": "过期token访问session",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": null,
+      "expectStatus": 404,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1563,
+      "timestamp": "2026-07-01T14:26:38.689Z"
+    },
+    {
+      "label": "A25-修改密码-正向",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "test9999"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 13,
+      "timestamp": "2026-07-01T14:26:38.706Z"
+    },
+    {
+      "label": "改密后恢复原密码",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "test9999",
+        "new_password": "888888"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1536,
+      "timestamp": "2026-07-01T14:26:40.243Z"
+    },
+    {
+      "label": "改密-当前密码错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "wrong",
+        "new_password": "newpass"
+      },
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 3,
+      "timestamp": "2026-07-01T14:26:40.247Z"
+    },
+    {
+      "label": "改密-新密码太短",
+      "module": "auth",
+      "category": "边界值",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "12"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 7,
+      "timestamp": "2026-07-01T14:26:40.254Z"
+    },
+    {
+      "label": "改密-未登录",
+      "module": "auth",
+      "category": "权限校验",
+      "method": "POST",
+      "url": "/api/auth/change-password",
+      "headers": "Bearer <token>",
+      "body": {
+        "current_password": "888888",
+        "new_password": "123456"
+      },
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 3,
+      "timestamp": "2026-07-01T14:26:40.257Z"
+    },
+    {
+      "label": "A13-新用户注册",
+      "module": "auth",
+      "category": "正向功能",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009874",
+        "name": "测试用户",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 201,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1526,
+      "timestamp": "2026-07-01T14:26:41.784Z"
+    },
+    {
+      "label": "注册-手机号格式错误",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "123",
+        "name": "测试",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1546,
+      "timestamp": "2026-07-01T14:26:43.331Z"
+    },
+    {
+      "label": "注册-已存在手机号",
+      "module": "auth",
+      "category": "重复操作",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "13600001234",
+        "name": "重复",
+        "role": "worker",
+        "code": "888888"
+      },
+      "expectStatus": 409,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1532,
+      "timestamp": "2026-07-01T14:26:44.863Z"
+    },
+    {
+      "label": "注册-缺少验证码",
+      "module": "auth",
+      "category": "参数异常",
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": "Bearer <token>",
+      "body": {
+        "phone": "15000009999",
+        "name": "测试",
+        "role": "worker"
+      },
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1526,
+      "timestamp": "2026-07-01T14:26:46.389Z"
+    },
+    {
+      "label": "E01-流程-注册→密码登录→验证会话",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "POST→GET",
+      "url": "/api/auth/*",
+      "headers": "Bearer <token>",
+      "body": "phone→token→session",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1527,
+      "timestamp": "2026-07-01T14:26:48.176Z"
+    },
+    {
+      "label": "E01-流程-无token请求被拒绝",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "(无)",
+      "body": "无token",
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1737,
+      "timestamp": "2026-07-01T14:26:49.913Z"
+    },
+    {
+      "label": "E01-流程-假token请求被拒绝",
+      "module": "auth",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/auth/session",
+      "headers": "Bearer <token>",
+      "body": "假token",
+      "expectStatus": 401,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "fetch failed",
+      "duration": 1733,
+      "timestamp": "2026-07-01T14:26:51.764Z"
+    },
+    {
+      "label": "E02-流程-创建简历→查询→审批(如可用)",
+      "module": "workers",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/workers + /api/resume-reviews",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→审批",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 56,
+      "timestamp": "2026-07-01T14:26:51.843Z"
+    },
+    {
+      "label": "E03-流程-创建订单→查询→完成",
+      "module": "orders",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→完成",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 18,
+      "timestamp": "2026-07-01T14:26:51.863Z"
+    },
+    {
+      "label": "E03-签约-创建订单→阿姨签约→验证签约记录",
+      "module": "order_signings",
+      "category": "端到端流程",
+      "method": "POST→POST→GET",
+      "url": "/api/orders + /api/orders/{id}/signing + /api/orders",
+      "headers": "Bearer <token>",
+      "body": "创建→签约→查询",
+      "expectStatus": 201,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 12,
+      "timestamp": "2026-07-01T14:26:51.875Z"
+    },
+    {
+      "label": "E03-流程-非法状态流转被拒绝",
+      "module": "orders",
+      "category": "端到端流程",
+      "method": "PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "completed→open(非法)",
+      "expectStatus": 400,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 17,
+      "timestamp": "2026-07-01T14:26:51.892Z"
+    },
+    {
+      "label": "E04-流程-创建线索→查询→签约",
+      "module": "leads",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/leads",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→签约",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [recruiter(招生张三)]: fetch failed",
+      "duration": 25,
+      "timestamp": "2026-07-01T14:26:51.920Z"
+    },
+    {
+      "label": "E04-流程-添加跟进记录",
+      "module": "leads",
+      "category": "端到端流程",
+      "method": "POST",
+      "url": "/api/leads/:id/followups",
+      "headers": "Bearer <token>",
+      "body": "{content}",
+      "expectStatus": 201,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [recruiter(招生张三)]: fetch failed",
+      "duration": 10,
+      "timestamp": "2026-07-01T14:26:51.931Z"
+    },
+    {
+      "label": "E05-流程-讲师创建课程→admin审核通过",
+      "module": "courses",
+      "category": "端到端流程",
+      "method": "POST→POST",
+      "url": "/api/courses + /api/courses/:id/approve",
+      "headers": "Bearer <token>",
+      "body": "创建→审核",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [instructor(讲师李四)]: fetch failed",
+      "duration": 16,
+      "timestamp": "2026-07-01T14:26:51.963Z"
+    },
+    {
+      "label": "E05-流程-报名→讲师打分",
+      "module": "enrollments",
+      "category": "端到端流程",
+      "method": "POST→POST",
+      "url": "/api/enrollments + /api/enrollments/:id/grade",
+      "headers": "Bearer <token>",
+      "body": "报名→打分",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [recruiter(招生张三)]: fetch failed",
+      "duration": 95,
+      "timestamp": "2026-07-01T14:26:52.058Z"
+    },
+    {
+      "label": "E06-流程-创建合同(draft)→查询→更新为signed",
+      "module": "contracts",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/contracts",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→签约",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 31,
+      "timestamp": "2026-07-01T14:26:52.089Z"
+    },
+    {
+      "label": "E07-流程-创建客户→关联订单→完成",
+      "module": "customers",
+      "category": "端到端流程",
+      "method": "POST→POST→PUT",
+      "url": "/api/customers + /api/orders",
+      "headers": "Bearer <token>",
+      "body": "创建客户→下单→完成",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 36,
+      "timestamp": "2026-07-01T14:26:52.141Z"
+    },
+    {
+      "label": "E08-隔离-worker无法获取admin数据",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/users",
+      "headers": "Bearer <token>",
+      "body": "worker token→查全量用户",
+      "expectStatus": 403,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [worker(阿姨孙八)]: fetch failed",
+      "duration": 27,
+      "timestamp": "2026-07-01T14:26:52.170Z"
+    },
+    {
+      "label": "E08-隔离-customer无法创建阿姨",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "POST",
+      "url": "/api/workers",
+      "headers": "Bearer <token>",
+      "body": "customer→创建阿姨",
+      "expectStatus": 403,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [customer(客户周九)]: fetch failed",
+      "duration": 14,
+      "timestamp": "2026-07-01T14:26:52.186Z"
+    },
+    {
+      "label": "E08-隔离-worker无法删除客户",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "DELETE",
+      "url": "/api/customers?id=xxx",
+      "headers": "Bearer <token>",
+      "body": "worker→删除客户",
+      "expectStatus": 403,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [worker(阿姨孙八)]: fetch failed",
+      "duration": 8,
+      "timestamp": "2026-07-01T14:26:52.194Z"
+    },
+    {
+      "label": "E08-隔离-agent无法管理字段权限",
+      "module": "authz",
+      "category": "端到端流程",
+      "method": "GET",
+      "url": "/api/field-permissions",
+      "headers": "Bearer <token>",
+      "body": "agent→读取权限配置",
+      "expectStatus": 403,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 12,
+      "timestamp": "2026-07-01T14:26:52.207Z"
+    },
+    {
+      "label": "E09-流程-读取设置→更新→再次读取验证",
+      "module": "settings",
+      "category": "端到端流程",
+      "method": "GET→PUT→GET",
+      "url": "/api/settings",
+      "headers": "Bearer <token>",
+      "body": "key→value→验证",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 68,
+      "timestamp": "2026-07-01T14:26:52.276Z"
+    },
+    {
+      "label": "E10-流程-创建自荐→查询→更新状态",
+      "module": "worker_applications",
+      "category": "端到端流程",
+      "method": "POST→GET→PUT",
+      "url": "/api/worker-applications",
+      "headers": "Bearer <token>",
+      "body": "创建→查询→更新",
+      "expectStatus": 201,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 19,
+      "timestamp": "2026-07-01T14:26:52.296Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的客户",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "DELETE",
+      "url": "/api/customers?id=",
+      "headers": "Bearer <token>",
+      "body": "批量删除",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 6,
+      "timestamp": "2026-07-01T14:26:52.313Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的订单",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "PUT",
+      "url": "/api/orders",
+      "headers": "Bearer <token>",
+      "body": "批量取消",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [agent(经纪人赵六)]: fetch failed",
+      "duration": 13,
+      "timestamp": "2026-07-01T14:26:52.327Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的签约记录",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "DELETE",
+      "url": "/api/order-signings?id=",
+      "headers": "Bearer <token>",
+      "body": "批量删除",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 13,
+      "timestamp": "2026-07-01T14:26:52.340Z"
+    },
+    {
+      "label": "E99-清理-删除E2E创建的自荐记录",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "DELETE",
+      "url": "/api/worker-applications?id=",
+      "headers": "Bearer <token>",
+      "body": "批量删除",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 37,
+      "timestamp": "2026-07-01T14:26:52.378Z"
+    },
+    {
+      "label": "E99-清理-清理设置测试键",
+      "module": "cleanup",
+      "category": "清理",
+      "method": "PUT",
+      "url": "/api/settings",
+      "headers": "Bearer <token>",
+      "body": "删除e2e_test_key",
+      "expectStatus": 200,
+      "actualStatus": null,
+      "status": "FAIL",
+      "error": "登录网络错误 [admin(管理员)]: fetch failed",
+      "duration": 15,
+      "timestamp": "2026-07-01T14:26:52.394Z"
+    }
+  ]
+}

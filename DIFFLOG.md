@@ -4,6 +4,66 @@
 
 ---
 
+## 第61轮 (2026-07-01) — v058 Session RLS修复 + 权限矩阵修正
+
+### 🔧 修复
+- `src/app/api/auth/session/route.ts` — `getSupabaseClient()` → `getSupabaseServiceClient()`（anon key 被 RLS 拦截导致 404）
+- `src/lib/auth-middleware.ts` — 删除 guest 降级逻辑；`workers:write` 恢复 agent/recruiter；`leads:write` 恢复 agent
+
+### 🧪 测试修正
+- `tests/api-test/suites/gap-biz.test.js` — B04/B05 预期从 401→200（JWT 生效后 valid token 应返回数据）
+
+### 📋 文档
+- `docs/问题跟踪清单.md` — P0/P1/P2 全部同步实际状态，D04-D06 标记已验证，版本记录补 v057/v058
+
+## 第60轮 (2026-07-01) — v057 安全加固 8 项
+
+### P0 安全修复
+- `src/app/api/auth/password-login/route.ts` — 删除自定义 generateToken()，改用 signToken()
+- `src/app/api/referral/my-referrals/route.ts` — 删除内联 JWT 处理，改用 parseAndVerifyToken()
+- `src/app/api/referral/my-code/route.ts` — 同上，合并双分支逻辑
+- `src/middleware.ts` — 新增：CSRF Origin 校验 + 安全头（X-Content-Type-Options 等）
+- `src/lib/csrf.ts` — 新增：isValidOrigin/csrfCheck
+
+### P1 数据安全
+- `src/lib/utils.ts` — maskPhone() 改为 139****1111 格式，新增 maskIdCard()、sanitizeHtml()
+
+### P2 代码质量
+- `src/hooks/use-api.ts` — **删除**（108行，0处引用）
+- `src/app/api/auth/init-users/route.ts` — 生产环境用 `ALLOW_INIT_USERS` 环境变量控制
+
+## 第59轮 (2026-07-01) — v056 密码哈希修复 + 简历文件key持久化
+
+### 密码体系改造
+- `src/app/api/auth/password-login/route.ts` — `===` → `verifyPassword()` 兼容明文/哈希
+- `src/app/api/auth/change-password/route.ts` — 旧密码 `verifyPassword()`, 新密码 `hashPassword()`
+- `src/app/api/auth/init-users/route.ts` — 8个用户密码统一 `hashPassword('888888')`
+- `src/app/api/auth/phone-login/route.ts` — 注册时 `hashPassword()`
+- `src/app/api/auth/phone-register/route.ts` — 同上
+- `src/app/api/auth/register/route.ts` — 同上
+- `src/app/api/auth/reset-password/route.ts` — 同上
+- `src/app/api/auth/wechat-login/route.ts` — 同上
+- `src/app/api/auth/wechat-register/route.ts` — 同上
+
+### 简历文件 key 持久化
+- `src/app/m/worker/resume/page.tsx` — 大改
+  - 新增 `uploadFile()` / `resolveFileUrl()` / `handleImgError()` 三个辅助函数
+  - state 新增 `avatarKey` / `idCardFrontKey` / `idCardBackKey`
+  - photos/videos 项新增 `key` 字段
+  - 头像上传: `FileReader` → `uploadFile(file, 'avatar')`
+  - 身份证上传: `setIdCardFront('uploaded')` → `uploadFile(file, 'idcard')`
+  - 照片上传: `URL.createObjectURL()` → `uploadFile(file, 'photo')`
+  - 视频上传: `URL.createObjectURL()` → `uploadFile(file, 'general')`
+  - 所有 `<img>` 加 `onError` → 自动 `/api/file-url?key=xxx` 刷新
+  - `handleSave` 写入 `avatar_key`/`idcard_front_key`/`idcard_back_key`/`photo_keys`/`video_keys`
+  - `handleCancel` 重置所有 key state
+  - `fetchWorker` 从 API 恢复已保存的 key
+
+### 文档
+- `CHANGELOG.md` — v056 条目更新
+- `DIFFLOG.md` — 本条目
+- `Dockerfile` — BUST_CACHE → v056-20260701
+
 ## 第58轮 (2026-07-01) — 黄金路径v2：按业务逻辑全景图72步全覆盖
 
 ### 测试文档
