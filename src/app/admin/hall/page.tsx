@@ -95,7 +95,7 @@ export default function HallPage() {
     setWorkerJobFilter('all');
     setWorkersLoading(true);
     try {
-      const res = await fetch('/api/workers?status=idle', {
+      const res = await fetch('/api/workers?status=available', {
         headers: getAuthHeaders(false),
       });
       const json = await res.json();

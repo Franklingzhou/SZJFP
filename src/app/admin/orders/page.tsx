@@ -268,7 +268,7 @@ export default function OrdersPage() {
     setReplaceWorkersLoading(true);
     setShowReplace(true);
     try {
-      const res = await fetch('/api/workers?status=idle', { headers: getAuthHeaders() });
+      const res = await fetch('/api/workers?status=available', { headers: getAuthHeaders() });
       const data = await res.json();
       setReplaceWorkers(data.data || []);
     } catch {
@@ -317,7 +317,7 @@ export default function OrdersPage() {
     setShowRecommend(true);
     setWorkersLoading(true);
     try {
-      const res = await fetch('/api/workers?status=idle', { headers: getAuthHeaders() });
+      const res = await fetch('/api/workers?status=available', { headers: getAuthHeaders() });
       const data = await res.json();
       setAvailableWorkers(data.data || []);
     } catch {
@@ -373,7 +373,7 @@ export default function OrdersPage() {
       setSignRecommendations([]);
     }
     try {
-      const res = await fetch('/api/workers?status=idle', { headers: getAuthHeaders() });
+      const res = await fetch('/api/workers?status=available', { headers: getAuthHeaders() });
       const data = await res.json();
       setSignAvailableWorkers(data.data || []);
     } catch {
